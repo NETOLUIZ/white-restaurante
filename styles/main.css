@@ -5,7 +5,7 @@ body {
   -webkit-font-smoothing: antialiased;
   color: #2A0E0A;
   min-height: 100vh;
-  background: radial-gradient(120% 90% at 50% 0%, #E8820E 0%, #B01818 44%, #4A0A06 100%);
+  background: radial-gradient(120% 90% at 50% 0%, #f5e503 0%, #B01818 44%, #4A0A06 100%);
   padding: 48px 24px 56px;
 }
 a { text-decoration: none; color: inherit; }
