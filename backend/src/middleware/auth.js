@@ -60,4 +60,24 @@ function autenticarEntregador(req, res, next) {
   }
 }
 
-module.exports = { autenticarAdmin, autenticarGarcom, autenticarEntregador };
+/**
+ * Exige um atendente autenticado — mesmo esquema do admin/garçom (JWT em
+ * cookie httpOnly), cookie e payload próprios. Sem acesso a /api/admin/*,
+ * /api/garcom/* nem /api/entregador/*, só ao próprio escopo (criar pedido de balcão).
+ */
+function autenticarAtendente(req, res, next) {
+  const token = req.cookies?.bel_do_frango_atu_atendente_token;
+  if (!token) {
+    return res.status(401).json({ erro: 'Nao autenticado' });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    req.atendente = { id: payload.id, email: payload.email };
+    next();
+  } catch {
+    return res.status(401).json({ erro: 'Sessao invalida ou expirada' });
+  }
+}
+
+module.exports = { autenticarAdmin, autenticarGarcom, autenticarEntregador, autenticarAtendente };

@@ -42,6 +42,7 @@ const marmitaTamanhosRoutes = require('./routes/marmitaTamanhos');
 const adminRoutes = require('./routes/admin');
 const garcomRoutes = require('./routes/garcom');
 const entregadorRoutes = require('./routes/entregador');
+const atendenteRoutes = require('./routes/atendente');
 
 const app = express();
 const PORT = process.env.PORT || 3010;
@@ -113,6 +114,7 @@ app.use('/api/cupons', limitadorPublico);
 app.use('/api/auth/login', limitadorLogin);
 app.use('/api/garcom/login', limitadorLogin);
 app.use('/api/entregador/login', limitadorLogin);
+app.use('/api/atendente/login', limitadorLogin);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/categorias', categoriasRoutes);
@@ -128,6 +130,7 @@ app.use('/api/marmita-tamanhos', marmitaTamanhosRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/garcom', garcomRoutes);
 app.use('/api/entregador', entregadorRoutes);
+app.use('/api/atendente', atendenteRoutes);
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });

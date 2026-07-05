@@ -11,6 +11,7 @@ const complementoController = require('../controllers/complementoController');
 const marmitaTamanhoController = require('../controllers/marmitaTamanhoController');
 const entregadorController = require('../controllers/entregadorController');
 const garcomAdminController = require('../controllers/garcomAdminController');
+const atendenteAdminController = require('../controllers/atendenteAdminController');
 const caixaController = require('../controllers/caixaController');
 const configuracaoController = require('../controllers/configuracaoController');
 const mesaController = require('../controllers/mesaController');
@@ -71,6 +72,10 @@ router.put('/entregadores/:id', entregadorController.atualizar);
 router.get('/garcons', garcomAdminController.listarAdmin);
 router.post('/garcons', garcomAdminController.criar);
 router.put('/garcons/:id', garcomAdminController.atualizar);
+
+router.get('/atendentes', atendenteAdminController.listarAdmin);
+router.post('/atendentes', atendenteAdminController.criar);
+router.put('/atendentes/:id', atendenteAdminController.atualizar);
 
 const { atribuirEntregador } = require('../controllers/pedidoController');
 router.put('/pedidos/:id/entregador', atribuirEntregador);

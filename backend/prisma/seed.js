@@ -190,12 +190,22 @@ async function main() {
     create: { email: 'garcom@beldofrango.com', senha: senhaGarcomHash, nome: 'Garçom' },
   });
 
+  const senhaAtendente = process.env.SEED_ATENDENTE_SENHA || 'AtendenteBelDoFrango@2026';
+  const senhaAtendenteHash = await bcrypt.hash(senhaAtendente, 10);
+  await prisma.atendente.upsert({
+    where: { email: 'atendente@beldofrango.com' },
+    update: {},
+    create: { email: 'atendente@beldofrango.com', senha: senhaAtendenteHash, nome: 'Atendente' },
+  });
+
   console.log('\n✔ Seed concluído com sucesso!');
   console.log('─────────────────────────────────────────');
-  console.log('Admin login  : admin@beldofrango.com');
-  console.log(`Admin senha  : ${senhaAdmin}`);
-  console.log('Garçom login : garcom@beldofrango.com');
-  console.log(`Garçom senha : ${senhaGarcom}`);
+  console.log('Admin login     : admin@beldofrango.com');
+  console.log(`Admin senha     : ${senhaAdmin}`);
+  console.log('Garçom login    : garcom@beldofrango.com');
+  console.log(`Garçom senha    : ${senhaGarcom}`);
+  console.log('Atendente login : atendente@beldofrango.com');
+  console.log(`Atendente senha : ${senhaAtendente}`);
   console.log('─────────────────────────────────────────');
 }
 

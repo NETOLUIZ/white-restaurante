@@ -1,6 +1,9 @@
 const { prisma } = require('../utils/db');
 
-const FORMAS_PAGAMENTO_VALIDAS = ['PIX', 'CARTAO'];
+// Pedido público (guest checkout, sem presença física) só aceita pagamento online —
+// Dinheiro exigiria alguém fisicamente presente pra receber, por isso é exclusivo do atendente.
+const FORMAS_PAGAMENTO_PUBLICO = ['PIX', 'CARTAO'];
+const FORMAS_PAGAMENTO_ATENDENTE = ['PIX', 'CARTAO', 'DINHEIRO'];
 const TAXA_ENTREGA_PADRAO = 7.9;
 
 /**
@@ -75,24 +78,25 @@ class Erro400 extends Error {}
  *     itens: [{ produtoId, quantidade, observacoes? } | { tamanhoMarmitaId, proteinaIds, complementoIds, quantidade, observacoes? }],
  *     cupomCodigo?, formaPagamento: 'PIX' | 'CARTAO' }
  */
-async function criar(req, res) {
+async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirCliente = true } = {}) {
   try {
     const { nomeCliente, telefone, endereco, itens, cupomCodigo, formaPagamento } = req.body;
     const tipo = req.body.tipo === 'RETIRADA' ? 'RETIRADA' : 'ENTREGA';
 
-    if (!nomeCliente || !telefone || (tipo === 'ENTREGA' && !endereco) || !Array.isArray(itens) || itens.length === 0) {
+    if ((exigirCliente && (!nomeCliente || !telefone)) || (tipo === 'ENTREGA' && !endereco) || !Array.isArray(itens) || itens.length === 0) {
       return res.status(400).json({ erro: 'Dados obrigatórios não informados' });
     }
-    if (!FORMAS_PAGAMENTO_VALIDAS.includes(formaPagamento)) {
+    if (!formasPagamentoValidas.includes(formaPagamento)) {
       return res.status(400).json({ erro: 'Forma de pagamento inválida' });
     }
     // Endpoint público (sem login) — nunca confiar no formato/tamanho do que vier do client.
-    const nomeTrim = String(nomeCliente).trim();
-    if (nomeTrim.length < 2 || nomeTrim.length > 100) {
+    // Pedido de balcão (atendente) não coleta cliente — usa nome genérico e sem telefone/cadastro de cliente.
+    const nomeTrim = nomeCliente ? String(nomeCliente).trim() : 'Cliente balcão';
+    if (exigirCliente && (nomeTrim.length < 2 || nomeTrim.length > 100)) {
       return res.status(400).json({ erro: 'Nome deve ter entre 2 e 100 caracteres' });
     }
-    const telefoneDigitos = String(telefone).replace(/\D/g, '');
-    if (telefoneDigitos.length < 10 || telefoneDigitos.length > 15) {
+    const telefoneDigitos = telefone ? String(telefone).replace(/\D/g, '') : '';
+    if (exigirCliente && (telefoneDigitos.length < 10 || telefoneDigitos.length > 15)) {
       return res.status(400).json({ erro: 'Telefone inválido' });
     }
     if (tipo === 'ENTREGA' && (typeof endereco !== 'object' || Array.isArray(endereco) || endereco === null)) {
@@ -155,18 +159,21 @@ async function criar(req, res) {
     }
     const total = Math.max(0, Number((subtotal - desconto + taxaEntrega).toFixed(2)));
 
-    const cliente = await prisma.cliente.upsert({
-      where: { telefone: telefoneDigitos },
-      update: { nome: nomeTrim },
-      create: { nome: nomeTrim, telefone: telefoneDigitos },
-    });
+    // Pedido de balcão sem telefone não tem Cliente vinculado (não dá pra upsert sem a chave única).
+    const cliente = telefoneDigitos
+      ? await prisma.cliente.upsert({
+          where: { telefone: telefoneDigitos },
+          update: { nome: nomeTrim },
+          create: { nome: nomeTrim, telefone: telefoneDigitos },
+        })
+      : null;
 
     const pedido = await prisma.pedido.create({
       data: {
         tipo,
-        clienteId: cliente.id,
+        clienteId: cliente?.id ?? null,
         nomeCliente: nomeTrim,
-        telefone: telefoneDigitos,
+        telefone: telefoneDigitos || null,
         endereco: tipo === 'ENTREGA' ? endereco : null,
         cupomId: cupom?.id ?? null,
         subtotal: Number(subtotal.toFixed(2)),
@@ -180,7 +187,7 @@ async function criar(req, res) {
     });
 
     // Log sem dado pessoal (LGPD) — só ids e valores, nunca telefone/endereço completos.
-    console.log(`[pedido] criado id=${pedido.id} clienteId=${cliente.id} total=${total}`);
+    console.log(`[pedido] criado id=${pedido.id} clienteId=${cliente?.id ?? null} total=${total}`);
 
     res.status(201).json({
       id: pedido.id,
@@ -196,6 +203,16 @@ async function criar(req, res) {
     console.error('Erro ao criar pedido:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
   }
+}
+
+/** Guest checkout (sem login) — só pagamento online, ver FORMAS_PAGAMENTO_PUBLICO. */
+function criar(req, res) {
+  return criarPedidoInterno(req, res, FORMAS_PAGAMENTO_PUBLICO);
+}
+
+/** Pedido criado pelo atendente no balcão (autenticado) — aceita Dinheiro, pago na hora, sem coletar dados do cliente. */
+function criarComoAtendente(req, res) {
+  return criarPedidoInterno(req, res, FORMAS_PAGAMENTO_ATENDENTE, { exigirCliente: false });
 }
 
 /**
@@ -393,4 +410,4 @@ async function relatorioDia(req, res) {
   }
 }
 
-module.exports = { criar, buscarPorCodigo, listarAdmin, atualizarStatus, atribuirEntregador, relatorioDia };
+module.exports = { criar, criarComoAtendente, buscarPorCodigo, listarAdmin, atualizarStatus, atribuirEntregador, relatorioDia };

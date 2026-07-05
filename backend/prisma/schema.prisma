@@ -80,6 +80,17 @@ model Garcom {
   createdAt DateTime @default(now())
 }
 
+/// Atendente de balcão — login próprio, separado do Admin. Acesso restrito à
+/// tela de criar pedido manual (retirada), nunca ao painel completo.
+model Atendente {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  senha     String
+  nome      String
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
 model CategoriaProduto {
   id            Int            @id @default(autoincrement())
   nome          String         @unique

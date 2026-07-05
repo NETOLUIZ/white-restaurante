@@ -1,0 +1,88 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { prisma } = require('../utils/db');
+
+const NOME_COOKIE = 'bel_do_frango_atu_atendente_token';
+const COOKIE_MAX_IDADE_MS = 12 * 60 * 60 * 1000; // 12h, mesma duracao do token
+
+/** Opcoes do cookie do token de atendente — httpOnly, igual ao padrão usado pro admin/garçom. */
+function opcoesCookie() {
+  return {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: COOKIE_MAX_IDADE_MS,
+  };
+}
+
+/** Login do atendente — sessão própria, nunca dá acesso às rotas de admin/garçom. */
+async function login(req, res) {
+  try {
+    const { email, senha } = req.body;
+    if (!email || !senha) {
+      return res.status(400).json({ erro: 'Email e senha sao obrigatorios' });
+    }
+
+    const atendente = await prisma.atendente.findUnique({ where: { email: String(email).trim().toLowerCase() } });
+    if (!atendente || !atendente.ativo) {
+      return res.status(401).json({ erro: 'Email ou senha incorretos' });
+    }
+
+    const senhaValida = await bcrypt.compare(senha, atendente.senha);
+    if (!senhaValida) {
+      return res.status(401).json({ erro: 'Email ou senha incorretos' });
+    }
+
+    const token = jwt.sign({ id: atendente.id, email: atendente.email }, process.env.JWT_SECRET, {
+      expiresIn: '12h',
+    });
+
+    res.cookie(NOME_COOKIE, token, opcoesCookie());
+    res.json({ atendente: { id: atendente.id, nome: atendente.nome, email: atendente.email } });
+  } catch (err) {
+    console.error('Erro no login do atendente:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+function logout(req, res) {
+  res.clearCookie(NOME_COOKIE, opcoesCookie());
+  res.json({ ok: true });
+}
+
+/** Confirma se a sessão do atendente (cookie) ainda é válida — usado pela tela ao carregar. */
+async function me(req, res) {
+  const atendente = await prisma.atendente.findUnique({ where: { id: req.atendente.id } });
+  if (!atendente || !atendente.ativo) {
+    return res.status(401).json({ erro: 'Sessao invalida' });
+  }
+  res.json({ atendente: { id: atendente.id, nome: atendente.nome, email: atendente.email } });
+}
+
+/** Troca a senha do atendente logado — exige a senha atual correta. */
+async function alterarSenha(req, res) {
+  try {
+    const { senhaAtual, novaSenha } = req.body;
+    if (!senhaAtual || !novaSenha) {
+      return res.status(400).json({ erro: 'Informe a senha atual e a nova senha' });
+    }
+    if (String(novaSenha).length < 6) {
+      return res.status(400).json({ erro: 'A nova senha precisa de ao menos 6 caracteres' });
+    }
+
+    const atendente = await prisma.atendente.findUnique({ where: { id: req.atendente.id } });
+    const senhaValida = await bcrypt.compare(senhaAtual, atendente.senha);
+    if (!senhaValida) {
+      return res.status(401).json({ erro: 'Senha atual incorreta' });
+    }
+
+    const senhaHash = await bcrypt.hash(String(novaSenha), 10);
+    await prisma.atendente.update({ where: { id: atendente.id }, data: { senha: senhaHash } });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao trocar senha do atendente:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+module.exports = { login, logout, me, alterarSenha };

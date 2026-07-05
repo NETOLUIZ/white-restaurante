@@ -138,6 +138,10 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 2a5 5 0 0 1-5 5 5 5 0 0 1-5-5"/><path d="M7 22a5 5 0 0 1 5-5 5 5 0 0 1 5 5"/></svg>
         <span style="flex:1;text-align:left;">Garçons</span>
       </button>
+      <button onClick="{{ goAtendentes }}" style="{{ navAtendentes }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9h20"/><path d="M7 14h3"/></svg>
+        <span style="flex:1;text-align:left;">Atendentes</span>
+      </button>
       <button onClick="{{ goSenha }}" style="{{ navSenha }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.4"/></svg>
         <span style="flex:1;text-align:left;">Trocar senha</span>
@@ -326,53 +330,79 @@
         </div>
 
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;flex:1;">Proteínas</h3>
-            <button onClick="{{ novaProteina }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:10px;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova proteína</button>
-          </div>
-          <sc-if value="{{ isProteinaDraft }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;gap:8px;margin-bottom:12px;">
-              <input value="{{ marmitaDraftNome }}" onChange="{{ onMarmitaDraftNome }}" placeholder="Nome da proteína" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;"/>
-              <button onClick="{{ salvarMarmitaDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
-              <button onClick="{{ cancelarMarmitaDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 14px;">Adicionar Item ao Cardápio</h3>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:2;min-width:220px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Nome do Item</label>
+              <input value="{{ marmitaAddNome }}" onChange="{{ onMarmitaAddNome }}" placeholder="Ex: Frango Grelhado" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;box-sizing:border-box;"/>
             </div>
-          </sc-if>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <sc-for list="{{ proteinaRows }}" as="it" hint-placeholder-count="4">
-              <div style="display:flex;align-items:center;gap:12px;background:#F6F1E7;border-radius:12px;padding:10px 14px;">
-                <span style="flex:1;font-weight:600;font-size:14px;">{{ it.nome }}</span>
-                <sc-if value="{{ it.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border:1px solid #F0CFCB;border-radius:7px;padding:3px 8px;">Esgotado</span></sc-if>
-                <button onClick="{{ it.onToggleEsgotado }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;">{{ it.esgotadoLabel }}</button>
-                <button onClick="{{ it.onToggleAtivo }}" style="{{ it.toggleStyle }}"><span style="{{ it.knobStyle }}"></span></button>
-                <button onClick="{{ it.onExcluir }}" aria-label="Excluir proteína" style="background:none;border:none;color:#C0392B;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-              </div>
-            </sc-for>
+            <div style="flex:1;min-width:150px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Tipo</label>
+              <select value="{{ marmitaAddTipo }}" onChange="{{ onMarmitaAddTipo }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;box-sizing:border-box;">
+                <option value="proteinas">Proteína</option>
+                <option value="complementos">Complemento</option>
+              </select>
+            </div>
+            <button onClick="{{ adicionarItemCardapio }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adicionar</button>
           </div>
         </div>
 
-        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;flex:1;">Complementos</h3>
-            <button onClick="{{ novoComplementoBtn }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:10px;padding:8px 13px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo complemento</button>
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;">Proteínas ({{ proteinasCount }})</h3>
           </div>
-          <sc-if value="{{ isComplementoDraft }}" hint-placeholder-val="{{ false }}">
-            <div style="display:flex;gap:8px;margin-bottom:12px;">
-              <input value="{{ marmitaDraftNome }}" onChange="{{ onMarmitaDraftNome }}" placeholder="Nome do complemento" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;"/>
-              <button onClick="{{ salvarMarmitaDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
-              <button onClick="{{ cancelarMarmitaDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
-            </div>
-          </sc-if>
-          <div style="display:flex;flex-direction:column;gap:8px;">
-            <sc-for list="{{ complementoRows }}" as="it" hint-placeholder-count="6">
-              <div style="display:flex;align-items:center;gap:12px;background:#F6F1E7;border-radius:12px;padding:10px 14px;">
-                <span style="flex:1;font-weight:600;font-size:14px;">{{ it.nome }}</span>
-                <sc-if value="{{ it.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border:1px solid #F0CFCB;border-radius:7px;padding:3px 8px;">Esgotado</span></sc-if>
-                <button onClick="{{ it.onToggleEsgotado }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;">{{ it.esgotadoLabel }}</button>
-                <button onClick="{{ it.onToggleAtivo }}" style="{{ it.toggleStyle }}"><span style="{{ it.knobStyle }}"></span></button>
-                <button onClick="{{ it.onExcluir }}" aria-label="Excluir complemento" style="background:none;border:none;color:#C0392B;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+          <div style="display:grid;grid-template-columns:2fr 110px 1fr;gap:14px;padding:11px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Status</span><span style="text-align:right;">Ações</span>
+          </div>
+          <sc-for list="{{ proteinaRows }}" as="it" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:2fr 110px 1fr;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ it.editNome }}" onChange="{{ it.onEditNomeChange }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 9px;font-size:13.5px;outline:none;box-sizing:border-box;"/></sc-if>
+              <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}"><span style="font-weight:600;font-size:14px;">{{ it.nome }}</span></sc-if>
+              <span style="{{ it.statusBadgeStyle }}">{{ it.statusLabel }}</span>
+              <div style="display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;">
+                <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ it.onSalvarEdit }}" style="background:#2D9E60;color:#fff;border:none;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Salvar</button>
+                  <button onClick="{{ it.onCancelarEdit }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Cancelar</button>
+                </sc-if>
+                <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ it.onToggleAtivo }}" style="{{ it.ativoPillStyle }}">Ativo</button>
+                  <button onClick="{{ it.onToggleEsgotado }}" style="{{ it.esgotadoPillStyle }}">Esgotado</button>
+                  <button onClick="{{ it.onEditar }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Editar</button>
+                  <button onClick="{{ it.onExcluir }}" style="background:#FBEAE8;border:1px solid #F0CFCB;color:#C0392B;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Excluir</button>
+                </sc-if>
               </div>
-            </sc-for>
+            </div>
+          </sc-for>
+          <sc-if value="{{ proteinasEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:36px;text-align:center;color:#8C8075;font-size:13.5px;">Nenhuma proteína cadastrada.</div></sc-if>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;">Complementos ({{ complementosCount }})</h3>
           </div>
+          <div style="display:grid;grid-template-columns:2fr 110px 1fr;gap:14px;padding:11px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Status</span><span style="text-align:right;">Ações</span>
+          </div>
+          <sc-for list="{{ complementoRows }}" as="it" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:2fr 110px 1fr;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ it.editNome }}" onChange="{{ it.onEditNomeChange }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 9px;font-size:13.5px;outline:none;box-sizing:border-box;"/></sc-if>
+              <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}"><span style="font-weight:600;font-size:14px;">{{ it.nome }}</span></sc-if>
+              <span style="{{ it.statusBadgeStyle }}">{{ it.statusLabel }}</span>
+              <div style="display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;">
+                <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ it.onSalvarEdit }}" style="background:#2D9E60;color:#fff;border:none;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Salvar</button>
+                  <button onClick="{{ it.onCancelarEdit }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Cancelar</button>
+                </sc-if>
+                <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ it.onToggleAtivo }}" style="{{ it.ativoPillStyle }}">Ativo</button>
+                  <button onClick="{{ it.onToggleEsgotado }}" style="{{ it.esgotadoPillStyle }}">Esgotado</button>
+                  <button onClick="{{ it.onEditar }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Editar</button>
+                  <button onClick="{{ it.onExcluir }}" style="background:#FBEAE8;border:1px solid #F0CFCB;color:#C0392B;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Excluir</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ complementosEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:36px;text-align:center;color:#8C8075;font-size:13.5px;">Nenhum complemento cadastrado.</div></sc-if>
         </div>
 
       </div>
@@ -646,9 +676,70 @@
       </div>
       </sc-if>
 
+      <!-- ---------- ATENDENTES ---------- -->
+      <sc-if value="{{ isAtendentes }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;max-width:820px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <p style="margin:0;font-size:13px;color:#8C8075;flex:1;">Login próprio pra criar pedidos manuais no balcão (retirada), sem acesso ao painel completo.</p>
+          <button onClick="{{ novoAtendente }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);flex:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo atendente
+          </button>
+        </div>
+
+        <sc-if value="{{ isAtendenteDraft }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;background:#FFFBF3;border:1px solid rgba(29,16,9,.08);border-radius:14px;padding:14px;">
+            <div style="display:flex;gap:8px;">
+              <input value="{{ atendenteDraftNome }}" onChange="{{ onAtendenteDraftNome }}" placeholder="Nome do atendente" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <input value="{{ atendenteDraftEmail }}" onChange="{{ onAtendenteDraftEmail }}" placeholder="email@exemplo.com" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            </div>
+            <div style="position:relative;">
+              <input type="{{ tipoAtendenteDraftSenha }}" value="{{ atendenteDraftSenha }}" onChange="{{ onAtendenteDraftSenha }}" placeholder="{{ atendenteSenhaPlaceholder }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 42px 10px 13px;font-size:14px;outline:none;"/>
+              <button type="button" onClick="{{ toggleAtendenteDraftSenha }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+                <sc-if value="{{ mostrarAtendenteDraftSenha }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+                <sc-if value="{{ ocultarAtendenteDraftSenha }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+              </button>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ salvarAtendenteDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+              <button onClick="{{ cancelarAtendenteDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Email (login)</span><span></span><span style="text-align:right;">Status</span>
+          </div>
+          <sc-for list="{{ atendenteRows }}" as="a" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:14px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <div style="font-weight:700;font-size:14px;">{{ a.nome }}</div>
+              <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ a.email }}</span>
+              <button onClick="{{ a.onEdit }}" aria-label="Editar atendente" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ a.onToggle }}" style="{{ a.toggleStyle }}"><span style="{{ a.knobStyle }}"></span></button></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ atendentesEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum atendente cadastrado.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
       <!-- ---------- VENDAS & ESTOQUE ---------- -->
       <sc-if value="{{ isVendas }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:10px 12px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
+          <button onClick="{{ vendasOnPrevWeek }}" aria-label="Semana anterior" style="flex:none;width:34px;height:34px;border-radius:10px;border:1px solid rgba(29,16,9,.1);background:#fff;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+          <div style="display:flex;gap:7px;flex:1;">
+            <sc-for list="{{ vendasDiasPills }}" as="d" hint-placeholder-count="7">
+              <button onClick="{{ d.onClick }}" style="{{ d.style }}">
+                <span style="font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;opacity:.8;">{{ d.label }}</span>
+                <span style="font-family:'DM Mono',monospace;font-size:15px;font-weight:500;">{{ d.dayNum }}</span>
+              </button>
+            </sc-for>
+          </div>
+          <button onClick="{{ vendasOnNextWeek }}" aria-label="Próxima semana" style="flex:none;width:34px;height:34px;border-radius:10px;border:1px solid rgba(29,16,9,.1);background:#fff;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+          <button onClick="{{ vendasOnHoje }}" style="flex:none;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Hoje</button>
+        </div>
+
         <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
           <sc-for list="{{ vendasKpis }}" as="k" hint-placeholder-count="4">
             <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:16px 18px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
@@ -660,7 +751,7 @@
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
           <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-            <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0;">Vendidos hoje</h3></div>
+            <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0;">Vendidos <span style="color:#8C8075;font-weight:600;">— {{ vendasDataLabel }}</span></h3></div>
             <div style="display:grid;grid-template-columns:1fr 78px 100px;gap:10px;padding:11px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#8C8075;"><span>Produto</span><span style="text-align:center;">Qtd</span><span style="text-align:right;">Receita</span></div>
             <sc-for list="{{ soldRows }}" as="r" hint-placeholder-count="6">
               <div style="display:grid;grid-template-columns:1fr 78px 100px;gap:10px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.05);align-items:center;">
@@ -669,6 +760,7 @@
                 <span style="text-align:right;font-family:'DM Mono',monospace;font-size:13px;color:#D97706;">{{ r.revFmt }}</span>
               </div>
             </sc-for>
+            <sc-if value="{{ soldEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:36px;text-align:center;color:#8C8075;font-size:13.5px;">Nenhuma venda nesse dia.</div></sc-if>
           </div>
 
           <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
@@ -938,6 +1030,7 @@ class Component extends DCLogic {
     caixa:{ aberto:false, valorInicial:'', abertoEm:'', fechamento:null },
     taxaEntregaInput:'',
     galetoHorarioInicioInput:'', galetoHorarioFimInput:'',
+    vendasSelectedDate: (() => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); })(),
 
     // ---- sessão (API real — login/logout via cookie httpOnly, nunca em localStorage) ----
     admin:null, authChecked:false,
@@ -953,6 +1046,8 @@ class Component extends DCLogic {
     entregadorDraft:null,
     garcons:[],
     garcomDraft:null,
+    atendentes:[],
+    atendenteDraft:null,
     categoriaDraft:null,
 
     // ---- "Monte sua marmita": catálogo próprio de proteínas/complementos + preço por tamanho (via API) ----
@@ -962,7 +1057,8 @@ class Component extends DCLogic {
       pequena:{ nome:'Marmita Pequena', proteinas:1, price:24.9 },
       grande:{ nome:'Marmita Grande', proteinas:2, price:32.9 }
     },
-    marmitaDraft:null, // { tipo:'proteinas'|'complementos', nome } — rascunho de novo item
+    marmitaAddNome:'', marmitaAddTipo:'proteinas', // form único "Adicionar Item ao Cardápio"
+    marmitaEdit:null, // { tipo:'proteinas'|'complementos', id, nome } — edição inline de item existente
     tables:[], // carregado da API em carregarMesas() — ver mapMesa()
     novaMesaNumero:''
   };
@@ -978,6 +1074,9 @@ class Component extends DCLogic {
     const d = new Date();
     return d.getDate() + ' ' + meses[d.getMonth()] + ' ' + d.getFullYear() + ', ' + dias[d.getDay()];
   }
+  // ---- helpers de data pro filtro de dia da tela "Vendas & Estoque" (comparação sempre em horário local, nunca UTC) ----
+  isoDate(d){ return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+  addDiasIso(iso, n){ const [y,m,d] = iso.split('-').map(Number); const dt = new Date(y, m-1, d); dt.setDate(dt.getDate()+n); return this.isoDate(dt); }
   toggleMostrarSenha(campo){ this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
 
   // ---- impressão térmica (POS-58, 58mm) ----
@@ -1080,7 +1179,7 @@ class Component extends DCLogic {
   // enquanto a aba estiver aberta.
   nav(view){
     clearInterval(this._mesasPoll);
-    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaDraft:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, categoriaDraft:null });
+    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaEdit:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, atendenteDraft:null, categoriaDraft:null });
     if (view === 'mesas') {
       this.carregarMesas();
       this._mesasPoll = setInterval(() => this.carregarMesas(), 8000);
@@ -1139,7 +1238,7 @@ class Component extends DCLogic {
     await Promise.all([
       this.carregarCategorias(), this.carregarSubcategorias(), this.carregarProdutos(), this.carregarPedidos(),
       this.carregarBanners(), this.carregarMarmitaConfig(), this.carregarEntregadores(),
-      this.carregarGarcons(), this.carregarCaixa(), this.carregarMesas(), this.carregarConfiguracao()
+      this.carregarGarcons(), this.carregarAtendentes(), this.carregarCaixa(), this.carregarMesas(), this.carregarConfiguracao()
     ]);
   }
   mapProduto(p){
@@ -1192,6 +1291,7 @@ class Component extends DCLogic {
       status: statusMap[o.statusEntrega] || 'novo',
       entregadorId: o.entregadorId || null,
       itens: (o.itens || []).map((it) => ({ n:it.nome, q:it.quantidade, p:it.precoUnitario })),
+      criadoEm: o.createdAt,
       // ---- usado só pra impressão automática do recibo de delivery (ver imprimirReciboPedido) ----
       tipoRaw: o.tipo, telefone: o.telefone || '', enderecoFull: end,
       subtotal: o.subtotal, taxaEntrega: o.taxaEntrega, total: o.total,
@@ -1218,6 +1318,10 @@ class Component extends DCLogic {
   async carregarGarcons(){
     const lista = await this.apiGet('/admin/garcons');
     this.setState({ garcons: lista });
+  }
+  async carregarAtendentes(){
+    const lista = await this.apiGet('/admin/atendentes');
+    this.setState({ atendentes: lista });
   }
   /** Carrega o status do caixa atual ao inicializar (ou ao voltar para a aba). */
   async carregarCaixa(){
@@ -1323,6 +1427,38 @@ class Component extends DCLogic {
       const updated = await this.apiSend('PUT', '/admin/garcons/' + id, { ativo: !g.ativo });
       this.setState(s => ({ garcons: s.garcons.map(x => x.id === id ? updated : x) }));
     } catch (err) { this.showToast('Erro ao atualizar garçom'); }
+  }
+  novoAtendente(){ this.setState({ atendenteDraft: { id:null, nome:'', email:'', senha:'' } }); }
+  editAtendente(a){ this.setState({ atendenteDraft: { id:a.id, nome:a.nome, email:a.email, senha:'' } }); }
+  cancelarAtendenteDraft(){ this.setState({ atendenteDraft: null }); }
+  onAtendenteDraftNome(e){ this.setState(s => ({ atendenteDraft: { ...s.atendenteDraft, nome: e.target.value } })); }
+  onAtendenteDraftEmail(e){ this.setState(s => ({ atendenteDraft: { ...s.atendenteDraft, email: e.target.value } })); }
+  onAtendenteDraftSenha(e){ this.setState(s => ({ atendenteDraft: { ...s.atendenteDraft, senha: e.target.value } })); }
+  async salvarAtendenteDraft(){
+    const d = this.state.atendenteDraft;
+    const nome = (d?.nome || '').trim();
+    const email = (d?.email || '').trim();
+    if (!nome || !email){ this.showToast('Informe nome e email'); return; }
+    if (!d.id && !d.senha){ this.showToast('Defina uma senha para o novo atendente'); return; }
+    try {
+      const payload = { nome, email };
+      if (d.senha) payload.senha = d.senha;
+      const salvo = d.id
+        ? await this.apiSend('PUT', '/admin/atendentes/' + d.id, payload)
+        : await this.apiSend('POST', '/admin/atendentes', payload);
+      this.setState(s => ({
+        atendentes: d.id ? s.atendentes.map(x => x.id === d.id ? salvo : x) : [...s.atendentes, salvo],
+        atendenteDraft: null
+      }));
+      this.showToast(d.id ? 'Atendente atualizado' : 'Atendente cadastrado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar atendente'); }
+  }
+  async toggleAtendenteAtivo(id){
+    const a = this.state.atendentes.find(x => x.id === id); if (!a) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/atendentes/' + id, { ativo: !a.ativo });
+      this.setState(s => ({ atendentes: s.atendentes.map(x => x.id === id ? updated : x) }));
+    } catch (err) { this.showToast('Erro ao atualizar atendente'); }
   }
   novaCategoria(){ this.setState({ categoriaDraft: { id:null, nome:'', ordem:'' } }); }
   editCategoria(c){ this.setState({ categoriaDraft: { id:c.id, nome:c.nome, ordem:String(c.ordem) } }); }
@@ -1460,17 +1596,31 @@ class Component extends DCLogic {
   }
 
   // ---- "Monte sua marmita": CRUD de proteínas e complementos + preço dos tamanhos (via API) ----
-  novoMarmitaItem(tipo){ this.setState({ marmitaDraft:{ tipo, nome:'' } }); } // tipo: 'proteinas' | 'complementos'
-  onMarmitaDraftNome(e){ this.setState(s => ({ marmitaDraft: s.marmitaDraft ? { ...s.marmitaDraft, nome:e.target.value } : s.marmitaDraft })); }
-  cancelarMarmitaDraft(){ this.setState({ marmitaDraft:null }); }
-  async salvarMarmitaDraft(){
-    const d = this.state.marmitaDraft; if (!d) return;
-    if (!d.nome.trim()) { this.showToast('Informe o nome'); return; }
-    const path = d.tipo === 'proteinas' ? '/admin/proteinas' : '/admin/complementos';
+  onMarmitaAddNome(e){ this.setState({ marmitaAddNome: e.target.value }); }
+  onMarmitaAddTipo(e){ this.setState({ marmitaAddTipo: e.target.value }); }
+  async adicionarItemCardapio(){
+    const nome = this.state.marmitaAddNome.trim();
+    if (!nome) { this.showToast('Informe o nome do item'); return; }
+    const tipo = this.state.marmitaAddTipo; // 'proteinas' | 'complementos'
+    const path = tipo === 'proteinas' ? '/admin/proteinas' : '/admin/complementos';
     try {
-      const item = await this.apiSend('POST', path, { nome:d.nome.trim() });
-      this.setState(s => ({ [d.tipo]: [...s[d.tipo], item], marmitaDraft:null }));
-      this.showToast(d.tipo === 'proteinas' ? 'Proteína adicionada' : 'Complemento adicionado');
+      const item = await this.apiSend('POST', path, { nome });
+      this.setState(s => ({ [tipo]: [...s[tipo], item], marmitaAddNome:'' }));
+      this.showToast(tipo === 'proteinas' ? 'Proteína adicionada' : 'Complemento adicionado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar'); }
+  }
+  editarMarmitaItem(tipo, it){ this.setState({ marmitaEdit:{ tipo, id:it.id, nome:it.nome } }); }
+  onMarmitaEditNome(e){ this.setState(s => ({ marmitaEdit: s.marmitaEdit ? { ...s.marmitaEdit, nome:e.target.value } : s.marmitaEdit })); }
+  cancelarMarmitaEdit(){ this.setState({ marmitaEdit:null }); }
+  async salvarMarmitaEdit(){
+    const d = this.state.marmitaEdit; if (!d) return;
+    const nome = d.nome.trim();
+    if (!nome) { this.showToast('Informe o nome'); return; }
+    const path = (d.tipo === 'proteinas' ? '/admin/proteinas/' : '/admin/complementos/') + d.id;
+    try {
+      const updated = await this.apiSend('PUT', path, { nome });
+      this.setState(s => ({ [d.tipo]: s[d.tipo].map(x => x.id === d.id ? updated : x), marmitaEdit:null }));
+      this.showToast('Item atualizado');
     } catch (e) { this.showToast(e.message || 'Erro ao salvar'); }
   }
   async toggleMarmitaAtivo(tipo, id){
@@ -1772,8 +1922,32 @@ class Component extends DCLogic {
 
   vendasVals(){
     const s = this.state;
+    const diasSemana = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+    const meses = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+
+    const [selY, selM, selD] = s.vendasSelectedDate.split('-').map(Number);
+    const selectedDateObj = new Date(selY, selM - 1, selD);
+    const weekStart = new Date(selectedDateObj);
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay()); // volta pro domingo da semana
+    const todayIso = this.isoDate(new Date());
+
+    const vendasDiasPills = Array.from({ length:7 }, (_, i) => {
+      const dt = new Date(weekStart);
+      dt.setDate(weekStart.getDate() + i);
+      const iso = this.isoDate(dt);
+      const active = iso === s.vendasSelectedDate;
+      const isToday = iso === todayIso;
+      return {
+        iso, label:diasSemana[i], dayNum:String(dt.getDate()),
+        style:{ flex:'1', display:'flex', flexDirection:'column', alignItems:'center', gap:'3px', padding:'9px 4px', borderRadius:'12px', border: active ? 'none' : (isToday ? '1px solid #D97706' : '1px solid rgba(29,16,9,.1)'), background: active ? '#D97706' : '#fff', color: active ? '#fff' : '#1D1009', cursor:'pointer', fontFamily:"'Plus Jakarta Sans',sans-serif" },
+        onClick:() => this.setState({ vendasSelectedDate: iso })
+      };
+    });
+    const vendasDataLabel = selectedDateObj.getDate() + ' ' + meses[selectedDateObj.getMonth()] + (selectedDateObj.getFullYear() !== new Date().getFullYear() ? ' ' + selectedDateObj.getFullYear() : '') + (s.vendasSelectedDate === todayIso ? ' · hoje' : '');
+
+    const ordersDoDia = s.orders.filter(o => o.status !== 'cancelado' && o.criadoEm && this.isoDate(new Date(o.criadoEm)) === s.vendasSelectedDate);
     const soldMap = {};
-    s.orders.filter(o => o.status !== 'cancelado').forEach(o => o.itens.forEach(it => {
+    ordersDoDia.forEach(o => o.itens.forEach(it => {
       if (!soldMap[it.n]) soldMap[it.n] = { qty:0, rev:0 };
       soldMap[it.n].qty += it.q; soldMap[it.n].rev += it.p * it.q;
     }));
@@ -1792,7 +1966,10 @@ class Component extends DCLogic {
     });
 
     return {
-      soldRows, estoqueRows,
+      soldRows, soldEmpty: soldRows.length === 0, estoqueRows, vendasDiasPills, vendasDataLabel,
+      vendasOnPrevWeek:() => this.setState(s2 => ({ vendasSelectedDate: this.addDiasIso(s2.vendasSelectedDate, -7) })),
+      vendasOnNextWeek:() => this.setState(s2 => ({ vendasSelectedDate: this.addDiasIso(s2.vendasSelectedDate, 7) })),
+      vendasOnHoje:() => this.setState({ vendasSelectedDate: todayIso }),
       vendasKpis:[
         { label:'Itens vendidos', value:String(totalItens), color:'#D97706', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#D97706', display:'inline-block' } },
         { label:'Faturamento', value:this.fmt(totalReceita), color:'#2D9E60', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#2D9E60', display:'inline-block' } },
@@ -1818,6 +1995,7 @@ class Component extends DCLogic {
       caixa:['Caixa','Abra e feche o caixa do dia'],
       entregadores:['Entregadores','Cadastre e gerencie os entregadores do delivery'],
       garcons:['Garçons','Cadastre e gerencie os garçons do salão'],
+      atendentes:['Atendentes','Cadastre e gerencie os atendentes do balcão'],
       vendas:['Vendas & Estoque','Quanto foi vendido e o que resta em estoque'],
       senha:['Trocar senha','Atualize suas credenciais de acesso']
     };
@@ -1955,22 +2133,45 @@ class Component extends DCLogic {
         onToggle:(e) => { if (e&&e.stopPropagation) e.stopPropagation(); this.toggleProduct(p.id); } };
     });
 
-    // ---- "monte sua marmita": linhas de proteínas/complementos + preço por tamanho ----
-    const marmitaRow = (tipo) => (it) => ({
-      nome:it.nome, esgotado:it.esgotado, esgotadoLabel: it.esgotado ? 'Disponível' : 'Esgotado',
-      toggleStyle:this.toggleStyle(it.ativo), knobStyle:this.knobStyle(),
-      onToggleAtivo:() => this.toggleMarmitaAtivo(tipo, it.id),
-      onToggleEsgotado:() => this.toggleMarmitaEsgotado(tipo, it.id),
-      onExcluir:() => this.excluirMarmitaItem(tipo, it.id)
+    // ---- "monte sua marmita": linhas de proteínas/complementos (tabela Nome/Status/Ações) + preço por tamanho ----
+    const marmitaStatusMeta = (it) => {
+      if (it.esgotado) return { l:'Esgotado', fg:'#C0392B', bg:'#FBEAE8', bd:'#F0CFCB' };
+      if (!it.ativo) return { l:'Inativo', fg:'#8C8075', bg:'#F6F1E7', bd:'rgba(29,16,9,.1)' };
+      return { l:'Ativo', fg:'#2D9E60', bg:'#E6F4EC', bd:'#AEDCC2' };
+    };
+    const marmitaPillStyle = (active, on) => ({
+      border: active ? 'none' : '1px solid rgba(29,16,9,.14)',
+      background: active ? on.bg : '#fff', color: active ? on.fg : '#6B2E12',
+      borderRadius:'8px', padding:'6px 10px', fontSize:'12px', fontWeight:700, cursor:'pointer', whiteSpace:'nowrap'
     });
+    const mEdit = s.marmitaEdit;
+    const marmitaRow = (tipo) => (it) => {
+      const isEditing = !!(mEdit && mEdit.tipo === tipo && mEdit.id === it.id);
+      const meta = marmitaStatusMeta(it);
+      return {
+        nome:it.nome, isEditing, isNotEditing: !isEditing,
+        editNome: isEditing ? mEdit.nome : it.nome,
+        onEditNomeChange:(e) => this.onMarmitaEditNome(e),
+        statusLabel:meta.l,
+        statusBadgeStyle:{ display:'inline-block', padding:'3px 9px', borderRadius:'8px', fontSize:'11px', fontWeight:700, color:meta.fg, background:meta.bg, border:'1px solid '+meta.bd },
+        ativoPillStyle: marmitaPillStyle(it.ativo, { bg:'#2D9E60', fg:'#fff' }),
+        esgotadoPillStyle: marmitaPillStyle(it.esgotado, { bg:'#C0392B', fg:'#fff' }),
+        onToggleAtivo:() => this.toggleMarmitaAtivo(tipo, it.id),
+        onToggleEsgotado:() => this.toggleMarmitaEsgotado(tipo, it.id),
+        onEditar:() => this.editarMarmitaItem(tipo, it),
+        onSalvarEdit:() => this.salvarMarmitaEdit(),
+        onCancelarEdit:() => this.cancelarMarmitaEdit(),
+        onExcluir:() => this.excluirMarmitaItem(tipo, it.id)
+      };
+    };
     const proteinaRows = s.proteinas.map(marmitaRow('proteinas'));
     const complementoRows = s.complementos.map(marmitaRow('complementos'));
+    const proteinasEmpty = s.proteinas.length === 0, complementosEmpty = s.complementos.length === 0;
     const marmitaSizeInputs = ['pequena','grande'].map(id => {
       const sz = s.marmitaSizes[id] || { nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas:1, price:0 };
       return { id, nome:sz.nome, proteinasLabel: sz.proteinas + (sz.proteinas===1?' proteína':' proteínas') + ' + complementos à vontade',
         price:String(sz.price), onPrice:this.onMarmitaSizePreco(id) };
     });
-    const mDraft = s.marmitaDraft;
 
     // ---- product draft ----
     const d = s.productDraft;
@@ -2096,10 +2297,10 @@ class Component extends DCLogic {
       goPedidos:() => this.nav('pedidos'), goProdutos:() => this.nav('produtos'), goCategorias:() => this.nav('categorias'), goMarmitas:() => this.nav('marmitas'),
       goBanners:() => this.nav('banners'), goMesas:() => this.nav('mesas'), goSenha:() => this.nav('senha'),
       goCaixa:() => this.nav('caixa'), goVendas:() => this.nav('vendas'), goEntregadores:() => this.nav('entregadores'),
-      goGarcons:() => this.nav('garcons'),
+      goGarcons:() => this.nav('garcons'), goAtendentes:() => this.nav('atendentes'),
       navPedidos:navStyle(s.view==='pedidos'), navProdutos:navStyle(s.view==='produtos'), navCategorias:navStyle(s.view==='categorias'), navMarmitas:navStyle(s.view==='marmitas'), navBanners:navStyle(s.view==='banners'), navMesas:navStyle(s.view==='mesas'), navSenha:navStyle(s.view==='senha'),
       navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'),
-      navGarcons:navStyle(s.view==='garcons'),
+      navGarcons:navStyle(s.view==='garcons'), navAtendentes:navStyle(s.view==='atendentes'),
       hasNovos: novosCount > 0, novosCount:String(novosCount),
 
       pageTitle, pageSubtitle,
@@ -2109,7 +2310,7 @@ class Component extends DCLogic {
       todayDate: this.formatarDataHoje(), openLabel:'Aberto agora',
 
       isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha',
-      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons',
+      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes',
 
       novoEntregador:() => this.novoEntregador(),
       isEntregadorDraft: !!s.entregadorDraft,
@@ -2158,6 +2359,30 @@ class Component extends DCLogic {
         onToggle:() => this.toggleGarcomAtivo(g.id),
         onEdit:() => this.editGarcom(g)
       })),
+
+      novoAtendente:() => this.novoAtendente(),
+      isAtendenteDraft: !!s.atendenteDraft,
+      atendenteDraftNome: s.atendenteDraft?.nome || '',
+      atendenteDraftEmail: s.atendenteDraft?.email || '',
+      atendenteDraftSenha: s.atendenteDraft?.senha || '',
+      atendenteSenhaPlaceholder: s.atendenteDraft?.id ? 'Nova senha (deixe em branco pra manter)' : 'Senha (mín. 6 caracteres)',
+      tipoAtendenteDraftSenha: s.mostrarSenha.atendenteDraft ? 'text' : 'password',
+      mostrarAtendenteDraftSenha: !!s.mostrarSenha.atendenteDraft, ocultarAtendenteDraftSenha: !s.mostrarSenha.atendenteDraft,
+      toggleAtendenteDraftSenha:() => this.toggleMostrarSenha('atendenteDraft'),
+      onAtendenteDraftNome:(e) => this.onAtendenteDraftNome(e),
+      onAtendenteDraftEmail:(e) => this.onAtendenteDraftEmail(e),
+      onAtendenteDraftSenha:(e) => this.onAtendenteDraftSenha(e),
+      salvarAtendenteDraft:() => this.salvarAtendenteDraft(),
+      cancelarAtendenteDraft:() => this.cancelarAtendenteDraft(),
+      atendentesEmpty: s.atendentes.length === 0,
+      atendenteRows: s.atendentes.map(a => ({
+        nome: a.nome,
+        email: a.email,
+        toggleStyle: this.toggleStyle(a.ativo),
+        knobStyle: this.knobStyle(),
+        onToggle:() => this.toggleAtendenteAtivo(a.id),
+        onEdit:() => this.editAtendente(a)
+      })),
       ...this.caixaVals(), ...this.vendasVals(),
 
       kpis, orderTabs, orderRows, ordersEmpty: orderRows.length === 0,
@@ -2180,11 +2405,11 @@ class Component extends DCLogic {
       setCategoriaFotoInput:(el) => this.setCategoriaFotoInput(el),
       onCategoriaFotoSelected:(e) => this.onCategoriaFotoSelected(e),
 
-      proteinaRows, complementoRows, marmitaSizeInputs,
-      novaProteina:() => this.novoMarmitaItem('proteinas'), novoComplementoBtn:() => this.novoMarmitaItem('complementos'),
-      isProteinaDraft: !!(mDraft && mDraft.tipo === 'proteinas'), isComplementoDraft: !!(mDraft && mDraft.tipo === 'complementos'),
-      marmitaDraftNome: mDraft ? mDraft.nome : '', onMarmitaDraftNome:(e) => this.onMarmitaDraftNome(e),
-      salvarMarmitaDraft:() => this.salvarMarmitaDraft(), cancelarMarmitaDraft:() => this.cancelarMarmitaDraft(),
+      proteinaRows, complementoRows, marmitaSizeInputs, proteinasEmpty, complementosEmpty,
+      proteinasCount: s.proteinas.length, complementosCount: s.complementos.length,
+      marmitaAddNome: s.marmitaAddNome, onMarmitaAddNome:(e) => this.onMarmitaAddNome(e),
+      marmitaAddTipo: s.marmitaAddTipo, onMarmitaAddTipo:(e) => this.onMarmitaAddTipo(e),
+      adicionarItemCardapio:() => this.adicionarItemCardapio(),
       salvarMarmitaSizes:() => this.salvarMarmitaSizes(),
 
       productOpen: !!d, closeProduct:() => this.setState({ productDraft:null }),

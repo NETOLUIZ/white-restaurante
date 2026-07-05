@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Atendente — Bel do Frango</title>
+<script src="scripts/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:#FFF6D6;color:#1D1009;font-size:15px;}
+  input,button,select{font-family:inherit;}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #D62828;outline-offset:2px;}
+  button{-webkit-tap-highlight-color:transparent;transition:transform .12s ease;}
+  button:active{transform:scale(.96);}
+  @keyframes atUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes atRing{to{transform:rotate(360deg);}}
+  @keyframes atToast{from{opacity:0;transform:translate(-50%,12px);}to{opacity:1;transform:translate(-50%,0);}}
+</style>
+</helmet>
+
+<!-- CARREGANDO -->
+<sc-if value="{{ isLoading }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#FFF6D6;">
+  <span style="width:34px;height:34px;border:3px solid rgba(181,22,28,.2);border-top-color:#B5161C;border-radius:50%;animation:atRing .7s linear infinite;"></span>
+</div>
+</sc-if>
+
+<!-- LOGIN -->
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 90% at 50% 0%, #E8820E 0%, #B01818 46%, #5A0A06 100%);">
+  <div style="width:100%;max-width:380px;background:#FFF6D6;border-radius:26px;padding:32px 28px;box-shadow:0 30px 70px rgba(0,0,0,.4);animation:atUp .3s ease-out;">
+    <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:22px;">
+      <div style="width:64px;height:64px;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div>
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:#B5161C;">Bel do Frango</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.22em;color:#C0894A;text-transform:uppercase;margin-top:3px;">Acesso do atendente</div>
+      </div>
+    </div>
+    <label style="display:block;font-size:13px;font-weight:600;color:#7A1209;margin-bottom:6px;">E-mail</label>
+    <input value="{{ loginEmail }}" onChange="{{ onLoginEmail }}" placeholder="atendente@beldofrango.com" style="{{ inputStyle }}"/>
+    <label style="display:block;font-size:13px;font-weight:600;color:#7A1209;margin:16px 0 6px;">Senha</label>
+    <div style="position:relative;">
+      <input type="{{ tipoLoginSenha }}" value="{{ loginSenha }}" onChange="{{ onLoginSenha }}" placeholder="••••••••" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ toggleLoginSenha }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarLoginSenha }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarLoginSenha }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
+    <sc-if value="{{ hasLoginErro }}" hint-placeholder-val="{{ false }}"><p style="margin:10px 2px 0;font-size:13px;font-weight:600;color:#C0392B;">{{ loginErro }}</p></sc-if>
+    <button onClick="{{ doLogin }}" style="margin-top:18px;width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.34);">{{ loginLabel }}</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- NOVO PEDIDO (cardápio + carrinho) -->
+<sc-if value="{{ isPedido }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:1080px;margin:0 auto;animation:atUp .25s ease-out;">
+  <div style="background:#D62828;color:#fff;border-radius:0 0 26px 26px;padding:calc(18px + env(safe-area-inset-top)) 20px 20px;margin:0 0 18px;display:flex;align-items:center;gap:12px;">
+    <div style="width:42px;height:42px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);"/></div>
+    <div style="flex:1;min-width:0;">
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">Olá, {{ nomeAtendente }}</div>
+      <div style="font-size:12px;color:rgba(255,255,255,.8);">Novo pedido de balcão (retirada)</div>
+    </div>
+    <button onClick="{{ goSenha }}" aria-label="Trocar senha" style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.16);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-right:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></button>
+    <button onClick="{{ logout }}" aria-label="Sair" style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.16);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+  </div>
+
+  <div style="display:flex;gap:20px;align-items:flex-start;padding:0 16px 40px;">
+    <!-- ESQUERDA: pedido atual -->
+    <div style="width:320px;flex:none;position:sticky;top:16px;background:#fff;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
+      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 12px;">Pedido atual</h3>
+
+      <sc-if value="{{ carrinhoVazio }}" hint-placeholder-val="{{ true }}">
+        <p style="margin:0;font-size:13.5px;color:#8C8075;">Nenhum item ainda. Toque em "+" no cardápio pra adicionar.</p>
+      </sc-if>
+
+      <sc-if value="{{ hasCarrinho }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px;">
+          <sc-for list="{{ carrinhoItens }}" as="it" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.nome }}</div>
+                <div style="font-size:12px;color:#8C8075;">{{ it.qty }} × {{ it.precoFmt }}</div>
+              </div>
+              <span style="font-family:'DM Mono',monospace;font-size:13px;color:#6B2E12;flex:none;">{{ it.subtotalFmt }}</span>
+              <button onClick="{{ it.onRemover }}" aria-label="Remover item" style="width:26px;height:26px;border-radius:8px;background:#FBEAE8;border:1px solid #F0CFCB;color:#C0392B;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:1px dashed rgba(29,16,9,.14);margin-bottom:16px;">
+          <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;">Total</span>
+          <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:19px;color:#D97706;">{{ carrinhoTotalFmt }}</span>
+        </div>
+
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Pagamento</h3>
+        <div style="display:flex;gap:8px;">
+          <sc-for list="{{ pagamentoOpcoes }}" as="pg" hint-placeholder-count="3">
+            <button onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.label }}</button>
+          </sc-for>
+        </div>
+        <sc-if value="{{ isDinheiro }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:14px;padding-top:14px;border-top:1px dashed rgba(29,16,9,.12);">
+            <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Valor recebido do cliente</label>
+            <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="0,00" inputmode="decimal" style="{{ inputStyle }}"/>
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;">
+              <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;color:{{ trocoColor }}">{{ trocoLabel }}</span>
+              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:18px;color:{{ trocoColor }}">{{ trocoFmt }}</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <button onClick="{{ finalizarPedido }}" style="margin-top:18px;width:100%;background:#2D9E60;color:#fff;border:none;border-radius:14px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(45,158,96,.3);">{{ finalizarLabel }}</button>
+      </sc-if>
+    </div>
+
+    <!-- DIREITA: cardápio -->
+    <div style="flex:1;min-width:280px;">
+      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;">
+        <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="5">
+          <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+        </sc-for>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;">
+        <sc-for list="{{ produtosLista }}" as="p" hint-placeholder-count="6">
+          <div style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:8px;overflow:hidden;box-shadow:0 6px 18px rgba(29,16,9,.05);">
+            <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:96px;"><img src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+            <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:96px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);display:flex;align-items:center;justify-content:center;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.7;">foto</span></div></sc-if>
+            <div style="padding:10px;">
+              <div style="font-weight:700;font-size:13.5px;line-height:1.25;margin-bottom:6px;min-height:34px;">{{ p.nome }}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
+                <span style="font-family:'DM Mono',monospace;font-size:13px;color:#D97706;">{{ p.priceFmt }}</span>
+                <div style="display:flex;align-items:center;gap:5px;">
+                  <sc-if value="{{ p.hasQty }}" hint-placeholder-val="{{ false }}">
+                    <button onClick="{{ p.onDec }}" aria-label="Diminuir" style="width:26px;height:26px;border-radius:8px;border:1px solid rgba(29,16,9,.12);background:#fff;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                    <span style="font-family:'DM Mono',monospace;min-width:16px;text-align:center;font-size:13px;">{{ p.qty }}</span>
+                  </sc-if>
+                  <button onClick="{{ p.onAdd }}" aria-label="Adicionar" style="width:26px;height:26px;border-radius:8px;background:#D97706;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- CONFIRMAÇÃO -->
+<sc-if value="{{ isConfirmacao }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#FFF6D6;">
+  <div style="width:100%;max-width:400px;background:#fff;border-radius:24px;padding:34px 28px;box-shadow:0 10px 30px rgba(29,16,9,.1);text-align:center;animation:atUp .3s ease-out;">
+    <div style="width:64px;height:64px;border-radius:50%;background:#E6F4EC;color:#2D9E60;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin:0 0 6px;">Pedido criado!</h2>
+    <p style="margin:0 0 4px;color:#8C8075;font-size:14px;">Código do pedido</p>
+    <p style="margin:0 0 18px;font-family:'DM Mono',monospace;font-weight:500;font-size:22px;color:#D97706;">{{ confirmacaoCodigo }}</p>
+    <div style="background:#F6F1E7;border-radius:14px;padding:14px;margin-bottom:22px;">
+      <div style="display:flex;justify-content:space-between;font-size:14px;color:#6B2E12;"><span>Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;">{{ confirmacaoTotalFmt }}</span></div>
+    </div>
+    <button onClick="{{ novoPedido }}" style="width:100%;background:#D97706;color:#fff;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(217,119,6,.28);">Novo pedido</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- TROCAR SENHA -->
+<sc-if value="{{ isSenha }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:420px;margin:0 auto;padding:0 16px 40px;animation:atUp .25s ease-out;">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(18px + env(safe-area-inset-top)) 0 20px;">
+    <button onClick="{{ voltarPedido }}" aria-label="Voltar" style="width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid rgba(29,16,9,.08);color:#6B2E12;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;">Trocar senha</h1>
+  </div>
+  <div style="background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
+    <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Senha atual</label>
+    <div style="position:relative;">
+      <input type="{{ tipoPwdAtual }}" value="{{ pwdAtual }}" onChange="{{ onPwdAtual }}" placeholder="••••••••" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ togglePwdAtual }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarPwdAtual }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarPwdAtual }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
+    <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Nova senha</label>
+    <div style="position:relative;">
+      <input type="{{ tipoPwdNova }}" value="{{ pwdNova }}" onChange="{{ onPwdNova }}" placeholder="Mín. 6 caracteres" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ togglePwdNova }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarPwdNova }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarPwdNova }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
+    <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Confirmar nova senha</label>
+    <div style="position:relative;">
+      <input type="{{ tipoPwdConf }}" value="{{ pwdConf }}" onChange="{{ onPwdConf }}" placeholder="Repita a nova senha" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ togglePwdConf }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarPwdConf }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarPwdConf }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
+    <sc-if value="{{ pwdMsg }}" hint-placeholder-val="{{ false }}"><p style="{{ pwdMsgStyle }}">{{ pwdMsg }}</p></sc-if>
+    <button onClick="{{ savePwd }}" style="margin-top:18px;width:100%;background:#D97706;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(217,119,6,.28);">Salvar nova senha</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- TOAST -->
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:60;background:#2A0E0A;color:#FFF6D6;padding:13px 20px;border-radius:13px;box-shadow:0 12px 30px rgba(0,0,0,.32);font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px;animation:atToast .25s ease-out;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7BD49B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{{ toast }}</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  // Dev usa porta separada (3010); produção roteia /api pro backend via proxy Nginx no mesmo domínio.
+  apiBase = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3010/api'
+    : '/api';
+
+  state = {
+    screen: 'loading', // loading | login | pedido | confirmacao | senha
+    atendente: null,
+    loginForm: { email:'', senha:'' }, loginErro:'', loggingIn:false,
+
+    categorias: [], produtos: [],
+    selectedCat: null,
+    carrinho: {}, // { [produtoId]: quantidade } — pedido em montagem, ainda não enviado
+    formaPagamento: 'PIX',
+    valorRecebido: '', // só usado quando formaPagamento === 'DINHEIRO', pro cálculo do troco
+    finalizando: false,
+    ultimoPedido: null, // { codigo, total } — mostrado na tela de confirmação
+
+    pwd: { atual:'', nova:'', conf:'' }, pwdMsg:'', pwdOk:false,
+    mostrarSenha: {},
+
+    toast: ''
+  };
+
+  toggleMostrarSenha(campo){ this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
+
+  fmt(n){ return 'R$ ' + (Math.round(n*100)/100).toFixed(2).replace('.', ','); }
+  showToast(m){ this.setState({ toast:m }); clearTimeout(this._t); this._t = setTimeout(() => this.setState({ toast:'' }), 2200); }
+
+  async apiCall(path, opts){
+    const res = await fetch(this.apiBase + path, { credentials:'include', ...opts });
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* resposta sem corpo (ex: 204) */ }
+    if (!res.ok) { const erro = new Error((data && data.erro) || ('Erro ' + res.status)); erro.status = res.status; throw erro; }
+    return data;
+  }
+  apiGet(path){ return this.apiCall(path, { method:'GET' }); }
+  apiSend(method, path, body){ return this.apiCall(path, { method, headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) }); }
+
+  async componentDidMount(){
+    try {
+      const { atendente } = await this.apiGet('/atendente/me');
+      this.setState({ atendente, screen:'pedido' });
+      await this.carregarCardapio();
+    } catch (e) {
+      this.setState({ screen:'login' });
+    }
+  }
+
+  async carregarCardapio(){
+    const [categorias, produtos] = await Promise.all([this.apiGet('/categorias'), this.apiGet('/produtos')]);
+    this.setState(s => ({ categorias, produtos, selectedCat: s.selectedCat == null ? (categorias[0] && categorias[0].id) : s.selectedCat }));
+  }
+
+  // ---- login ----
+  onLoginEmail(e){ this.setState(s => ({ loginForm:{ ...s.loginForm, email:e.target.value } })); }
+  onLoginSenha(e){ this.setState(s => ({ loginForm:{ ...s.loginForm, senha:e.target.value } })); }
+  async doLogin(){
+    const { email, senha } = this.state.loginForm;
+    if (!email || !senha) { this.setState({ loginErro:'Informe email e senha' }); return; }
+    this.setState({ loggingIn:true, loginErro:'' });
+    try {
+      const { atendente } = await this.apiSend('POST', '/atendente/login', { email, senha });
+      this.setState({ atendente, loggingIn:false, loginForm:{ email:'', senha:'' }, screen:'pedido' });
+      await this.carregarCardapio();
+    } catch (e) {
+      this.setState({ loggingIn:false, loginErro: e.message || 'Email ou senha incorretos' });
+    }
+  }
+  async logout(){
+    try { await this.apiSend('POST', '/atendente/logout', {}); } catch (e) { /* mesmo se falhar, limpa a sessão local */ }
+    this.setState({ atendente:null, screen:'login' });
+  }
+
+  goSenha(){ this.setState({ screen:'senha', pwd:{ atual:'', nova:'', conf:'' }, pwdMsg:'' }); }
+  voltarPedido(){ this.setState({ screen:'pedido' }); }
+
+  // ---- trocar senha ----
+  onPwdAtual(e){ this.setState(s => ({ pwd:{ ...s.pwd, atual:e.target.value } })); }
+  onPwdNova(e){ this.setState(s => ({ pwd:{ ...s.pwd, nova:e.target.value } })); }
+  onPwdConf(e){ this.setState(s => ({ pwd:{ ...s.pwd, conf:e.target.value } })); }
+  async savePwd(){
+    const { atual, nova, conf } = this.state.pwd;
+    if (!atual){ this.setState({ pwdMsg:'Digite sua senha atual.', pwdOk:false }); return; }
+    if (nova.length < 6){ this.setState({ pwdMsg:'A nova senha precisa de ao menos 6 caracteres.', pwdOk:false }); return; }
+    if (nova !== conf){ this.setState({ pwdMsg:'A confirmação não confere.', pwdOk:false }); return; }
+    try {
+      await this.apiSend('PUT', '/atendente/senha', { senhaAtual:atual, novaSenha:nova });
+      this.setState({ pwd:{ atual:'', nova:'', conf:'' }, pwdMsg:'Senha alterada com sucesso!', pwdOk:true });
+      this.showToast('Senha atualizada');
+    } catch (e) {
+      this.setState({ pwdMsg: e.message || 'Erro ao trocar senha', pwdOk:false });
+    }
+  }
+
+  // ---- carrinho do pedido em montagem ----
+  carrinhoInc(produtoId){ this.setState(s => ({ carrinho:{ ...s.carrinho, [produtoId]: (s.carrinho[produtoId] || 0) + 1 } })); }
+  carrinhoDec(produtoId){
+    this.setState(s => {
+      const q = (s.carrinho[produtoId] || 0) - 1;
+      const carrinho = { ...s.carrinho };
+      if (q <= 0) delete carrinho[produtoId]; else carrinho[produtoId] = q;
+      return { carrinho };
+    });
+  }
+  carrinhoRemover(produtoId){
+    this.setState(s => {
+      const carrinho = { ...s.carrinho };
+      delete carrinho[produtoId];
+      return { carrinho };
+    });
+  }
+  setFormaPagamento(f){ this.setState({ formaPagamento:f, valorRecebido:'' }); }
+  onValorRecebido(e){ this.setState({ valorRecebido:e.target.value }); }
+
+  async finalizarPedido(){
+    const s = this.state;
+    const entradas = Object.entries(s.carrinho).filter(([, q]) => q > 0);
+    if (!entradas.length) return;
+
+    this.setState({ finalizando:true });
+    try {
+      const itens = entradas.map(([produtoId, quantidade]) => ({ produtoId: parseInt(produtoId, 10), quantidade }));
+      const pedido = await this.apiSend('POST', '/atendente/pedidos', {
+        tipo: 'RETIRADA',
+        itens,
+        formaPagamento: s.formaPagamento
+      });
+      this.setState({
+        finalizando:false, screen:'confirmacao',
+        ultimoPedido: { codigo: '#BF' + pedido.id, total: pedido.total },
+        carrinho:{}, formaPagamento:'PIX', valorRecebido:''
+      });
+    } catch (e) {
+      this.setState({ finalizando:false });
+      this.showToast(e.message || 'Erro ao criar pedido');
+    }
+  }
+  novoPedido(){ this.setState({ screen:'pedido', ultimoPedido:null }); }
+
+  renderVals(){
+    const s = this.state;
+
+    const catChips = s.categorias.map((c) => {
+      const on = s.selectedCat === c.id;
+      return { label:c.nome, onClick:() => this.setState({ selectedCat:c.id }),
+        style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'8px 14px', fontWeight:700, fontSize:'12.5px',
+          background: on ? '#7A1209' : '#FFF0C2', color: on ? '#FFF6D6' : '#7A1209' } };
+    });
+
+    const produtosLista = s.produtos.filter((p) => p.categoriaId === s.selectedCat).map((p) => {
+      const qty = s.carrinho[p.id] || 0;
+      const fotoSrc = p.foto ? this.apiBase.replace('/api', '') + '/uploads/' + p.foto : '';
+      return {
+        nome:p.nome, priceFmt:this.fmt(p.preco), qty:String(qty), hasQty: qty > 0,
+        hasFoto: !!fotoSrc, semFoto: !fotoSrc, fotoSrc,
+        onAdd:() => this.carrinhoInc(p.id), onDec:() => this.carrinhoDec(p.id)
+      };
+    });
+
+    const carrinhoEntradas = Object.entries(s.carrinho).filter(([, q]) => q > 0);
+    const carrinhoCount = carrinhoEntradas.reduce((a, [, q]) => a + q, 0);
+    const carrinhoTotal = carrinhoEntradas.reduce((a, [pid, q]) => {
+      const prod = s.produtos.find((p) => String(p.id) === String(pid));
+      return a + (prod ? prod.preco * q : 0);
+    }, 0);
+    const carrinhoItens = carrinhoEntradas.map(([pid, q]) => {
+      const prod = s.produtos.find((p) => String(p.id) === String(pid));
+      if (!prod) return null;
+      return {
+        nome:prod.nome, qty:String(q), precoFmt:this.fmt(prod.preco), subtotalFmt:this.fmt(prod.preco * q),
+        onRemover:() => this.carrinhoRemover(pid)
+      };
+    }).filter(Boolean);
+
+    const pagamentoMeta = [ ['PIX','Pix'], ['CARTAO','Cartão'], ['DINHEIRO','Dinheiro'] ];
+    const pagamentoOpcoes = pagamentoMeta.map(([id, label]) => {
+      const on = s.formaPagamento === id;
+      return { label, onClick:() => this.setFormaPagamento(id),
+        style:{ flex:'1', border: on ? 'none' : '1px solid rgba(29,16,9,.14)', cursor:'pointer', borderRadius:'11px', padding:'11px', fontWeight:700, fontSize:'13.5px',
+          background: on ? '#D97706' : '#fff', color: on ? '#fff' : '#6B2E12' } };
+    });
+
+    const valorRecebidoNum = parseFloat(String(s.valorRecebido).replace(',', '.')) || 0;
+    const troco = valorRecebidoNum - carrinhoTotal;
+    const trocoNegativo = troco < 0;
+
+    return {
+      isLoading: s.screen === 'loading', isLogin: s.screen === 'login', isPedido: s.screen === 'pedido',
+      isConfirmacao: s.screen === 'confirmacao', isSenha: s.screen === 'senha',
+
+      nomeAtendente: s.atendente ? (s.atendente.nome || s.atendente.email) : '',
+      logout:() => this.logout(), goSenha:() => this.goSenha(), voltarPedido:() => this.voltarPedido(),
+
+      pwdAtual:s.pwd.atual, onPwdAtual:(e) => this.onPwdAtual(e),
+      pwdNova:s.pwd.nova, onPwdNova:(e) => this.onPwdNova(e),
+      pwdConf:s.pwd.conf, onPwdConf:(e) => this.onPwdConf(e),
+      pwdMsg:s.pwdMsg, pwdMsgStyle:{ margin:'10px 2px 0', fontSize:'13px', fontWeight:600, color: s.pwdOk ? '#2D9E60' : '#C0392B' },
+      savePwd:() => this.savePwd(),
+      tipoPwdAtual: s.mostrarSenha.atual ? 'text' : 'password',
+      mostrarPwdAtual: !!s.mostrarSenha.atual, ocultarPwdAtual: !s.mostrarSenha.atual,
+      togglePwdAtual:() => this.toggleMostrarSenha('atual'),
+      tipoPwdNova: s.mostrarSenha.nova ? 'text' : 'password',
+      mostrarPwdNova: !!s.mostrarSenha.nova, ocultarPwdNova: !s.mostrarSenha.nova,
+      togglePwdNova:() => this.toggleMostrarSenha('nova'),
+      tipoPwdConf: s.mostrarSenha.conf ? 'text' : 'password',
+      mostrarPwdConf: !!s.mostrarSenha.conf, ocultarPwdConf: !s.mostrarSenha.conf,
+      togglePwdConf:() => this.toggleMostrarSenha('conf'),
+
+      loginEmail:s.loginForm.email, onLoginEmail:(e) => this.onLoginEmail(e),
+      loginSenha:s.loginForm.senha, onLoginSenha:(e) => this.onLoginSenha(e),
+      doLogin:() => this.doLogin(), loginLabel: s.loggingIn ? 'Entrando...' : 'Entrar',
+      loginErro:s.loginErro, hasLoginErro: !!s.loginErro,
+      inputStyle:{ width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 14px', fontSize:'15px', color:'#1D1009', outline:'none' },
+      inputStyleSenha:{ width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 42px 13px 14px', fontSize:'15px', color:'#1D1009', outline:'none' },
+      olhoBtnStyle:{ position:'absolute', right:'6px', top:'50%', transform:'translateY(-50%)', width:'32px', height:'32px', border:'none', background:'transparent', color:'#8C8075', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' },
+      tipoLoginSenha: s.mostrarSenha.login ? 'text' : 'password',
+      mostrarLoginSenha: !!s.mostrarSenha.login, ocultarLoginSenha: !s.mostrarSenha.login,
+      toggleLoginSenha:() => this.toggleMostrarSenha('login'),
+
+      catChips, produtosLista,
+      hasCarrinho: carrinhoCount > 0, carrinhoVazio: carrinhoCount === 0,
+      carrinhoItens,
+      carrinhoCountLabel: carrinhoCount + (carrinhoCount === 1 ? ' item' : ' itens'),
+      carrinhoTotalFmt:this.fmt(carrinhoTotal),
+      pagamentoOpcoes,
+      isDinheiro: s.formaPagamento === 'DINHEIRO',
+      valorRecebido:s.valorRecebido, onValorRecebido:(e) => this.onValorRecebido(e),
+      trocoLabel: trocoNegativo ? 'Falta' : 'Troco',
+      trocoFmt: this.fmt(Math.abs(troco)),
+      trocoColor: trocoNegativo ? '#C0392B' : '#2D9E60',
+      finalizarPedido:() => this.finalizarPedido(), finalizarLabel: s.finalizando ? 'Enviando...' : 'Finalizar pedido',
+
+      confirmacaoCodigo: s.ultimoPedido ? s.ultimoPedido.codigo : '',
+      confirmacaoTotalFmt: s.ultimoPedido ? this.fmt(s.ultimoPedido.total) : '',
+      novoPedido:() => this.novoPedido(),
+
+      toast:s.toast
+    };
+  }
+}
+</script>
+</body>
+</html>
