@@ -148,8 +148,9 @@ model Produto {
   ativo             Boolean              @default(true)
   itensPedido       ItemPedido[]
   banners           Banner[]
-  /// Adicionais que esse produto pode receber — subconjunto do catálogo global de Adicional.
-  adicionais        Adicional[]          @relation("ProdutoAdicionais")
+  /// Adicionais pagos próprios deste produto (ex: "Bacon +R$3" só no Galeto) —
+  /// cadastrados e editados direto no modal do produto, nunca compartilhados entre produtos.
+  adicionais        Adicional[]
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
 
@@ -157,18 +158,21 @@ model Produto {
   @@index([subcategoriaId])
 }
 
-/// Catálogo global de adicionais pagos (ex: "Bacon +R$3", "Queijo extra +R$2").
-/// Cada produto escolhe, via ProdutoAdicionais, quais desse catálogo ele oferece.
+/// Adicional pago de um produto específico (ex: "Bacon +R$3" só no Galeto Inteiro).
+/// Cada linha pertence a exatamente um produto — sem catálogo compartilhado.
 model Adicional {
   id          Int                   @id @default(autoincrement())
+  produtoId   Int
+  produto     Produto               @relation(fields: [produtoId], references: [id], onDelete: Cascade)
   nome        String
   preco       Float
   ativo       Boolean               @default(true)
   esgotado    Boolean               @default(false)
-  produtos    Produto[]             @relation("ProdutoAdicionais")
   itensUsados ItemPedidoAdicional[]
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
+
+  @@index([produtoId])
 }
 
 model Cupom {

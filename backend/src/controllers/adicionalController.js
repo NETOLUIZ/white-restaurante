@@ -1,24 +1,20 @@
 const { prisma } = require('../utils/db');
 
-/** Lista todos os adicionais (inclusive inativos) — painel admin. */
-async function listarAdmin(req, res) {
-  try {
-    const adicionais = await prisma.adicional.findMany({ orderBy: { nome: 'asc' } });
-    res.json(adicionais);
-  } catch (err) {
-    console.error('Erro ao listar adicionais (admin):', err);
-    res.status(500).json({ erro: 'Erro interno do servidor' });
-  }
-}
-
-/** Cria um adicional novo — painel admin. */
+/** Cria um adicional novo, sempre vinculado a um produto — painel admin. */
 async function criar(req, res) {
   try {
+    const produtoId = parseInt(req.params.produtoId, 10);
     const { nome, preco } = req.body;
     if (!nome || !String(nome).trim() || preco === undefined) {
       return res.status(400).json({ erro: 'Informe o nome e o preço do adicional' });
     }
-    const adicional = await prisma.adicional.create({ data: { nome: String(nome).trim(), preco: Number(preco) } });
+    const produto = await prisma.produto.findUnique({ where: { id: produtoId } });
+    if (!produto) {
+      return res.status(404).json({ erro: 'Produto não encontrado' });
+    }
+    const adicional = await prisma.adicional.create({
+      data: { produtoId, nome: String(nome).trim(), preco: Number(preco) },
+    });
     res.status(201).json(adicional);
   } catch (err) {
     console.error('Erro ao criar adicional:', err);
@@ -59,4 +55,4 @@ async function deletar(req, res) {
   }
 }
 
-module.exports = { listarAdmin, criar, atualizar, deletar };
+module.exports = { criar, atualizar, deletar };

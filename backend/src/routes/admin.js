@@ -38,6 +38,7 @@ router.delete('/produtos/:id', produtoController.deletar);
 router.post('/produtos/:id/foto', uploadFoto.single('foto'), produtoController.enviarFoto);
 router.delete('/produtos/:id/foto', produtoController.removerFoto);
 router.put('/produtos/:id/estoque', produtoController.ajustarEstoque);
+router.post('/produtos/:produtoId/adicionais', adicionalController.criar);
 
 router.get('/cupons', cupomController.listarAdmin);
 router.post('/cupons', cupomController.criar);
@@ -66,8 +67,6 @@ router.delete('/complementos/:id', complementoController.deletar);
 
 router.put('/marmita-tamanhos/:id', marmitaTamanhoController.atualizar);
 
-router.get('/adicionais', adicionalController.listarAdmin);
-router.post('/adicionais', adicionalController.criar);
 router.put('/adicionais/:id', adicionalController.atualizar);
 router.delete('/adicionais/:id', adicionalController.deletar);
 
