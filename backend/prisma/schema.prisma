@@ -66,6 +66,9 @@ model Admin {
   email     String   @unique
   senha     String
   nome      String
+  /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
+  /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
+  senhaAlteradaEm DateTime?
   createdAt DateTime @default(now())
 }
 
@@ -77,6 +80,9 @@ model Garcom {
   senha     String
   nome      String
   ativo     Boolean  @default(true)
+  /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
+  /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
+  senhaAlteradaEm DateTime?
   createdAt DateTime @default(now())
 }
 
@@ -88,6 +94,9 @@ model Atendente {
   senha     String
   nome      String
   ativo     Boolean  @default(true)
+  /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
+  /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
+  senhaAlteradaEm DateTime?
   createdAt DateTime @default(now())
 }
 
@@ -364,6 +373,9 @@ model Entregador {
   email     String   @unique
   senha     String
   ativo     Boolean  @default(true)
+  /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
+  /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
+  senhaAlteradaEm DateTime?
   pedidos   Pedido[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

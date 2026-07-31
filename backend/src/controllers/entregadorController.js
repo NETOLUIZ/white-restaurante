@@ -26,7 +26,7 @@ async function criar(req, res) {
     if (senha.length < 6) {
       return res.status(400).json({ erro: 'A senha precisa de ao menos 6 caracteres' });
     }
-    const senhaHash = await bcrypt.hash(senha, 10);
+    const senhaHash = await bcrypt.hash(senha, 12);
     const entregador = await prisma.entregador.create({
       data: { nome, email, senha: senhaHash },
       select: SELECT_SEM_SENHA,
@@ -53,7 +53,8 @@ async function atualizar(req, res) {
       if (String(req.body.senha).length < 6) {
         return res.status(400).json({ erro: 'A senha precisa de ao menos 6 caracteres' });
       }
-      dados.senha = await bcrypt.hash(String(req.body.senha), 10);
+      dados.senha = await bcrypt.hash(String(req.body.senha), 12);
+      dados.senhaAlteradaEm = new Date();
     }
     const entregador = await prisma.entregador.update({ where: { id }, data: dados, select: SELECT_SEM_SENHA });
     res.json(entregador);

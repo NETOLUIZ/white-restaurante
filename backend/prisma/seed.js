@@ -59,6 +59,17 @@ const TAMANHOS_MARMITA = [
 async function main() {
   console.log('Iniciando seed do Bel do Frango ATU...');
 
+  // Em producao, exigimos as senhas via env — nunca criar conta admin/garcom/atendente
+  // com a senha padrao (publica no historico do Git) num ambiente real. Checado antes
+  // de qualquer escrita no banco, nao só antes de criar as contas.
+  if (
+    process.env.NODE_ENV === 'production' &&
+    (!process.env.SEED_ADMIN_SENHA || !process.env.SEED_GARCOM_SENHA || !process.env.SEED_ATENDENTE_SENHA)
+  ) {
+    console.error('FATAL: SEED_ADMIN_SENHA, SEED_GARCOM_SENHA e SEED_ATENDENTE_SENHA sao obrigatorias em producao — defina-as no .env antes de rodar o seed.');
+    process.exit(1);
+  }
+
   const categoriaIdPorNome = new Map();
   for (const categoria of CATEGORIAS) {
     const registro = await prisma.categoriaProduto.upsert({
@@ -175,7 +186,7 @@ async function main() {
   console.log('Configuração da loja criada/já existente (taxa de entrega)');
 
   const senhaAdmin = process.env.SEED_ADMIN_SENHA || 'BelDoFrangoAtu@2026';
-  const senhaHash = await bcrypt.hash(senhaAdmin, 10);
+  const senhaHash = await bcrypt.hash(senhaAdmin, 12);
   await prisma.admin.upsert({
     where: { email: 'admin@beldofrango.com' },
     update: {},
@@ -183,7 +194,7 @@ async function main() {
   });
 
   const senhaGarcom = process.env.SEED_GARCOM_SENHA || 'GarcomBelDoFrango@2026';
-  const senhaGarcomHash = await bcrypt.hash(senhaGarcom, 10);
+  const senhaGarcomHash = await bcrypt.hash(senhaGarcom, 12);
   await prisma.garcom.upsert({
     where: { email: 'garcom@beldofrango.com' },
     update: {},
@@ -191,7 +202,7 @@ async function main() {
   });
 
   const senhaAtendente = process.env.SEED_ATENDENTE_SENHA || 'AtendenteBelDoFrango@2026';
-  const senhaAtendenteHash = await bcrypt.hash(senhaAtendente, 10);
+  const senhaAtendenteHash = await bcrypt.hash(senhaAtendente, 12);
   await prisma.atendente.upsert({
     where: { email: 'atendente@beldofrango.com' },
     update: {},

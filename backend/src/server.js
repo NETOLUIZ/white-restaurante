@@ -22,6 +22,14 @@ if (
   process.exit(1);
 }
 
+// NODE_ENV precisa ser explicito — sem isso, "secure: NODE_ENV === 'production'"
+// nos cookies de sessao (authController e afins) cai silenciosamente pra false
+// e a sessao passa a trafegar tambem por HTTP puro em produção.
+if (!['development', 'production'].includes(process.env.NODE_ENV)) {
+  console.error('FATAL: NODE_ENV ausente ou invalido. Defina NODE_ENV=development ou NODE_ENV=production no .env.');
+  process.exit(1);
+}
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -88,7 +96,7 @@ app.use(
   }),
 );
 
-app.use(express.json());
+app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 
 // Fotos de produto enviadas pelo admin (multer salva em disco, nunca base64 no banco).

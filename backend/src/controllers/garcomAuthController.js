@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { prisma } = require('../utils/db');
+const { verificarBloqueio, registrarFalha, limparFalhas } = require('../utils/loginThrottle');
 
 const NOME_COOKIE = 'bel_do_frango_atu_garcom_token';
 const COOKIE_MAX_IDADE_MS = 12 * 60 * 60 * 1000; // 12h, mesma duracao do token
@@ -23,15 +24,23 @@ async function login(req, res) {
       return res.status(400).json({ erro: 'Email e senha sao obrigatorios' });
     }
 
+    const segundosRestantes = verificarBloqueio(email);
+    if (segundosRestantes) {
+      return res.status(429).json({ erro: `Muitas tentativas para esta conta. Tente novamente em ${segundosRestantes}s.` });
+    }
+
     const garcom = await prisma.garcom.findUnique({ where: { email: String(email).trim().toLowerCase() } });
     if (!garcom || !garcom.ativo) {
+      registrarFalha(email);
       return res.status(401).json({ erro: 'Email ou senha incorretos' });
     }
 
     const senhaValida = await bcrypt.compare(senha, garcom.senha);
     if (!senhaValida) {
+      registrarFalha(email);
       return res.status(401).json({ erro: 'Email ou senha incorretos' });
     }
+    limparFalhas(email);
 
     const token = jwt.sign({ id: garcom.id, email: garcom.email }, process.env.JWT_SECRET, {
       expiresIn: '12h',
@@ -76,8 +85,8 @@ async function alterarSenha(req, res) {
       return res.status(401).json({ erro: 'Senha atual incorreta' });
     }
 
-    const senhaHash = await bcrypt.hash(String(novaSenha), 10);
-    await prisma.garcom.update({ where: { id: garcom.id }, data: { senha: senhaHash } });
+    const senhaHash = await bcrypt.hash(String(novaSenha), 12);
+    await prisma.garcom.update({ where: { id: garcom.id }, data: { senha: senhaHash, senhaAlteradaEm: new Date() } });
     res.json({ ok: true });
   } catch (err) {
     console.error('Erro ao trocar senha do garçom:', err);
