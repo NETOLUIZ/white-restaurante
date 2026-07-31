@@ -113,6 +113,10 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8Z"/><path d="M3 10 5 4h14l2 6"/><path d="M12 4v6"/></svg>
         <span style="flex:1;text-align:left;">Monte sua Marmita</span>
       </button>
+      <button onClick="{{ goAdicionais }}" style="{{ navAdicionais }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        <span style="flex:1;text-align:left;">Adicionais</span>
+      </button>
       <button onClick="{{ goBanners }}" style="{{ navBanners }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="m21 16-4.5-4.5L7 21"/></svg>
         <span style="flex:1;text-align:left;">Banners &amp; Cards</span>
@@ -405,6 +409,59 @@
           <sc-if value="{{ complementosEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:36px;text-align:center;color:#8C8075;font-size:13.5px;">Nenhum complemento cadastrado.</div></sc-if>
         </div>
 
+      </div>
+      </sc-if>
+
+      <!-- ---------- ADICIONAIS ---------- -->
+      <sc-if value="{{ isAdicionais }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;max-width:820px;display:flex;flex-direction:column;gap:18px;">
+        <p style="margin:0;font-size:13px;color:#8C8075;">Catálogo de extras pagos (ex: Bacon, Queijo extra). Depois de cadastrar, habilite quais produtos oferecem cada adicional na edição do produto.</p>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 14px;">Novo Adicional</h3>
+          <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:2;min-width:200px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Nome</label>
+              <input value="{{ adicionalAddNome }}" onChange="{{ onAdicionalAddNome }}" placeholder="Ex: Bacon" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;box-sizing:border-box;"/>
+            </div>
+            <div style="flex:1;min-width:120px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Preço (R$)</label>
+              <input value="{{ adicionalAddPreco }}" onChange="{{ onAdicionalAddPreco }}" inputmode="decimal" placeholder="0,00" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;box-sizing:border-box;"/>
+            </div>
+            <button onClick="{{ adicionarAdicional }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adicionar</button>
+          </div>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;">Adicionais cadastrados ({{ adicionaisCount }})</h3>
+          </div>
+          <div style="display:grid;grid-template-columns:1.6fr 90px 110px 1fr;gap:14px;padding:11px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Preço</span><span>Status</span><span style="text-align:right;">Ações</span>
+          </div>
+          <sc-for list="{{ adicionalRows }}" as="it" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:1.6fr 90px 110px 1fr;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ it.editNome }}" onChange="{{ it.onEditNomeChange }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 9px;font-size:13.5px;outline:none;box-sizing:border-box;"/></sc-if>
+              <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}"><span style="font-weight:600;font-size:14px;">{{ it.nome }}</span></sc-if>
+              <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ it.editPreco }}" onChange="{{ it.onEditPrecoChange }}" inputmode="decimal" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 9px;font-size:13.5px;outline:none;box-sizing:border-box;"/></sc-if>
+              <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}"><span style="font-family:'DM Mono',monospace;font-size:13.5px;color:#D97706;">{{ it.precoFmt }}</span></sc-if>
+              <span style="{{ it.statusBadgeStyle }}">{{ it.statusLabel }}</span>
+              <div style="display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;">
+                <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ it.onSalvarEdit }}" style="background:#2D9E60;color:#fff;border:none;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Salvar</button>
+                  <button onClick="{{ it.onCancelarEdit }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Cancelar</button>
+                </sc-if>
+                <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ it.onToggleAtivo }}" style="{{ it.ativoPillStyle }}">Ativo</button>
+                  <button onClick="{{ it.onToggleEsgotado }}" style="{{ it.esgotadoPillStyle }}">Esgotado</button>
+                  <button onClick="{{ it.onEditar }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Editar</button>
+                  <button onClick="{{ it.onExcluir }}" style="background:#FBEAE8;border:1px solid #F0CFCB;color:#C0392B;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Excluir</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ adicionaisEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:36px;text-align:center;color:#8C8075;font-size:13.5px;">Nenhum adicional cadastrado.</div></sc-if>
+        </div>
       </div>
       </sc-if>
 
@@ -801,7 +858,10 @@
           <sc-for list="{{ od.itens }}" as="it" hint-placeholder-count="2">
             <div style="display:flex;gap:11px;align-items:center;">
               <span style="font-family:'DM Mono',monospace;font-size:13px;color:#6B2E12;background:#FFF3DC;border:1px solid #F2C078;border-radius:8px;min-width:30px;height:30px;display:flex;align-items:center;justify-content:center;font-weight:500;flex:none;">{{ it.q }}×</span>
-              <span style="flex:1;font-size:14px;">{{ it.n }}</span>
+              <div style="flex:1;min-width:0;">
+                <div style="font-size:14px;">{{ it.n }}</div>
+                <sc-if value="{{ it.hasAd }}" hint-placeholder-val="{{ false }}"><div style="font-size:12px;color:#8C8075;">+ {{ it.ad }}</div></sc-if>
+              </div>
               <span style="font-family:'DM Mono',monospace;font-size:13px;color:#6B2E12;">{{ it.lineFmt }}</span>
             </div>
           </sc-for>
@@ -885,6 +945,14 @@
           <div><div style="font-weight:700;font-size:14px;">Disponível no app</div><div style="font-size:12px;color:#8C8075;">Clientes podem pedir este item</div></div>
           <button onClick="{{ toggleDraftActive }}" style="{{ draftToggleStyle }}"><span style="{{ draftKnobStyle }}"></span></button>
         </div>
+        <sc-if value="{{ hasAdicionalOptions }}" hint-placeholder-val="{{ false }}">
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Adicionais deste produto</label>
+          <div style="display:flex;gap:7px;flex-wrap:wrap;">
+            <sc-for list="{{ draftAdicionalOptions }}" as="a" hint-placeholder-count="3">
+              <button onClick="{{ a.onClick }}" style="{{ a.style }}">{{ a.label }}</button>
+            </sc-for>
+          </div>
+        </sc-if>
       </div>
       <div style="padding:16px 22px;border-top:1px solid rgba(29,16,9,.07);display:flex;gap:10px;">
         <sc-if value="{{ draftIsEdit }}" hint-placeholder-val="{{ false }}"><button onClick="{{ deleteProduct }}" style="flex:none;background:#FBEAE8;color:#C0392B;border:1px solid #F0CFCB;border-radius:13px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;">Excluir</button></sc-if>
@@ -1060,7 +1128,12 @@ class Component extends DCLogic {
     marmitaAddNome:'', marmitaAddTipo:'proteinas', // form único "Adicionar Item ao Cardápio"
     marmitaEdit:null, // { tipo:'proteinas'|'complementos', id, nome } — edição inline de item existente
     tables:[], // carregado da API em carregarMesas() — ver mapMesa()
-    novaMesaNumero:''
+    novaMesaNumero:'',
+
+    // ---- Adicionais: catálogo global de extras pagos, habilitados por produto ----
+    adicionais:[],
+    adicionalAddNome:'', adicionalAddPreco:'',
+    adicionalEdit:null, // { id, nome, preco } — edição inline de item existente
   };
 
   fee = 7.9;
@@ -1130,6 +1203,7 @@ class Component extends DCLogic {
     const SEP = '<div class="linha">================================</div>';
     const itensHtml = (p.itensImpressao || []).map((it) =>
       '<div class="lin"><span>' + this.escapeHtml(it.q) + 'x ' + this.escapeHtml(it.nome) + '</span></div>' +
+      (it.ad ? '<div style="padding-left:8px;font-size:11px;">+ ' + this.escapeHtml(it.ad) + '</div>' : '') +
       (it.obs ? '<div style="padding-left:8px;font-size:11px;">obs: ' + this.escapeHtml(it.obs) + '</div>' : '')
     ).join('');
     const e = p.enderecoFull || {};
@@ -1179,7 +1253,7 @@ class Component extends DCLogic {
   // enquanto a aba estiver aberta.
   nav(view){
     clearInterval(this._mesasPoll);
-    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaEdit:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, atendenteDraft:null, categoriaDraft:null });
+    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaEdit:null, adicionalEdit:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, atendenteDraft:null, categoriaDraft:null });
     if (view === 'mesas') {
       this.carregarMesas();
       this._mesasPoll = setInterval(() => this.carregarMesas(), 8000);
@@ -1237,12 +1311,13 @@ class Component extends DCLogic {
   async carregarTudo(){
     await Promise.all([
       this.carregarCategorias(), this.carregarSubcategorias(), this.carregarProdutos(), this.carregarPedidos(),
-      this.carregarBanners(), this.carregarMarmitaConfig(), this.carregarEntregadores(),
+      this.carregarBanners(), this.carregarMarmitaConfig(), this.carregarAdicionais(), this.carregarEntregadores(),
       this.carregarGarcons(), this.carregarAtendentes(), this.carregarCaixa(), this.carregarMesas(), this.carregarConfiguracao()
     ]);
   }
   mapProduto(p){
     return { id:p.id, cat:p.categoriaId, subcat:p.subcategoriaId, name:p.nome, desc:p.descricaoCurta, price:p.preco, stock:p.estoque, active:p.ativo,
+      adicionalIds: (p.adicionais || []).map((a) => a.id),
       foto: p.foto ? this.apiBase.replace('/api', '') + '/uploads/' + p.foto : null };
   }
   async carregarCategorias(){
@@ -1277,6 +1352,9 @@ class Component extends DCLogic {
     const produtos = await this.apiGet('/admin/produtos');
     this.setState({ products: produtos.map((p) => this.mapProduto(p)) });
   }
+  resumoAdicionais(adicionais){
+    return (adicionais || []).map((a) => (a.quantidade > 1 ? a.quantidade + 'x ' : '') + a.nome).join(', ');
+  }
   mapPedido(o){
     const statusMap = { CONFIRMADO:'novo', PREPARANDO:'preparo', SAIU_ENTREGA:'rota', ENTREGUE:'concluido', CANCELADO:'cancelado' };
     const tipoMap = { ENTREGA:'Entrega', MESA:'Mesa', RETIRADA:'Retirada' };
@@ -1290,12 +1368,12 @@ class Component extends DCLogic {
       hora: new Date(o.createdAt).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
       status: statusMap[o.statusEntrega] || 'novo',
       entregadorId: o.entregadorId || null,
-      itens: (o.itens || []).map((it) => ({ n:it.nome, q:it.quantidade, p:it.precoUnitario })),
+      itens: (o.itens || []).map((it) => ({ n:it.nome, q:it.quantidade, p:it.precoUnitario, ad: this.resumoAdicionais(it.adicionais) })),
       criadoEm: o.createdAt,
       // ---- usado só pra impressão automática do recibo de delivery (ver imprimirReciboPedido) ----
       tipoRaw: o.tipo, telefone: o.telefone || '', enderecoFull: end,
       subtotal: o.subtotal, taxaEntrega: o.taxaEntrega, total: o.total,
-      itensImpressao: (o.itens || []).map((it) => ({ nome:it.nome, q:it.quantidade, obs:it.observacoes || '' }))
+      itensImpressao: (o.itens || []).map((it) => ({ nome:it.nome, q:it.quantidade, obs:it.observacoes || '', ad: this.resumoAdicionais(it.adicionais) }))
     };
   }
   async carregarPedidos(){
@@ -1507,6 +1585,10 @@ class Component extends DCLogic {
     tamanhos.forEach((t) => { marmitaSizes[t.id] = { nome:t.nome, proteinas:t.qtdProteinas, price:t.preco }; });
     this.setState({ proteinas, complementos, marmitaSizes });
   }
+  async carregarAdicionais(){
+    const adicionais = await this.apiGet('/admin/adicionais');
+    this.setState({ adicionais });
+  }
 
   payBreakdown(){
     const pay = { Dinheiro:0, Pix:0, 'Cartão':0, 'Na mesa':0 };
@@ -1647,6 +1729,56 @@ class Component extends DCLogic {
       this.showToast('Removido');
     } catch (e) { this.showToast(e.message || 'Erro ao remover'); }
   }
+
+  // ---- Adicionais: catálogo global de extras pagos (via API) ----
+  onAdicionalAddNome(e){ this.setState({ adicionalAddNome: e.target.value }); }
+  onAdicionalAddPreco(e){ this.setState({ adicionalAddPreco: e.target.value }); }
+  async adicionarAdicional(){
+    const nome = this.state.adicionalAddNome.trim();
+    if (!nome) { this.showToast('Informe o nome do adicional'); return; }
+    const preco = parseFloat(String(this.state.adicionalAddPreco).replace(',', '.')) || 0;
+    try {
+      const item = await this.apiSend('POST', '/admin/adicionais', { nome, preco });
+      this.setState(s => ({ adicionais: [...s.adicionais, item], adicionalAddNome:'', adicionalAddPreco:'' }));
+      this.showToast('Adicional cadastrado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar'); }
+  }
+  editarAdicional(it){ this.setState({ adicionalEdit:{ id:it.id, nome:it.nome, preco:String(it.preco).replace('.', ',') } }); }
+  onAdicionalEditNome(e){ this.setState(s => ({ adicionalEdit: s.adicionalEdit ? { ...s.adicionalEdit, nome:e.target.value } : s.adicionalEdit })); }
+  onAdicionalEditPreco(e){ this.setState(s => ({ adicionalEdit: s.adicionalEdit ? { ...s.adicionalEdit, preco:e.target.value } : s.adicionalEdit })); }
+  cancelarAdicionalEdit(){ this.setState({ adicionalEdit:null }); }
+  async salvarAdicionalEdit(){
+    const d = this.state.adicionalEdit; if (!d) return;
+    const nome = d.nome.trim();
+    if (!nome) { this.showToast('Informe o nome'); return; }
+    const preco = parseFloat(String(d.preco).replace(',', '.')) || 0;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/adicionais/' + d.id, { nome, preco });
+      this.setState(s => ({ adicionais: s.adicionais.map(x => x.id === d.id ? updated : x), adicionalEdit:null }));
+      this.showToast('Adicional atualizado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar'); }
+  }
+  async toggleAdicionalAtivo(id){
+    const item = this.state.adicionais.find(x => x.id === id); if (!item) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/adicionais/' + id, { ativo: !item.ativo });
+      this.setState(s => ({ adicionais: s.adicionais.map(x => x.id === id ? updated : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar'); }
+  }
+  async toggleAdicionalEsgotado(id){
+    const item = this.state.adicionais.find(x => x.id === id); if (!item) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/adicionais/' + id, { esgotado: !item.esgotado });
+      this.setState(s => ({ adicionais: s.adicionais.map(x => x.id === id ? updated : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar'); }
+  }
+  async excluirAdicional(id){
+    try {
+      await this.apiDelete('/admin/adicionais/' + id);
+      this.setState(s => ({ adicionais: s.adicionais.filter(x => x.id !== id) }));
+      this.showToast('Removido');
+    } catch (e) { this.showToast(e.message || 'Erro ao remover'); }
+  }
   onMarmitaSizePreco(sizeId){
     return (e) => {
       const marmitaSizes = { ...this.state.marmitaSizes, [sizeId]: { ...this.state.marmitaSizes[sizeId], price:e.target.value } };
@@ -1693,10 +1825,10 @@ class Component extends DCLogic {
     return { style:{ display:'inline-flex', alignItems:'center', padding:'5px 11px', borderRadius:'9px', fontSize:'12px', fontWeight:700, color:c.fg, background:c.bg, border:'1px solid '+c.bd, whiteSpace:'nowrap' }, label:this.statusLabel(status, tipo) };
   }
 
+  // Subtotal/taxa/total vêm prontos do servidor (que já soma adicionais e aplica cupom) —
+  // nunca recalculados aqui, senão o faturamento mostrado no painel destoa do que foi cobrado de fato.
   orderTotals(o){
-    const sub = o.itens.reduce((a, x) => a + x.p * x.q, 0);
-    const fee = o.tipo === 'Entrega' ? this.fee : 0;
-    return { sub, fee, total: sub + fee };
+    return { sub: o.subtotal, fee: o.taxaEntrega, total: o.total };
   }
 
   // Avança o pedido pra próxima etapa do pipeline local (novo→preparo→rota→concluido), espelhando no status real da API.
@@ -1737,15 +1869,22 @@ class Component extends DCLogic {
   }
   newProduct(){
     const catId = this.state.categorias[0] ? this.state.categorias[0].id : null;
-    this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', active:true, foto:null, fotoFile:null } });
+    this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', active:true, foto:null, fotoFile:null, adicionalIds:[] } });
   }
-  editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), active:p.active, foto:p.foto||null, fotoFile:null } }); }
+  editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), active:p.active, foto:p.foto||null, fotoFile:null, adicionalIds:(p.adicionalIds||[]).slice() } }); }
+  toggleDraftAdicional(id){
+    this.setState(st => {
+      const atual = st.productDraft.adicionalIds || [];
+      const adicionalIds = atual.includes(id) ? atual.filter((x) => x !== id) : [...atual, id];
+      return { productDraft:{ ...st.productDraft, adicionalIds } };
+    });
+  }
   async saveProduct(){
     const d = this.state.productDraft; if (!d) return;
     if (!d.name.trim()){ this.showToast('Informe o nome do produto'); return; }
     const price = parseFloat(String(d.price).replace(/\./g,'').replace(',','.')) || 0;
     const stock = parseInt(String(d.stock).replace(/\D/g,''), 10) || 0;
-    const payload = { categoriaId:d.cat, subcategoriaId:d.subcat||null, nome:d.name.trim(), descricaoCurta:d.desc.trim(), descricaoCompleta:d.desc.trim(), preco:price, estoque:stock, ativo:d.active };
+    const payload = { categoriaId:d.cat, subcategoriaId:d.subcat||null, nome:d.name.trim(), descricaoCurta:d.desc.trim(), descricaoCompleta:d.desc.trim(), preco:price, estoque:stock, ativo:d.active, adicionalIds:d.adicionalIds||[] };
     try {
       let saved = d.id ? await this.apiSend('PUT', '/admin/produtos/' + d.id, payload) : await this.apiSend('POST', '/admin/produtos', payload);
       if (d.fotoFile) {
@@ -1990,6 +2129,7 @@ class Component extends DCLogic {
       produtos:['Produtos','Cadastre, edite preços e controle o estoque'],
       categorias:['Categorias','Foto de cada categoria exibida no app do cliente'],
       marmitas:['Monte sua Marmita','Proteínas, complementos e preço por tamanho'],
+      adicionais:['Adicionais','Extras pagos que os produtos podem oferecer'],
       banners:['Banners & Cards','Gerencie os destaques da Home do app'],
       mesas:['Mesas','Controle o salão e o consumo das mesas'],
       caixa:['Caixa','Abra e feche o caixa do dia'],
@@ -2084,7 +2224,7 @@ class Component extends DCLogic {
         id:selO.id, hora:selO.hora, tipo:selO.tipo, cliente:selO.cliente, initial:(selO.cliente||'?').replace(/^(Mesa|Retirada).*/,'$1')[0] || selO.cliente[0],
         localInfo: selO.tipo === 'Mesa' ? ('Mesa '+selO.mesa+' · salão') : selO.tipo === 'Retirada' ? 'Retirada no balcão' : selO.endereco,
         badgeStyle:b.style, statusLabel:b.label,
-        itens: selO.itens.map(it => ({ n:it.n, q:it.q, lineFmt:this.fmt(it.p*it.q) })),
+        itens: selO.itens.map(it => ({ n:it.n, q:it.q, lineFmt:this.fmt(it.p*it.q), ad:it.ad, hasAd: !!it.ad })),
         subFmt:this.fmt(T.sub), feeFmt: T.fee === 0 ? 'Grátis' : this.fmt(T.fee), totalFmt:this.fmt(T.total), pgto:selO.pgto,
         steps,
         canAdvance: selO.status !== 'concluido' && selO.status !== 'cancelado',
@@ -2173,6 +2313,32 @@ class Component extends DCLogic {
         price:String(sz.price), onPrice:this.onMarmitaSizePreco(id) };
     });
 
+    // ---- adicionais: catálogo global de extras pagos (tabela Nome/Preço/Status/Ações) ----
+    const aEdit = s.adicionalEdit;
+    const adicionalRows = s.adicionais.map((it) => {
+      const isEditing = !!(aEdit && aEdit.id === it.id);
+      const meta = marmitaStatusMeta(it);
+      return {
+        nome:it.nome, isEditing, isNotEditing: !isEditing,
+        editNome: isEditing ? aEdit.nome : it.nome,
+        onEditNomeChange:(e) => this.onAdicionalEditNome(e),
+        precoFmt: this.fmt(it.preco),
+        editPreco: isEditing ? aEdit.preco : String(it.preco),
+        onEditPrecoChange:(e) => this.onAdicionalEditPreco(e),
+        statusLabel:meta.l,
+        statusBadgeStyle:{ display:'inline-block', padding:'3px 9px', borderRadius:'8px', fontSize:'11px', fontWeight:700, color:meta.fg, background:meta.bg, border:'1px solid '+meta.bd },
+        ativoPillStyle: marmitaPillStyle(it.ativo, { bg:'#2D9E60', fg:'#fff' }),
+        esgotadoPillStyle: marmitaPillStyle(it.esgotado, { bg:'#C0392B', fg:'#fff' }),
+        onToggleAtivo:() => this.toggleAdicionalAtivo(it.id),
+        onToggleEsgotado:() => this.toggleAdicionalEsgotado(it.id),
+        onEditar:() => this.editarAdicional(it),
+        onSalvarEdit:() => this.salvarAdicionalEdit(),
+        onCancelarEdit:() => this.cancelarAdicionalEdit(),
+        onExcluir:() => this.excluirAdicional(it.id)
+      };
+    });
+    const adicionaisEmpty = s.adicionais.length === 0;
+
     // ---- product draft ----
     const d = s.productDraft;
     const draftCatOptions = s.categorias.map(c => {
@@ -2189,6 +2355,13 @@ class Component extends DCLogic {
         style:{ border:'1px solid', cursor:'pointer', borderRadius:'10px', padding:'8px 13px', fontWeight:700, fontSize:'13px',
           background: on ? '#D97706' : '#fff', color: on ? '#fff' : '#6B2E12', borderColor: on ? '#D97706' : 'rgba(29,16,9,.12)' } };
     });
+    const draftAdicionalOptions = s.adicionais.map((a) => {
+      const on = d && (d.adicionalIds || []).includes(a.id);
+      return { label:a.nome + ' (' + this.fmt(a.preco) + ')', onClick:() => this.toggleDraftAdicional(a.id),
+        style:{ border:'1px solid', cursor:'pointer', borderRadius:'10px', padding:'8px 13px', fontWeight:700, fontSize:'13px',
+          background: on ? '#2D9E60' : '#fff', color: on ? '#fff' : '#6B2E12', borderColor: on ? '#2D9E60' : 'rgba(29,16,9,.12)' } };
+    });
+    const hasAdicionalOptions = s.adicionais.length > 0;
 
     // ---- banner rows ----
     const bannerRows = s.banners.map((b, i) => ({
@@ -2295,10 +2468,11 @@ class Component extends DCLogic {
       adminNome, adminEmail: s.admin ? s.admin.email : '',
       adminInicial: adminNome ? adminNome[0].toUpperCase() : 'A',
       goPedidos:() => this.nav('pedidos'), goProdutos:() => this.nav('produtos'), goCategorias:() => this.nav('categorias'), goMarmitas:() => this.nav('marmitas'),
+      goAdicionais:() => this.nav('adicionais'),
       goBanners:() => this.nav('banners'), goMesas:() => this.nav('mesas'), goSenha:() => this.nav('senha'),
       goCaixa:() => this.nav('caixa'), goVendas:() => this.nav('vendas'), goEntregadores:() => this.nav('entregadores'),
       goGarcons:() => this.nav('garcons'), goAtendentes:() => this.nav('atendentes'),
-      navPedidos:navStyle(s.view==='pedidos'), navProdutos:navStyle(s.view==='produtos'), navCategorias:navStyle(s.view==='categorias'), navMarmitas:navStyle(s.view==='marmitas'), navBanners:navStyle(s.view==='banners'), navMesas:navStyle(s.view==='mesas'), navSenha:navStyle(s.view==='senha'),
+      navPedidos:navStyle(s.view==='pedidos'), navProdutos:navStyle(s.view==='produtos'), navCategorias:navStyle(s.view==='categorias'), navMarmitas:navStyle(s.view==='marmitas'), navAdicionais:navStyle(s.view==='adicionais'), navBanners:navStyle(s.view==='banners'), navMesas:navStyle(s.view==='mesas'), navSenha:navStyle(s.view==='senha'),
       navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'),
       navGarcons:navStyle(s.view==='garcons'), navAtendentes:navStyle(s.view==='atendentes'),
       hasNovos: novosCount > 0, novosCount:String(novosCount),
@@ -2309,7 +2483,7 @@ class Component extends DCLogic {
       search:s.search, onSearch:(e) => this.setState({ search:e.target.value }),
       todayDate: this.formatarDataHoje(), openLabel:'Aberto agora',
 
-      isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha',
+      isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isAdicionais: s.view==='adicionais', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha',
       isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes',
 
       novoEntregador:() => this.novoEntregador(),
@@ -2412,6 +2586,11 @@ class Component extends DCLogic {
       adicionarItemCardapio:() => this.adicionarItemCardapio(),
       salvarMarmitaSizes:() => this.salvarMarmitaSizes(),
 
+      adicionalRows, adicionaisEmpty, adicionaisCount: s.adicionais.length,
+      adicionalAddNome: s.adicionalAddNome, onAdicionalAddNome:(e) => this.onAdicionalAddNome(e),
+      adicionalAddPreco: s.adicionalAddPreco, onAdicionalAddPreco:(e) => this.onAdicionalAddPreco(e),
+      adicionarAdicional:() => this.adicionarAdicional(),
+
       productOpen: !!d, closeProduct:() => this.setState({ productDraft:null }),
       productDrawerTitle: d && d.id ? 'Editar produto' : 'Novo produto',
       draftIsEdit: !!(d && d.id),
@@ -2424,6 +2603,7 @@ class Component extends DCLogic {
       onDraftPrice:(e) => this.setState(st => ({ productDraft:{ ...st.productDraft, price:e.target.value } })),
       onDraftStock:(e) => this.setState(st => ({ productDraft:{ ...st.productDraft, stock:e.target.value } })),
       draftCatOptions, draftSubcatOptions, hasDraftSubcatOptions: draftSubcatOptions.length > 0,
+      draftAdicionalOptions, hasAdicionalOptions,
       draftToggleStyle:this.toggleStyle(d ? d.active : true), draftKnobStyle:this.knobStyle(),
       toggleDraftActive:() => this.setState(st => ({ productDraft:{ ...st.productDraft, active:!st.productDraft.active } })),
       saveProduct:() => this.saveProduct(), deleteProduct:() => this.deleteProduct(),

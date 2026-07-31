@@ -69,9 +69,21 @@ app.use(
 
 // CORS com origem fixa (single-tenant — só o frontend deste protótipo),
 // credentials:true porque o login do admin usa cookie httpOnly.
+// Aceita tanto "localhost" quanto "127.0.0.1" na mesma porta — são o mesmo
+// front em dev, mas o browser trata como origens diferentes; sem isso, abrir
+// pela variante que não bate com FRONTEND_URL quebra todas as chamadas de API.
+const frontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:5000';
+const origensPermitidas = new Set([
+  frontendUrl,
+  frontendUrl.replace('://localhost', '://127.0.0.1'),
+  frontendUrl.replace('://127.0.0.1', '://localhost'),
+]);
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || 'http://127.0.0.1:5000',
+    origin: (origin, callback) => {
+      if (!origin || origensPermitidas.has(origin)) callback(null, true);
+      else callback(new Error('Origem não permitida pelo CORS'));
+    },
     credentials: true,
   }),
 );

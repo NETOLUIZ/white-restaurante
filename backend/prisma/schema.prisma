@@ -139,11 +139,27 @@ model Produto {
   ativo             Boolean              @default(true)
   itensPedido       ItemPedido[]
   banners           Banner[]
+  /// Adicionais que esse produto pode receber — subconjunto do catálogo global de Adicional.
+  adicionais        Adicional[]          @relation("ProdutoAdicionais")
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
 
   @@index([categoriaId])
   @@index([subcategoriaId])
+}
+
+/// Catálogo global de adicionais pagos (ex: "Bacon +R$3", "Queijo extra +R$2").
+/// Cada produto escolhe, via ProdutoAdicionais, quais desse catálogo ele oferece.
+model Adicional {
+  id          Int                   @id @default(autoincrement())
+  nome        String
+  preco       Float
+  ativo       Boolean               @default(true)
+  esgotado    Boolean               @default(false)
+  produtos    Produto[]             @relation("ProdutoAdicionais")
+  itensUsados ItemPedidoAdicional[]
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
 }
 
 model Cupom {
@@ -217,12 +233,28 @@ model ItemPedido {
   tamanhoMarmita         TamanhoMarmita?          @relation(fields: [tamanhoMarmitaId], references: [id])
   proteinas              ItemPedidoProteina[]
   complementos           ItemPedidoComplemento[]
+  /// Adicionais escolhidos — só se aplica a item de produto fixo (produtoId), nunca a marmita montada.
+  adicionais             ItemPedidoAdicional[]
   quantidade             Int
   observacoes            String?
   /// Preco unitario (do produto OU do tamanho de marmita) no momento do pedido — congelado.
   precoUnitarioCongelado Float
 
   @@index([pedidoId])
+}
+
+/// Um adicional escolhido dentro de um item de pedido, com preço e quantidade próprios
+/// (ex: 2x Bacon). Preço sempre congelado do catálogo no momento do pedido.
+model ItemPedidoAdicional {
+  id                     Int        @id @default(autoincrement())
+  itemPedidoId           Int
+  itemPedido             ItemPedido @relation(fields: [itemPedidoId], references: [id], onDelete: Cascade)
+  adicionalId            Int
+  adicional              Adicional  @relation(fields: [adicionalId], references: [id])
+  quantidade             Int        @default(1)
+  precoUnitarioCongelado Float
+
+  @@index([itemPedidoId])
 }
 
 model ItemPedidoProteina {

@@ -224,9 +224,16 @@
           <p style="{{ p.descStyle }}">{{ p.desc }}</p>
           <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
             <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;">{{ p.priceFmt }}</span>
-            <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:#D62828;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            </button>
+            <div style="display:flex;align-items:center;gap:7px;">
+              <sc-if value="{{ p.hasAdicionais }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2"/><path d="M12 6h8"/><circle cx="16" cy="12" r="2"/><path d="M4 12h10"/><circle cx="8" cy="18" r="2"/><path d="M12 18h8"/></svg>
+                </button>
+              </sc-if>
+              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:#D62828;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -293,9 +300,16 @@
             <p style="{{ p.descStyle }}">{{ p.desc }}</p>
             <div style="margin-top:9px;display:flex;align-items:center;justify-content:space-between;">
               <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;">{{ p.priceFmt }}</span>
+              <div style="display:flex;align-items:center;gap:7px;">
+              <sc-if value="{{ p.hasAdicionais }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2"/><path d="M12 6h8"/><circle cx="16" cy="12" r="2"/><path d="M4 12h10"/><circle cx="8" cy="18" r="2"/><path d="M12 18h8"/></svg>
+                </button>
+              </sc-if>
               <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:#D62828;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </button>
+              </div>
             </div>
           </div>
         </div>
@@ -503,20 +517,28 @@
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">{{ marmitaNomeTitulo }}</h1>
   </div>
   <div style="flex:1;overflow-y:auto;padding:8px 18px 18px;">
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:12px 0 8px;color:#C0271A;">Escolha {{ marmitaProteinasLabel }}</h2>
+    <div style="display:flex;align-items:center;gap:9px;margin:12px 0 8px;">
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0;color:#C0271A;flex:1;">Escolha {{ marmitaProteinasLabel }}</h2>
+      <button onClick="{{ onFalarTituloProteinas }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+    </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <sc-for list="{{ marmitaProteinaOptions }}" as="o" hint-placeholder-count="4">
         <button onClick="{{ o.onClick }}" style="{{ o.style }}">
+          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
           <span style="flex:1;">{{ o.nome }}</span>
           <sc-if value="{{ o.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border-radius:7px;padding:3px 8px;flex:none;">Esgotado</span></sc-if>
           <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
         </button>
       </sc-for>
     </div>
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Complementos (escolha quantos quiser)</h2>
+    <div style="display:flex;align-items:center;gap:9px;margin:22px 0 8px;">
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0;color:#C0271A;flex:1;">Complementos (escolha quantos quiser)</h2>
+      <button onClick="{{ onFalarTituloComplementos }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+    </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <sc-for list="{{ marmitaComplementoOptions }}" as="o" hint-placeholder-count="6">
         <button onClick="{{ o.onClick }}" style="{{ o.style }}">
+          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
           <span style="flex:1;">{{ o.nome }}</span>
           <sc-if value="{{ o.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border-radius:7px;padding:3px 8px;flex:none;">Esgotado</span></sc-if>
           <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
@@ -730,6 +752,39 @@
 </div>
 </sc-if>
 
+<!-- ===================== ADICIONAIS (popup) ===================== -->
+<sc-if value="{{ hasAdicionaisModal }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:70;">
+  <div onClick="{{ fecharAdicionaisModal }}" style="position:absolute;inset:0;background:rgba(29,16,9,.42);"></div>
+  <div style="position:absolute;left:0;right:0;bottom:0;max-height:82%;background:#FFF6D6;border-radius:22px 22px 0 0;box-shadow:0 -12px 30px rgba(29,16,9,.2);display:flex;flex-direction:column;animation:bfUp .22s cubic-bezier(.16,1,.3,1);">
+    <div style="display:flex;align-items:center;gap:12px;padding:18px 20px 12px;border-bottom:1px solid rgba(29,16,9,.07);">
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;margin:0;flex:1;">Adicionais — {{ adicionaisModalNome }}</h2>
+      <button onClick="{{ fecharAdicionaisModal }}" aria-label="Fechar" style="width:34px;height:34px;border-radius:10px;background:#fff;border:none;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+    </div>
+    <div style="flex:1;overflow-y:auto;padding:6px 20px;">
+      <sc-for list="{{ adicionaisModalItens }}" as="a" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(29,16,9,.06);">
+          <div style="flex:1;min-width:0;">
+            <div style="font-weight:700;font-size:14.5px;">{{ a.nome }}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;color:#D62828;margin-top:2px;">{{ a.precoFmt }}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;flex:none;">
+            <button onClick="{{ a.onDec }}" aria-label="Diminuir" style="width:32px;height:32px;border-radius:9px;background:#fff;border:1px solid rgba(29,16,9,.12);color:#6B2E12;font-weight:700;font-size:17px;cursor:pointer;">−</button>
+            <span style="font-family:'DM Mono',monospace;font-weight:600;font-size:14px;min-width:16px;text-align:center;">{{ a.qty }}</span>
+            <button onClick="{{ a.onInc }}" aria-label="Aumentar" style="width:32px;height:32px;border-radius:9px;background:#fff;border:1px solid rgba(29,16,9,.12);color:#6B2E12;font-weight:700;font-size:17px;cursor:pointer;">+</button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="padding:14px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid rgba(29,16,9,.07);">
+      <button onClick="{{ confirmarAdicionaisModal }}" style="width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);display:flex;align-items:center;justify-content:space-between;padding-left:20px;padding-right:20px;box-sizing:border-box;">
+        <span>Adicionar ao carrinho</span><span style="font-family:'DM Mono',monospace;font-size:16px;">{{ adicionaisModalTotalFmt }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
 <!-- ===================== TOAST ===================== -->
 <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;bottom:26px;left:50%;transform:translateX(-50%);z-index:60;background:#2A0E0A;color:#FFF6D6;padding:13px 20px;border-radius:13px;box-shadow:0 12px 30px rgba(0,0,0,.32);font-weight:600;font-size:14px;display:flex;align-items:center;gap:9px;animation:bfUp .25s ease-out;white-space:nowrap;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7BD49B" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{{ toast }}</div>
@@ -800,6 +855,9 @@ class Component extends DCLogic {
     },
     marmitaSizeId:'pequena', marmitaSelProteinas:[], marmitaSelComplementos:[],
 
+    // Popup de adicionais do produto (aberto pelo botão "+" extra no card) — { produtoId, sel: { [adicionalId]: quantidade } }
+    adicionaisModal: null,
+
     usuario: null, // { nome, email, telefone, endereco:{cep,rua,numero,complemento,bairro,cidade,uf} } | null = cadastro é opcional
     cadastro: { // rascunho do formulário de cadastro/edição (tela "Cadastro")
       nome:'', email:'', telefone:'',
@@ -823,6 +881,7 @@ class Component extends DCLogic {
   mapProduto(p){
     return { id:p.id, cat:p.categoriaId, subcat:p.subcategoriaId, name:p.nome, desc:p.descricaoCurta, price:p.preco,
       rating: p.avaliacao != null ? String(p.avaliacao) : '', tag:p.tag || '', pop:p.destaque,
+      adicionais: (p.adicionais || []).map((a) => ({ id:a.id, nome:a.nome, preco:a.preco })),
       foto: p.foto ? this.apiBase.replace('/api', '') + '/uploads/' + p.foto : null };
   }
   mapCategoria(c){
@@ -1013,12 +1072,45 @@ class Component extends DCLogic {
   openProduct(id){ this.setState({ screen:'product', selectedId:id, detailQty:1, detailObs:'', horarioRetirada:null }); }
   selecionarHorarioRetirada(h){ this.setState({ horarioRetirada:h }); }
 
-  addToCart(id, qty, obs, marmita){
+  // ---- popup de adicionais (botão extra no card do produto) ----
+  abrirAdicionaisModal(produtoId){ this.setState({ adicionaisModal:{ produtoId, sel:{} } }); }
+  fecharAdicionaisModal(){ this.setState({ adicionaisModal:null }); }
+  ajustarAdicionalModal(adicionalId, delta){
+    this.setState(s => {
+      if (!s.adicionaisModal) return {};
+      const sel = { ...s.adicionaisModal.sel };
+      const atual = sel[adicionalId] || 0;
+      const novo = Math.max(0, Math.min(10, atual + delta));
+      if (novo === 0) delete sel[adicionalId]; else sel[adicionalId] = novo;
+      return { adicionaisModal:{ ...s.adicionaisModal, sel } };
+    });
+  }
+  confirmarAdicionaisModal(){
+    const m = this.state.adicionaisModal; if (!m) return;
+    const produto = this.prod(m.produtoId); if (!produto) return;
+    const itensSel = (produto.adicionais || [])
+      .filter((a) => m.sel[a.id] > 0)
+      .map((a) => ({ id:a.id, nome:a.nome, preco:a.preco, qtd:m.sel[a.id] }));
+    if (itensSel.length === 0) { this.showToast('Escolha ao menos um adicional'); return; }
+    const totalAdicionais = itensSel.reduce((soma, a) => soma + a.preco * a.qtd, 0);
+    // Produto sintético (mesmo padrão da marmita montada) — cria uma linha própria no
+    // carrinho pra não misturar com o mesmo produto pedido sem adicionais.
+    const id = 'prod-' + produto.id + '-ad-' + Date.now();
+    const nomesAd = itensSel.map((a) => (a.qtd > 1 ? a.qtd + 'x ' : '') + a.nome).join(', ');
+    this.setState(st => ({ products: [...st.products, {
+      ...produto, id, name: produto.name, desc: 'Com ' + nomesAd, price: produto.price + totalAdicionais
+    }] }));
+    this.addToCart(id, 1, null, null, { produtoId: produto.id, itens: itensSel });
+    this.showToast(produto.name + ' adicionado ao carrinho');
+    this.fecharAdicionaisModal();
+  }
+
+  addToCart(id, qty, obs, marmita, adicionaisSel){
     qty = qty || 1;
     this.setState(s => {
       const cart = { ...s.cart };
       const cur = cart[id] || { qty:0, obs:'' };
-      cart[id] = { qty: cur.qty + qty, obs: (obs != null && obs !== '') ? obs : cur.obs, marmita: marmita || cur.marmita };
+      cart[id] = { qty: cur.qty + qty, obs: (obs != null && obs !== '') ? obs : cur.obs, marmita: marmita || cur.marmita, adicionaisSel: adicionaisSel || cur.adicionaisSel };
       return { cart };
     });
   }
@@ -1056,9 +1148,12 @@ class Component extends DCLogic {
       this.goCadastro();
       return;
     }
-    const itens = Object.entries(s.cart).map(([id, v]) => v.marmita
-      ? { tamanhoMarmitaId: v.marmita.tamanhoMarmitaId, proteinaIds: v.marmita.proteinaIds, complementoIds: v.marmita.complementoIds, quantidade: v.qty, observacoes: v.obs || undefined }
-      : { produtoId: parseInt(id, 10), quantidade: v.qty, observacoes: v.obs || undefined });
+    const itens = Object.entries(s.cart).map(([id, v]) => {
+      if (v.marmita) return { tamanhoMarmitaId: v.marmita.tamanhoMarmitaId, proteinaIds: v.marmita.proteinaIds, complementoIds: v.marmita.complementoIds, quantidade: v.qty, observacoes: v.obs || undefined };
+      if (v.adicionaisSel) return { produtoId: v.adicionaisSel.produtoId, quantidade: v.qty, observacoes: v.obs || undefined,
+        adicionais: v.adicionaisSel.itens.map((a) => ({ adicionalId: a.id, quantidade: a.qtd })) };
+      return { produtoId: parseInt(id, 10), quantidade: v.qty, observacoes: v.obs || undefined };
+    });
     if (itens.length === 0) { this.showToast('Seu carrinho está vazio'); return; }
 
     const payload = {
@@ -1205,6 +1300,17 @@ class Component extends DCLogic {
 
   // ---- monte sua marmita ----
   abrirMarmita(sizeId){ this.setState({ screen:'marmita', marmitaSizeId:sizeId, marmitaSelProteinas:[], marmitaSelComplementos:[] }); }
+
+  // Lê um texto em voz alta (Web Speech API, voz do próprio aparelho em pt-BR) —
+  // acessibilidade pra quem não sabe ler escolher proteínas/complementos da marmita.
+  falar(texto){
+    if (!('speechSynthesis' in window)) { this.showToast('Este aparelho não suporta leitura em voz alta'); return; }
+    window.speechSynthesis.cancel(); // corta a fala anterior — tocar duas ao mesmo tempo vira ruído
+    const fala = new SpeechSynthesisUtterance(texto);
+    fala.lang = 'pt-BR';
+    fala.rate = 0.95;
+    window.speechSynthesis.speak(fala);
+  }
   toggleMarmitaProteina(id){
     this.setState(s => {
       const size = s.marmitaConfig.marmitaSizes[s.marmitaSizeId];
@@ -1270,6 +1376,15 @@ class Component extends DCLogic {
     const isMainTab = isHome || isMenu || isCart || isConta;
     const wide = isDesktop && (isHome || isMenu);
 
+    // ---- popup de adicionais (aberto pelo botão extra no card do produto) ----
+    const am = s.adicionaisModal;
+    const amProduto = am ? this.prod(am.produtoId) : null;
+    const adicionaisModalItens = amProduto ? amProduto.adicionais.map((a) => ({
+      nome:a.nome, precoFmt:this.fmt(a.preco), qty: am.sel[a.id] || 0,
+      onInc:() => this.ajustarAdicionalModal(a.id, 1), onDec:() => this.ajustarAdicionalModal(a.id, -1)
+    })) : [];
+    const adicionaisModalTotal = amProduto ? amProduto.adicionais.reduce((soma, a) => soma + a.preco * (am.sel[a.id] || 0), 0) : 0;
+
     const rootStyle = {
       minHeight:'100vh', display:'flex',
       alignItems: (isDesktop && !wide) ? 'center' : 'flex-start',
@@ -1317,7 +1432,9 @@ class Component extends DCLogic {
         hasFoto: !!foto, semFoto: !foto, fotoSrc: foto || '',
         cardStyle, bodyStyle, descStyle,
         onOpen:() => this.openProduct(p.id),
-        onAdd:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.addToCart(p.id, 1); this.showToast(p.name + ' adicionado ao carrinho'); }
+        onAdd:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.addToCart(p.id, 1); this.showToast(p.name + ' adicionado ao carrinho'); },
+        hasAdicionais: (p.adicionais || []).length > 0,
+        onOpenAdicionais:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.abrirAdicionaisModal(p.id); }
       };
     };
 
@@ -1401,12 +1518,14 @@ class Component extends DCLogic {
     const marmitaProteinaOptions = mc.proteinas.filter(p => p.ativo).map(p => {
       const selecionado = s.marmitaSelProteinas.includes(p.id);
       return { nome:p.nome, esgotado:p.esgotado, selecionado, style:optBtnStyle(selecionado, p.esgotado),
-        onClick: p.esgotado ? () => {} : () => this.toggleMarmitaProteina(p.id) };
+        onClick: p.esgotado ? () => {} : () => this.toggleMarmitaProteina(p.id),
+        onFalar:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.falar(p.nome + (p.esgotado ? '. Esgotado' : '')); } };
     });
     const marmitaComplementoOptions = mc.complementos.filter(c => c.ativo).map(c => {
       const selecionado = s.marmitaSelComplementos.includes(c.id);
       return { nome:c.nome, esgotado:c.esgotado, selecionado, style:optBtnStyle(selecionado, c.esgotado),
-        onClick: c.esgotado ? () => {} : () => this.toggleMarmitaComplemento(c.id) };
+        onClick: c.esgotado ? () => {} : () => this.toggleMarmitaComplemento(c.id),
+        onFalar:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.falar(c.nome + (c.esgotado ? '. Esgotado' : '')); } };
     });
 
     const sp = this.prod(s.selectedId) || s.products[0] || { id:null, cat:null, name:'', desc:'', price:0, rating:'', tag:'', foto:null };
@@ -1425,7 +1544,7 @@ class Component extends DCLogic {
 
     const cartLines = T.lines.map(({ p, v }) => {
       const foto = p.foto;
-      const isMarmitaCustom = String(p.id).indexOf('marmita-') === 0;
+      const isMarmitaCustom = String(p.id).indexOf('marmita-') === 0 || String(p.id).indexOf('-ad-') !== -1;
       return {
         id:p.id, name:p.name, qty:v.qty, obs:v.obs, hasObs: !!(v.obs && v.obs.length),
         isMarmitaCustom, marmitaDesc: isMarmitaCustom ? p.desc : '',
@@ -1559,6 +1678,10 @@ class Component extends DCLogic {
       setCadastroMap: this.setCadastroMap,
       setTrackingMap: this.setTrackingMap,
 
+      hasAdicionaisModal: !!am, adicionaisModalNome: amProduto ? amProduto.name : '',
+      adicionaisModalItens, adicionaisModalTotalFmt: this.fmt(adicionaisModalTotal),
+      fecharAdicionaisModal:() => this.fecharAdicionaisModal(), confirmarAdicionaisModal:() => this.confirmarAdicionaisModal(),
+
       toast:s.toast, hasToast: !!s.toast,
 
       search:s.search, hasSearch: !!s.search,
@@ -1572,6 +1695,8 @@ class Component extends DCLogic {
       marmitaNomeTitulo:marmitaSize.nome, marmitaPriceFmt:this.fmt(marmitaSize.price),
       marmitaProteinasLabel: marmitaSize.proteinas === 1 ? '1 proteína' : marmitaSize.proteinas + ' proteínas',
       marmitaProteinaOptions, marmitaComplementoOptions,
+      onFalarTituloProteinas:() => this.falar('Escolha ' + (marmitaSize.proteinas === 1 ? '1 proteína' : marmitaSize.proteinas + ' proteínas')),
+      onFalarTituloComplementos:() => this.falar('Complementos. Escolha quantos quiser'),
       adicionarMarmitaAoCarrinho:() => this.adicionarMarmitaAoCarrinho(),
 
       cartLines, hasCart: T.count > 0, isCartEmpty: T.count === 0, cartCount: T.count,

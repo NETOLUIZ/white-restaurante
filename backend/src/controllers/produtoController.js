@@ -20,7 +20,11 @@ async function listarPublico(req, res) {
       ];
     }
 
-    const produtos = await prisma.produto.findMany({ where, orderBy: { nome: 'asc' } });
+    const produtos = await prisma.produto.findMany({
+      where,
+      include: { adicionais: { where: { ativo: true, esgotado: false }, orderBy: { nome: 'asc' } } },
+      orderBy: { nome: 'asc' },
+    });
     res.json(produtos);
   } catch (err) {
     console.error('Erro ao listar produtos:', err);
@@ -37,7 +41,7 @@ async function buscarPorId(req, res) {
     }
     const produto = await prisma.produto.findFirst({
       where: { id, ativo: true },
-      include: { categoria: true },
+      include: { categoria: true, adicionais: { where: { ativo: true, esgotado: false }, orderBy: { nome: 'asc' } } },
     });
     if (!produto) {
       return res.status(404).json({ erro: 'Produto não encontrado' });
@@ -53,7 +57,7 @@ async function buscarPorId(req, res) {
 async function listarAdmin(req, res) {
   try {
     const produtos = await prisma.produto.findMany({
-      include: { categoria: true },
+      include: { categoria: true, adicionais: { orderBy: { nome: 'asc' } } },
       orderBy: { nome: 'asc' },
     });
     res.json(produtos);
@@ -66,7 +70,7 @@ async function listarAdmin(req, res) {
 /** Cria um produto novo — painel admin. */
 async function criar(req, res) {
   try {
-    const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, avaliacao, tag, destaque, ativo, estoque } = req.body;
+    const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, avaliacao, tag, destaque, ativo, estoque, adicionalIds } = req.body;
     if (!categoriaId || !nome || !descricaoCurta || preco === undefined) {
       return res.status(400).json({ erro: 'Categoria, nome, descrição curta e preço são obrigatórios' });
     }
@@ -83,7 +87,9 @@ async function criar(req, res) {
         destaque: Boolean(destaque),
         estoque: estoque !== undefined ? parseInt(estoque, 10) || 0 : 0,
         ativo: ativo === undefined ? true : Boolean(ativo),
+        adicionais: Array.isArray(adicionalIds) ? { connect: adicionalIds.map((id) => ({ id: parseInt(id, 10) })) } : undefined,
       },
+      include: { adicionais: true },
     });
     res.status(201).json(produto);
   } catch (err) {
@@ -96,7 +102,7 @@ async function criar(req, res) {
 async function atualizar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, avaliacao, tag, destaque, ativo, estoque } = req.body;
+    const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, avaliacao, tag, destaque, ativo, estoque, adicionalIds } = req.body;
     const data = {};
     if (categoriaId !== undefined) data.categoriaId = parseInt(categoriaId, 10);
     if (subcategoriaId !== undefined) data.subcategoriaId = subcategoriaId ? parseInt(subcategoriaId, 10) : null;
@@ -109,8 +115,9 @@ async function atualizar(req, res) {
     if (destaque !== undefined) data.destaque = Boolean(destaque);
     if (estoque !== undefined) data.estoque = Math.max(0, parseInt(estoque, 10) || 0);
     if (ativo !== undefined) data.ativo = Boolean(ativo);
+    if (Array.isArray(adicionalIds)) data.adicionais = { set: adicionalIds.map((aid) => ({ id: parseInt(aid, 10) })) };
 
-    const produto = await prisma.produto.update({ where: { id }, data });
+    const produto = await prisma.produto.update({ where: { id }, data, include: { adicionais: true } });
     res.json(produto);
   } catch (err) {
     console.error('Erro ao atualizar produto:', err);
@@ -125,7 +132,7 @@ async function ajustarEstoque(req, res) {
     const delta = parseInt(req.body.delta, 10) || 0;
     const atual = await prisma.produto.findUnique({ where: { id } });
     if (!atual) return res.status(404).json({ erro: 'Produto não encontrado' });
-    const produto = await prisma.produto.update({ where: { id }, data: { estoque: Math.max(0, atual.estoque + delta) } });
+    const produto = await prisma.produto.update({ where: { id }, data: { estoque: Math.max(0, atual.estoque + delta) }, include: { adicionais: true } });
     res.json(produto);
   } catch (err) {
     console.error('Erro ao ajustar estoque:', err);
@@ -160,7 +167,7 @@ async function enviarFoto(req, res) {
       return res.status(400).json({ erro: 'Nenhum arquivo de imagem enviado' });
     }
     const caminhoRelativo = `produtos/${req.file.filename}`;
-    const produto = await prisma.produto.update({ where: { id }, data: { foto: caminhoRelativo } });
+    const produto = await prisma.produto.update({ where: { id }, data: { foto: caminhoRelativo }, include: { adicionais: true } });
     res.json({ foto: `/uploads/${caminhoRelativo}`, produto });
   } catch (err) {
     console.error('Erro ao salvar foto do produto:', err);
@@ -172,7 +179,7 @@ async function enviarFoto(req, res) {
 async function removerFoto(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    const produto = await prisma.produto.update({ where: { id }, data: { foto: null } });
+    const produto = await prisma.produto.update({ where: { id }, data: { foto: null }, include: { adicionais: true } });
     res.json({ produto });
   } catch (err) {
     console.error('Erro ao remover foto do produto:', err);

@@ -8,6 +8,7 @@ const pedidoController = require('../controllers/pedidoController');
 const bannerController = require('../controllers/bannerController');
 const proteinaController = require('../controllers/proteinaController');
 const complementoController = require('../controllers/complementoController');
+const adicionalController = require('../controllers/adicionalController');
 const marmitaTamanhoController = require('../controllers/marmitaTamanhoController');
 const entregadorController = require('../controllers/entregadorController');
 const garcomAdminController = require('../controllers/garcomAdminController');
@@ -64,6 +65,11 @@ router.put('/complementos/:id', complementoController.atualizar);
 router.delete('/complementos/:id', complementoController.deletar);
 
 router.put('/marmita-tamanhos/:id', marmitaTamanhoController.atualizar);
+
+router.get('/adicionais', adicionalController.listarAdmin);
+router.post('/adicionais', adicionalController.criar);
+router.put('/adicionais/:id', adicionalController.atualizar);
+router.delete('/adicionais/:id', adicionalController.deletar);
 
 router.get('/entregadores', entregadorController.listarAdmin);
 router.post('/entregadores', entregadorController.criar);

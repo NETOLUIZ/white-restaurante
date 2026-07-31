@@ -48,6 +48,7 @@ async function montarItemValidado(item, produtosPorId, tamanhosPorId, proteinasP
       precoUnitarioCongelado: tamanho.preco,
       proteinas: { create: proteinaIds.map((proteinaId) => ({ proteinaId })) },
       complementos: { create: complementoIds.map((complementoId) => ({ complementoId })) },
+      adicionais: { create: [] }, // marmita montada não tem adicionais — só produto fixo
     };
   }
 
@@ -56,12 +57,26 @@ async function montarItemValidado(item, produtosPorId, tamanhosPorId, proteinasP
   if (!produto) {
     throw new Erro400(`Produto ${produtoId} não encontrado ou indisponível`);
   }
+
+  const adicionaisPorId = new Map(produto.adicionais.map((a) => [a.id, a]));
+  const adicionaisSelecionados = Array.isArray(item.adicionais) ? item.adicionais : [];
+  const adicionaisValidados = adicionaisSelecionados.map((sel) => {
+    const adicionalId = parseInt(sel.adicionalId, 10);
+    const adicional = adicionaisPorId.get(adicionalId);
+    if (!adicional || !adicional.ativo || adicional.esgotado) {
+      throw new Erro400(`Adicional ${adicionalId} indisponível para o produto "${produto.nome}"`);
+    }
+    const quantidadeAdicional = Math.max(1, parseInt(sel.quantidade, 10) || 1);
+    return { adicionalId, quantidade: quantidadeAdicional, precoUnitarioCongelado: adicional.preco };
+  });
+
   return {
     produtoId: produto.id,
     tamanhoMarmitaId: null,
     quantidade,
     observacoes,
     precoUnitarioCongelado: produto.preco,
+    adicionais: { create: adicionaisValidados },
   };
 }
 
@@ -117,7 +132,7 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
     const complementoIds = itens.flatMap((i) => i.complementoIds || []).map((id) => parseInt(id, 10));
 
     const [produtos, tamanhos, proteinas, complementos] = await Promise.all([
-      prisma.produto.findMany({ where: { id: { in: produtoIds }, ativo: true } }),
+      prisma.produto.findMany({ where: { id: { in: produtoIds }, ativo: true }, include: { adicionais: true } }),
       prisma.tamanhoMarmita.findMany(),
       prisma.proteina.findMany({ where: { id: { in: proteinaIds } } }),
       prisma.complemento.findMany({ where: { id: { in: complementoIds } } }),
@@ -139,7 +154,10 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
       throw erro;
     }
 
-    const subtotal = itensValidados.reduce((soma, item) => soma + item.precoUnitarioCongelado * item.quantidade, 0);
+    const subtotal = itensValidados.reduce((soma, item) => {
+      const totalAdicionais = item.adicionais.create.reduce((s, a) => s + a.precoUnitarioCongelado * a.quantidade, 0);
+      return soma + item.precoUnitarioCongelado * item.quantidade + totalAdicionais;
+    }, 0);
 
     // Cupom revalidado aqui mesmo que o client já tenha chamado /api/cupons/validar
     // antes do checkout — o desconto final nunca é aceito vindo do client.
@@ -236,6 +254,7 @@ async function buscarPorCodigo(req, res) {
             tamanhoMarmita: true,
             proteinas: { include: { proteina: true } },
             complementos: { include: { complemento: true } },
+            adicionais: { include: { adicional: true } },
           },
         },
         entregador: true,
@@ -260,6 +279,7 @@ async function buscarPorCodigo(req, res) {
         tamanhoMarmitaId: item.tamanhoMarmitaId,
         proteinas: item.proteinas.map((p) => p.proteina.nome),
         complementos: item.complementos.map((c) => c.complemento.nome),
+        adicionais: item.adicionais.map((a) => ({ nome: a.adicional.nome, quantidade: a.quantidade, precoUnitario: a.precoUnitarioCongelado })),
         quantidade: item.quantidade,
         observacoes: item.observacoes,
         precoUnitario: item.precoUnitarioCongelado,
@@ -286,6 +306,7 @@ async function listarAdmin(req, res) {
             tamanhoMarmita: true,
             proteinas: { include: { proteina: true } },
             complementos: { include: { complemento: true } },
+            adicionais: { include: { adicional: true } },
           },
         },
       },
@@ -301,6 +322,7 @@ async function listarAdmin(req, res) {
           tamanhoMarmitaId: item.tamanhoMarmitaId,
           proteinas: item.proteinas.map((p) => p.proteina.nome),
           complementos: item.complementos.map((c) => c.complemento.nome),
+          adicionais: item.adicionais.map((a) => ({ nome: a.adicional.nome, quantidade: a.quantidade, precoUnitario: a.precoUnitarioCongelado })),
           quantidade: item.quantidade,
           observacoes: item.observacoes,
           precoUnitario: item.precoUnitarioCongelado,
@@ -369,6 +391,7 @@ async function relatorioDia(req, res) {
             tamanhoMarmita: true,
             proteinas: { include: { proteina: true } },
             complementos: { include: { complemento: true } },
+            adicionais: { include: { adicional: true } },
           },
         },
       },
@@ -394,6 +417,7 @@ async function relatorioDia(req, res) {
           tamanhoMarmitaId: item.tamanhoMarmitaId,
           proteinas: item.proteinas.map((p) => p.proteina.nome),
           complementos: item.complementos.map((c) => c.complemento.nome),
+          adicionais: item.adicionais.map((a) => ({ nome: a.adicional.nome, quantidade: a.quantidade, precoUnitario: a.precoUnitarioCongelado })),
           quantidade: item.quantidade,
           observacoes: item.observacoes,
           precoUnitario: item.precoUnitarioCongelado,
