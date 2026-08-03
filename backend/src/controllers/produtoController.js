@@ -1,5 +1,10 @@
+const path = require('path');
+const fs = require('fs/promises');
+const crypto = require('crypto');
+const sharp = require('sharp');
 const ExcelJS = require('exceljs');
 const { parsePlanilha, gerarPlanilhaModelo } = require('../utils/produtoImport');
+const { buscarPorCodigoBarras, baixarImagem } = require('../utils/openFoodFacts');
 
 /**
  * Lista produtos ativos. Filtros opcionais via query string:
@@ -195,6 +200,56 @@ async function enviarFoto(req, res) {
   }
 }
 
+/**
+ * Consulta a Open Food Facts por código de barras — autofill do cadastro de
+ * produto no Admin (o campo de código só existe pra tenant MERCANTIL, mas a
+ * rota não restringe: é uma consulta pública, sem dado sensível).
+ */
+async function buscarCodigoBarras(req, res) {
+  const codigo = String(req.params.codigo || '').replace(/\D/g, '');
+  if (codigo.length < 8 || codigo.length > 14) {
+    return res.status(400).json({ erro: 'Código de barras inválido — use de 8 a 14 dígitos' });
+  }
+  try {
+    const produto = await buscarPorCodigoBarras(codigo);
+    if (!produto) {
+      return res.status(404).json({ erro: 'Produto não encontrado na base Open Food Facts' });
+    }
+    res.json(produto);
+  } catch (err) {
+    console.error('Erro ao consultar Open Food Facts:', err);
+    res.status(502).json({ erro: 'Não foi possível consultar a base de produtos agora — tente de novo' });
+  }
+}
+
+/**
+ * Importa a foto do produto a partir de uma URL da Open Food Facts (só desse
+ * host — ver utils/openFoodFacts.js) — converte pra WebP e salva no mesmo
+ * diretório/formato do upload manual (uploads/{tenantId}/produtos/*.webp),
+ * então o resto do sistema não distingue a origem da foto.
+ */
+async function importarFotoUrl(req, res) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const buffer = await baixarImagem(String(req.body.url || ''));
+
+    const dir = path.join(__dirname, '..', '..', 'uploads', req.tenantId, 'produtos');
+    await fs.mkdir(dir, { recursive: true });
+    const filename = `${crypto.randomBytes(16).toString('hex')}.webp`;
+    await sharp(buffer).webp({ quality: 80 }).toFile(path.join(dir, filename));
+
+    const caminhoRelativo = `${req.tenantId}/produtos/${filename}`;
+    const produto = await req.prisma.produto.update({ where: { id }, data: { foto: caminhoRelativo }, include: { adicionais: true } });
+    res.json({ foto: `/uploads/${caminhoRelativo}`, produto });
+  } catch (err) {
+    if (err.codigo === 'URL_INVALIDA') {
+      return res.status(400).json({ erro: err.message });
+    }
+    console.error('Erro ao importar foto por URL:', err);
+    res.status(502).json({ erro: 'Não foi possível baixar a foto do produto' });
+  }
+}
+
 /** Remove a foto do produto (volta a usar o placeholder no front) — painel admin. */
 async function removerFoto(req, res) {
   try {
@@ -319,5 +374,5 @@ async function importarProdutos(req, res) {
 
 module.exports = {
   listarPublico, buscarPorId, listarAdmin, criar, atualizar, deletar, enviarFoto, removerFoto, ajustarEstoque,
-  baixarModeloImportacao, importarProdutos,
+  baixarModeloImportacao, importarProdutos, buscarCodigoBarras, importarFotoUrl,
 };
