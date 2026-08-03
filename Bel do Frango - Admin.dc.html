@@ -1018,7 +1018,7 @@
                     <button onClick="{{ adicionarNomeAtualPedidoEmpresa }}" style="background:#2D9E60;color:#fff;border:none;border-radius:9px;padding:0 14px;font-weight:700;font-size:12.5px;cursor:pointer;">Salvar</button>
                   </div>
                 </sc-if>
-                <sc-if value="{{ pedidoEmpresaMostrarInputNome }}" hint-placeholder-val="{{ true }}">
+                <sc-if value="{{ pedidoEmpresaNaoMostrarInputNome }}" hint-placeholder-val="{{ true }}">
                   <button type="button" onClick="{{ toggleInputNomePedidoEmpresa }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#7A1209;border-radius:9px;padding:8px 13px;font-weight:700;font-size:12.5px;cursor:pointer;margin-bottom:9px;">+ Adicionar nome</button>
                 </sc-if>
 
@@ -2905,7 +2905,7 @@ class Component extends DCLogic {
       pedidoEmpresaHasEnderecosSalvos: d.enderecosSalvos.length > 0,
       pedidoEmpresaEnderecosSalvosOptions: d.enderecosSalvos.map((e) => ({ texto: e, onClick:() => this.usarEnderecoSalvoPedidoEmpresa(e) })),
 
-      pedidoEmpresaMostrarInputNome: d.mostrarInputNome, toggleInputNomePedidoEmpresa:() => this.toggleInputNomePedidoEmpresa(),
+      pedidoEmpresaMostrarInputNome: d.mostrarInputNome, pedidoEmpresaNaoMostrarInputNome: !d.mostrarInputNome, toggleInputNomePedidoEmpresa:() => this.toggleInputNomePedidoEmpresa(),
       pedidoEmpresaNomeAtual: d.nomeAtual, onPedidoEmpresaNome:(e) => this.onPedidoEmpresaNome(e),
       adicionarNomeAtualPedidoEmpresa:() => this.adicionarNomeAtualPedidoEmpresa(),
       pedidoEmpresaHasFuncionariosSalvos: (s.empresas.find(e => e.id === d.empresaId)?.funcionariosSalvos || []).length > 0,
