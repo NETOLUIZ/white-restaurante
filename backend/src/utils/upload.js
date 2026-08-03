@@ -87,6 +87,16 @@ const uploadFotoBranding = multer({
   },
 });
 
+const MIMETYPES_PLANILHA = new Set([
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+  'application/wps-office.xlsx',
+  'application/x-msexcel',
+  'application/excel',
+  'application/x-excel',
+  'application/vnd.ms-excel',
+  'application/octet-stream',
+]);
+
 /**
  * Multer configurado pra planilha de importação de produtos — fica só em
  * memória (nunca grava em disco): o arquivo é lido uma vez pelo exceljs e
@@ -96,8 +106,10 @@ const uploadPlanilha = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 2 * 1024 * 1024 }, // 2MB — planilha de produtos é texto, não precisa de mais
   fileFilter(req, file, cb) {
-    if (!file.originalname.toLowerCase().endsWith('.xlsx')) {
-      return cb(new Error('Envie um arquivo .xlsx — baixe a planilha modelo se não tiver uma'));
+    const temExtensaoValida = file.originalname.toLowerCase().endsWith('.xlsx');
+    const temMimeValido = MIMETYPES_PLANILHA.has(file.mimetype);
+    if (!temExtensaoValida || !temMimeValido) {
+      return cb(new Error('Envie um arquivo .xlsx válido — baixe a planilha modelo se não tiver uma'));
     }
     cb(null, true);
   },

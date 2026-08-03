@@ -25,6 +25,9 @@ async function converterWebp(req, res, next) {
     req.file.mimetype = 'image/webp';
     next();
   } catch (err) {
+    if (req.file && req.file.path) {
+      try { await fs.unlink(req.file.path); } catch {}
+    }
     console.error('Erro ao converter imagem para WebP:', err);
     res.status(500).json({ erro: 'Erro ao processar imagem' });
   }

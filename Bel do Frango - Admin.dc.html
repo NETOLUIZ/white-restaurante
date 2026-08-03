@@ -1258,7 +1258,11 @@
             </div>
             <div style="flex:1;">
               <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Código de barras</label>
-              <input value="{{ draftCodigoBarras }}" onChange="{{ onDraftCodigoBarras }}" inputmode="numeric" placeholder="7891234567890" style="{{ inputStyle }}"/>
+              <div style="display:flex;gap:8px;">
+                <input value="{{ draftCodigoBarras }}" onChange="{{ onDraftCodigoBarras }}" onKeyDown="{{ onCodigoBarrasKeyDown }}" inputmode="numeric" placeholder="7891234567890" style="{{ inputStyle }}"/>
+                <button type="button" onClick="{{ buscarCodigoBarras }}" title="Busca nome, marca e foto na base aberta Open Food Facts" style="background:#FFF3DC;border:1px solid #F2C078;color:#7A1209;border-radius:11px;padding:0 15px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;flex:none;">{{ buscaCodigoLabel }}</button>
+              </div>
+              <p style="margin:6px 2px 0;font-size:11.5px;color:#8C8075;">Busca automática de nome, marca e foto (Open Food Facts)</p>
             </div>
           </div>
         </sc-if>
@@ -1460,6 +1464,7 @@ class Component extends DCLogic {
     selectedOrder:null,
     prodCat:'todos',
     productDraft:null,
+    buscandoCodigoBarras:false,
     importandoProdutos:false,
     importErros:null,
     importResumo:null,
@@ -2408,13 +2413,14 @@ class Component extends DCLogic {
     // Preview instantâneo local (FileReader) — o arquivo em si só é enviado ao servidor quando o produto for salvo.
     const reader = new FileReader();
     reader.onload = () => {
-      this.setState(s => ({ productDraft: s.productDraft ? { ...s.productDraft, foto:reader.result, fotoFile:file } : s.productDraft }));
+      // Arquivo escolhido à mão ganha da foto sugerida pela Open Food Facts.
+      this.setState(s => ({ productDraft: s.productDraft ? { ...s.productDraft, foto:reader.result, fotoFile:file, fotoUrlOFF:null } : s.productDraft }));
     };
     reader.readAsDataURL(file);
   }
   removerFoto(){
     const d = this.state.productDraft; if (!d) return;
-    this.setState(s => ({ productDraft:{ ...s.productDraft, foto:null, fotoFile:null } }));
+    this.setState(s => ({ productDraft:{ ...s.productDraft, foto:null, fotoFile:null, fotoUrlOFF:null } }));
     if (d.id) this.apiDelete('/admin/produtos/' + d.id + '/foto').catch(() => {}); // produto já existente: remove no servidor já
   }
 
@@ -2676,12 +2682,45 @@ class Component extends DCLogic {
 
   newProduct(){
     const catId = this.state.categorias[0] ? this.state.categorias[0].id : null;
-    this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', custo:'', codigoBarras:'', active:true, porPeso:false, foto:null, fotoFile:null, adicionais:[] }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null });
+    this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', custo:'', codigoBarras:'', active:true, porPeso:false, foto:null, fotoFile:null, fotoUrlOFF:null, adicionais:[] }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null });
   }
-  editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), custo: p.custo!=null ? String(p.custo).replace('.',',') : '', codigoBarras: p.codigoBarras||'', active:p.active, porPeso: !!p.vendidoPorPeso, foto:p.foto||null, fotoFile:null, adicionais:(p.adicionais||[]).slice() }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null }); }
+  editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), custo: p.custo!=null ? String(p.custo).replace('.',',') : '', codigoBarras: p.codigoBarras||'', active:p.active, porPeso: !!p.vendidoPorPeso, foto:p.foto||null, fotoFile:null, fotoUrlOFF:null, adicionais:(p.adicionais||[]).slice() }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null }); }
   toggleDraftPorPeso(){ this.setState(s => ({ productDraft: { ...s.productDraft, porPeso: !s.productDraft.porPeso } })); }
   onDraftCusto(e){ this.setState(s => ({ productDraft: { ...s.productDraft, custo:e.target.value } })); }
   onDraftCodigoBarras(e){ this.setState(s => ({ productDraft: { ...s.productDraft, codigoBarras:e.target.value } })); }
+  /**
+   * Consulta a Open Food Facts pelo código de barras digitado e preenche o
+   * que estiver vazio no draft (nome/descrição) + guarda a URL da foto pra
+   * importar no salvar (fotoUrlOFF) — campo já preenchido pelo admin nunca
+   * é sobrescrito.
+   */
+  async buscarCodigoBarras(){
+    const d = this.state.productDraft; if (!d || this.state.buscandoCodigoBarras) return;
+    const codigo = String(d.codigoBarras || '').replace(/\D/g, '');
+    if (codigo.length < 8) { this.showToast('Digite o código de barras completo antes de buscar'); return; }
+    this.setState({ buscandoCodigoBarras:true });
+    try {
+      const p = await this.apiGet('/admin/produtos/codigo-barras/' + codigo);
+      this.setState(s => {
+        const dr = s.productDraft; if (!dr) return {};
+        const descSugerida = [p.marca, p.quantidade].filter(Boolean).join(' — ');
+        return { productDraft: {
+          ...dr,
+          name: (dr.name || '').trim() ? dr.name : p.nome,
+          desc: (dr.desc || '').trim() ? dr.desc : descSugerida,
+          // Foto manual (fotoFile) ou já existente tem prioridade — a da OFF
+          // só entra se o produto está sem foto nenhuma.
+          foto: dr.foto ? dr.foto : (p.imagemUrl || null),
+          fotoUrlOFF: (!dr.foto && !dr.fotoFile && p.imagemUrl) ? p.imagemUrl : (dr.fotoUrlOFF || null),
+        } };
+      });
+      this.showToast('Produto encontrado: ' + p.nome);
+    } catch (e) {
+      this.showToast(e.status === 404 ? 'Código não encontrado na base Open Food Facts' : (e.message || 'Erro ao buscar código de barras'));
+    }
+    this.setState({ buscandoCodigoBarras:false });
+  }
+  onCodigoBarrasKeyDown(e){ if (e.key === 'Enter') { e.preventDefault(); this.buscarCodigoBarras(); } }
   async saveProduct(){
     const d = this.state.productDraft; if (!d) return;
     const price = parseFloat(String(d.price||'').replace(/\./g,'').replace(',','.')) || 0;
@@ -2697,6 +2736,13 @@ class Component extends DCLogic {
       if (d.fotoFile) {
         const fd = new FormData(); fd.append('foto', d.fotoFile);
         saved = (await this.apiUpload('/admin/produtos/' + saved.id + '/foto', fd)).produto;
+      } else if (d.fotoUrlOFF) {
+        // Foto sugerida pela busca de código de barras — o servidor baixa da
+        // Open Food Facts e salva igual a um upload manual. Falha aqui não
+        // desfaz o produto já salvo, só avisa.
+        try {
+          saved = (await this.apiSend('POST', '/admin/produtos/' + saved.id + '/foto-url', { url: d.fotoUrlOFF })).produto;
+        } catch (e2) { this.showToast('Produto salvo, mas a foto não pôde ser importada'); }
       }
       this.setState(s => {
         const mapped = this.mapProduto(saved);
@@ -3652,6 +3698,9 @@ class Component extends DCLogic {
       isRestauranteTenant: s.tipoTenant === 'RESTAURANTE',
       draftCusto: d ? d.custo : '', onDraftCusto:(e) => this.onDraftCusto(e),
       draftCodigoBarras: d ? d.codigoBarras : '', onDraftCodigoBarras:(e) => this.onDraftCodigoBarras(e),
+      buscarCodigoBarras:() => this.buscarCodigoBarras(),
+      onCodigoBarrasKeyDown:(e) => this.onCodigoBarrasKeyDown(e),
+      buscaCodigoLabel: s.buscandoCodigoBarras ? 'Buscando...' : 'Buscar',
       draftHasFoto: !!(d && d.foto), draftSemFoto: !(d && d.foto), draftFotoSrc: (d && d.foto) || '',
       setFotoInput:(el) => this.setFotoInput(el), triggerFotoUpload:() => this.triggerFotoUpload(),
       onFotoSelected:(e) => this.onFotoSelected(e), removerFoto:() => this.removerFoto(),

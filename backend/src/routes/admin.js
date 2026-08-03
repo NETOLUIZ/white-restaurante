@@ -43,6 +43,8 @@ router.post('/categorias/:id/foto', uploadFotoCategoria.single('foto'), converte
 router.delete('/categorias/:id/foto', categoriaController.removerFoto);
 
 router.get('/produtos', produtoController.listarAdmin);
+router.get('/produtos/codigo-barras/:codigo', produtoController.buscarCodigoBarras);
+router.post('/produtos/:id/foto-url', produtoController.importarFotoUrl);
 router.get('/produtos/import/modelo', produtoController.baixarModeloImportacao);
 router.post('/produtos/import', uploadPlanilha.single('arquivo'), produtoController.importarProdutos);
 router.post('/produtos', produtoController.criar);
