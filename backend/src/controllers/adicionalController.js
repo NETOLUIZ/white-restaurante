@@ -1,5 +1,3 @@
-const { prisma } = require('../utils/db');
-
 /** Cria um adicional novo, sempre vinculado a um produto — painel admin. */
 async function criar(req, res) {
   try {
@@ -8,11 +6,11 @@ async function criar(req, res) {
     if (!nome || !String(nome).trim() || preco === undefined) {
       return res.status(400).json({ erro: 'Informe o nome e o preço do adicional' });
     }
-    const produto = await prisma.produto.findUnique({ where: { id: produtoId } });
+    const produto = await req.prisma.produto.findFirst({ where: { id: produtoId } });
     if (!produto) {
       return res.status(404).json({ erro: 'Produto não encontrado' });
     }
-    const adicional = await prisma.adicional.create({
+    const adicional = await req.prisma.adicional.create({
       data: { produtoId, nome: String(nome).trim(), preco: Number(preco) },
     });
     res.status(201).json(adicional);
@@ -32,7 +30,7 @@ async function atualizar(req, res) {
     if (preco !== undefined) data.preco = Number(preco);
     if (ativo !== undefined) data.ativo = Boolean(ativo);
     if (esgotado !== undefined) data.esgotado = Boolean(esgotado);
-    const adicional = await prisma.adicional.update({ where: { id }, data });
+    const adicional = await req.prisma.adicional.update({ where: { id }, data });
     res.json(adicional);
   } catch (err) {
     console.error('Erro ao atualizar adicional:', err);
@@ -44,7 +42,7 @@ async function atualizar(req, res) {
 async function deletar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    await prisma.adicional.delete({ where: { id } });
+    await req.prisma.adicional.delete({ where: { id } });
     res.json({ ok: true });
   } catch (err) {
     if (err.code === 'P2003') {

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Atendente — Bel do Frango</title>
 <script src="scripts/support.js"></script>
+<script src="scripts/tema.js"></script>
 </head>
 <body>
 <x-dc>
@@ -19,6 +20,10 @@
   button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #D62828;outline-offset:2px;}
   button{-webkit-tap-highlight-color:transparent;transition:transform .12s ease;}
   button:active{transform:scale(.96);}
+  /* Mesmo padrão de .bf-card do site do cliente (index.html) — hover só em dispositivo com mouse de verdade (@media hover:hover evita hover "grudado" em toque). */
+  .bf-prod-card{transition:transform .15s ease, box-shadow .15s ease;}
+  .bf-prod-card:active{transform:scale(.98);}
+  @media (hover:hover){ .bf-prod-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(29,16,9,.12);} }
   @keyframes atUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   @keyframes atRing{to{transform:rotate(360deg);}}
   @keyframes atToast{from{opacity:0;transform:translate(-50%,12px);}to{opacity:1;transform:translate(-50%,0);}}
@@ -123,6 +128,11 @@
 
     <!-- DIREITA: cardápio -->
     <div style="flex:1;min-width:280px;">
+      <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:14px;padding:0 14px;height:46px;box-shadow:0 4px 14px rgba(29,16,9,.04);margin-bottom:12px;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input value="{{ buscaProduto }}" onChange="{{ onBuscaProduto }}" placeholder="Buscar produto no cardápio..." aria-label="Buscar produto" style="flex:1;height:100%;border:none;background:none;font-size:14px;color:#1D1009;outline:none;"/>
+      </div>
+
       <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;">
         <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="5">
           <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
@@ -131,20 +141,28 @@
 
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;">
         <sc-for list="{{ produtosLista }}" as="p" hint-placeholder-count="6">
-          <div style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:8px;overflow:hidden;box-shadow:0 6px 18px rgba(29,16,9,.05);">
+          <div class="bf-prod-card" onClick="{{ p.onCardClick }}" style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:8px;overflow:hidden;box-shadow:0 6px 18px rgba(29,16,9,.05);cursor:{{ p.cardCursor }};">
             <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:96px;"><img src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
             <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:96px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);display:flex;align-items:center;justify-content:center;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.7;">foto</span></div></sc-if>
             <div style="padding:10px;">
               <div style="font-weight:700;font-size:13.5px;line-height:1.25;margin-bottom:6px;min-height:34px;">{{ p.nome }}</div>
               <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
                 <span style="font-family:'DM Mono',monospace;font-size:13px;color:#D97706;">{{ p.priceFmt }}</span>
-                <div style="display:flex;align-items:center;gap:5px;">
-                  <sc-if value="{{ p.hasQty }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ p.onDec }}" aria-label="Diminuir" style="width:26px;height:26px;border-radius:8px;border:1px solid rgba(29,16,9,.12);background:#fff;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                    <span style="font-family:'DM Mono',monospace;min-width:16px;text-align:center;font-size:13px;">{{ p.qty }}</span>
-                  </sc-if>
-                  <button onClick="{{ p.onAdd }}" aria-label="Adicionar" style="width:26px;height:26px;border-radius:8px;background:#D97706;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-                </div>
+                <sc-if value="{{ p.porPeso }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;align-items:center;gap:4px;">
+                    <input value="{{ p.gramasValue }}" onChange="{{ p.onGramasChange }}" inputmode="numeric" placeholder="g" style="width:48px;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:5px 6px;font-size:12px;text-align:center;outline:none;"/>
+                    <span style="font-size:10px;color:#8C8075;">g</span>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ p.naoPorPeso }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;align-items:center;gap:5px;">
+                    <sc-if value="{{ p.hasQty }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ p.onDec }}" aria-label="Diminuir" style="width:26px;height:26px;border-radius:8px;border:1px solid rgba(29,16,9,.12);background:#fff;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                      <span style="font-family:'DM Mono',monospace;min-width:16px;text-align:center;font-size:13px;">{{ p.qty }}</span>
+                    </sc-if>
+                    <button onClick="{{ p.onAdd }}" aria-label="Adicionar" style="width:26px;height:26px;border-radius:8px;background:#D97706;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                  </div>
+                </sc-if>
               </div>
             </div>
           </div>
@@ -229,6 +247,7 @@ class Component extends DCLogic {
 
     categorias: [], produtos: [],
     selectedCat: null,
+    buscaProduto: '',
     carrinho: {}, // { [produtoId]: quantidade } — pedido em montagem, ainda não enviado
     formaPagamento: 'PIX',
     valorRecebido: '', // só usado quando formaPagamento === 'DINHEIRO', pro cálculo do troco
@@ -256,13 +275,40 @@ class Component extends DCLogic {
   apiGet(path){ return this.apiCall(path, { method:'GET' }); }
   apiSend(method, path, body){ return this.apiCall(path, { method, headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) }); }
 
+  // Telas que fazem sentido reabrir depois de um F5 — "confirmacao" fica de
+  // fora de propósito (é a tela de "acabei de enviar", sem sentido reabrir
+  // minutos depois), login/loading também nunca entram aqui.
+  TELAS_RESTAURAVEIS = new Set(['pedido', 'senha']);
+  STORAGE_KEY = 'bf_tela_atendente';
+  restaurarTela(){
+    try {
+      const salvo = JSON.parse(sessionStorage.getItem(this.STORAGE_KEY) || 'null');
+      if (salvo && this.TELAS_RESTAURAVEIS.has(salvo.screen)) return salvo.screen;
+    } catch (e) { /* sessionStorage corrompido ou indisponível — cai no padrão */ }
+    return null;
+  }
+
   async componentDidMount(){
+    // Precisa ser setado ANTES de qualquer outro setState — senão o setState
+    // que guarda o "atendente" logo abaixo já dispara um componentDidUpdate
+    // "fantasma" que apaga o sessionStorage antes do restaurarTela() ler.
+    this._lastScreen = this.state.screen;
     try {
       const { atendente } = await this.apiGet('/atendente/me');
-      this.setState({ atendente, screen:'pedido' });
+      this.setState({ atendente, screen: this.restaurarTela() || 'pedido' });
       await this.carregarCardapio();
     } catch (e) {
       this.setState({ screen:'login' });
+    }
+  }
+  componentDidUpdate(){
+    if (this.state.screen !== this._lastScreen) {
+      this._lastScreen = this.state.screen;
+      if (this.TELAS_RESTAURAVEIS.has(this.state.screen)) {
+        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify({ screen: this.state.screen }));
+      } else {
+        sessionStorage.removeItem(this.STORAGE_KEY);
+      }
     }
   }
 
@@ -288,6 +334,7 @@ class Component extends DCLogic {
   }
   async logout(){
     try { await this.apiSend('POST', '/atendente/logout', {}); } catch (e) { /* mesmo se falhar, limpa a sessão local */ }
+    sessionStorage.removeItem(this.STORAGE_KEY);
     this.setState({ atendente:null, screen:'login' });
   }
 
@@ -322,6 +369,16 @@ class Component extends DCLogic {
       return { carrinho };
     });
   }
+  // Produto vendido por peso: o campo de peso já digita direto o valor (não
+  // incrementa) — a quantidade no carrinho passa a ser gramas, não unidades.
+  carrinhoSetGramas(produtoId, valor){
+    const gramas = parseInt(String(valor).replace(/\D/g, ''), 10);
+    this.setState(s => {
+      const carrinho = { ...s.carrinho };
+      if (!gramas || gramas <= 0) delete carrinho[produtoId]; else carrinho[produtoId] = gramas;
+      return { carrinho };
+    });
+  }
   carrinhoRemover(produtoId){
     this.setState(s => {
       const carrinho = { ...s.carrinho };
@@ -332,10 +389,66 @@ class Component extends DCLogic {
   setFormaPagamento(f){ this.setState({ formaPagamento:f, valorRecebido:'' }); }
   onValorRecebido(e){ this.setState({ valorRecebido:e.target.value }); }
 
+  // ---- impressão térmica (POS-58, 58mm) — mesmo padrão do Admin (Bel do Frango - Admin.dc.html) ----
+  // Usa um iframe oculto: escreve o cupom nele e chama print() só daquele frame, sem afetar a tela.
+  escapeHtml(str){
+    return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+  }
+  imprimirHTML(corpoHtml){
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0';
+    iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
+    document.body.appendChild(iframe);
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(
+      '<meta charset="utf-8"><style>' +
+      '@page{ size:58mm auto; margin:0; }' +
+      'body{ width:48mm; margin:0 auto; padding:2mm 1mm; font-family:\'Courier New\',monospace; font-size:13px; font-weight:700; line-height:1.5; color:#000; }' +
+      '.c{ text-align:center; } .b{ font-weight:900; }' +
+      '.linha{ margin:5px 0; white-space:pre; }' +
+      '.esp{ height:8px; }' +
+      '.lin{ display:flex; justify-content:space-between; gap:6px; }' +
+      '.tit{ font-size:16px; }' +
+      '</style>' + corpoHtml
+    );
+    doc.close();
+    setTimeout(() => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      setTimeout(() => iframe.remove(), 1000);
+    }, 250);
+  }
+  imprimirCupomBalcao({ codigo, itens, total, formaPagamentoLabel }){
+    const SEP = '<div class="linha">================================</div>';
+    const itensHtml = itens.map((it) =>
+      '<div class="lin"><span>' + this.escapeHtml(it.quantidade) + 'x ' + this.escapeHtml(it.nome) + '</span><span>' + this.fmt(it.quantidade * it.precoUnitario) + '</span></div>'
+    ).join('');
+    const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    const html =
+      '<div class="c b tit">BEL DO FRANGO</div>' +
+      '<div class="c b">PEDIDO ' + this.escapeHtml(codigo) + ' — BALCÃO</div>' +
+      SEP + itensHtml + SEP +
+      '<div class="lin b"><span>TOTAL</span><span>' + this.fmt(total) + '</span></div>' +
+      '<div class="esp"></div>' +
+      '<div><span class="b">Pagamento:</span> ' + this.escapeHtml(formaPagamentoLabel) + '</div>' +
+      '<div class="esp"></div>' +
+      '<div class="c" style="font-size:10px;">' + agora + '</div>';
+    this.imprimirHTML(html);
+  }
+
   async finalizarPedido(){
     const s = this.state;
     const entradas = Object.entries(s.carrinho).filter(([, q]) => q > 0);
     if (!entradas.length) return;
+
+    // Monta os itens do cupom ANTES de limpar o carrinho — o servidor não devolve
+    // nome/preço por linha (só totais), e depois de setState({carrinho:{}}) o dado já era.
+    const itensParaCupom = entradas.map(([produtoId, quantidade]) => {
+      const produto = s.produtos.find((p) => String(p.id) === String(produtoId));
+      return { nome: produto ? produto.nome : 'Produto', quantidade, precoUnitario: produto ? produto.preco : 0 };
+    });
+    const pagamentoLabelMap = { PIX:'Pix', CARTAO:'Cartão', DINHEIRO:'Dinheiro' };
 
     this.setState({ finalizando:true });
     try {
@@ -344,6 +457,10 @@ class Component extends DCLogic {
         tipo: 'RETIRADA',
         itens,
         formaPagamento: s.formaPagamento
+      });
+      this.imprimirCupomBalcao({
+        codigo: '#BF' + pedido.id, itens: itensParaCupom, total: pedido.total,
+        formaPagamentoLabel: pagamentoLabelMap[s.formaPagamento] || s.formaPagamento,
       });
       this.setState({
         finalizando:false, screen:'confirmacao',
@@ -356,6 +473,7 @@ class Component extends DCLogic {
     }
   }
   novoPedido(){ this.setState({ screen:'pedido', ultimoPedido:null }); }
+  onBuscaProduto(e){ this.setState({ buscaProduto: e.target.value }); }
 
   renderVals(){
     const s = this.state;
@@ -367,27 +485,47 @@ class Component extends DCLogic {
           background: on ? '#7A1209' : '#FFF0C2', color: on ? '#FFF6D6' : '#7A1209' } };
     });
 
-    const produtosLista = s.produtos.filter((p) => p.categoriaId === s.selectedCat).map((p) => {
+    const busca = s.buscaProduto.trim().toLowerCase();
+    const produtosLista = s.produtos
+      .filter((p) => p.categoriaId === s.selectedCat)
+      .filter((p) => !busca || p.nome.toLowerCase().includes(busca))
+      .map((p) => {
       const qty = s.carrinho[p.id] || 0;
       const fotoSrc = p.foto ? this.apiBase.replace('/api', '') + '/uploads/' + p.foto : '';
+      const porPeso = !!p.vendidoPorPeso;
       return {
-        nome:p.nome, priceFmt:this.fmt(p.preco), qty:String(qty), hasQty: qty > 0,
+        nome:p.nome, priceFmt:this.fmt(p.preco) + (p.vendidoPorPeso ? '/kg' : ''), qty:String(qty), hasQty: qty > 0,
+        porPeso, naoPorPeso: !porPeso, gramasValue: qty > 0 ? String(qty) : '',
         hasFoto: !!fotoSrc, semFoto: !fotoSrc, fotoSrc,
-        onAdd:() => this.carrinhoInc(p.id), onDec:() => this.carrinhoDec(p.id)
+        // Card inteiro clicável só quando dá pra "adicionar 1" sem ambiguidade — item por
+        // peso depende do valor digitado em gramas, não tem um clique único que faça sentido.
+        cardCursor: porPeso ? 'default' : 'pointer',
+        onCardClick: porPeso ? () => {} : () => this.carrinhoInc(p.id),
+        onAdd:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoInc(p.id); },
+        onDec:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoDec(p.id); },
+        onGramasChange:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoSetGramas(p.id, e.target.value); }
       };
     });
 
+    // Item por peso conta como 1 "item" no carrinho (não as gramas) — evita um
+    // badge tipo "500 itens" pra 500g de um produto só.
     const carrinhoEntradas = Object.entries(s.carrinho).filter(([, q]) => q > 0);
-    const carrinhoCount = carrinhoEntradas.reduce((a, [, q]) => a + q, 0);
+    const carrinhoCount = carrinhoEntradas.reduce((a, [pid, q]) => {
+      const prod = s.produtos.find((p) => String(p.id) === String(pid));
+      return a + (prod && prod.vendidoPorPeso ? 1 : q);
+    }, 0);
     const carrinhoTotal = carrinhoEntradas.reduce((a, [pid, q]) => {
       const prod = s.produtos.find((p) => String(p.id) === String(pid));
-      return a + (prod ? prod.preco * q : 0);
+      if (!prod) return a;
+      return a + (prod.vendidoPorPeso ? (prod.preco * q) / 1000 : prod.preco * q);
     }, 0);
     const carrinhoItens = carrinhoEntradas.map(([pid, q]) => {
       const prod = s.produtos.find((p) => String(p.id) === String(pid));
       if (!prod) return null;
+      const subtotal = prod.vendidoPorPeso ? (prod.preco * q) / 1000 : prod.preco * q;
       return {
-        nome:prod.nome, qty:String(q), precoFmt:this.fmt(prod.preco), subtotalFmt:this.fmt(prod.preco * q),
+        nome:prod.nome, qty: prod.vendidoPorPeso ? (q + 'g') : String(q),
+        precoFmt:this.fmt(prod.preco) + (prod.vendidoPorPeso ? '/kg' : ''), subtotalFmt:this.fmt(subtotal),
         onRemover:() => this.carrinhoRemover(pid)
       };
     }).filter(Boolean);
@@ -438,6 +576,7 @@ class Component extends DCLogic {
       toggleLoginSenha:() => this.toggleMostrarSenha('login'),
 
       catChips, produtosLista,
+      buscaProduto: s.buscaProduto, onBuscaProduto:(e) => this.onBuscaProduto(e),
       hasCarrinho: carrinhoCount > 0, carrinhoVazio: carrinhoCount === 0,
       carrinhoItens,
       carrinhoCountLabel: carrinhoCount + (carrinhoCount === 1 ? ' item' : ' itens'),

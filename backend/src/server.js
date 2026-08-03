@@ -1,5 +1,5 @@
-require('dotenv').config();
 const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 // Bloqueia o boot se o JWT_SECRET estiver ausente, fraco ou for um valor
 // padrão conhecido — evita rodar em produção com um segredo previsível.
@@ -35,6 +35,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
+const multer = require('multer');
 
 const authRoutes = require('./routes/auth');
 const categoriasRoutes = require('./routes/categorias');
@@ -47,10 +48,15 @@ const bannersRoutes = require('./routes/banners');
 const proteinasRoutes = require('./routes/proteinas');
 const complementosRoutes = require('./routes/complementos');
 const marmitaTamanhosRoutes = require('./routes/marmitaTamanhos');
+const bairrosRoutes = require('./routes/bairros');
 const adminRoutes = require('./routes/admin');
 const garcomRoutes = require('./routes/garcom');
 const entregadorRoutes = require('./routes/entregador');
 const atendenteRoutes = require('./routes/atendente');
+const empresaRoutes = require('./routes/empresa');
+const superRoutes = require('./routes/super');
+const configRoutes = require('./routes/config');
+const { resolveTenant } = require('./middleware/resolveTenant');
 
 const app = express();
 const PORT = process.env.PORT || 3010;
@@ -75,22 +81,41 @@ app.use(
   }),
 );
 
-// CORS com origem fixa (single-tenant — só o frontend deste protótipo),
-// credentials:true porque o login do admin usa cookie httpOnly.
-// Aceita tanto "localhost" quanto "127.0.0.1" na mesma porta — são o mesmo
-// front em dev, mas o browser trata como origens diferentes; sem isso, abrir
-// pela variante que não bate com FRONTEND_URL quebra todas as chamadas de API.
+// CORS dinâmico (Fase 5) — aceita qualquer subdomínio direto de DOMINIO_BASE
+// (ex: https://belfrango.dominio.com, https://outraloja.dominio.com, e mais
+// tarde https://super.dominio.com), sem lista fixa de origem. credentials:true
+// porque o login usa cookie httpOnly.
+//
+// ⚠️ Nunca trocar por `origin: true` nem por refletir a origem recebida sem
+// checar contra um padrão — com credentials:true isso vira roubo de sessão
+// (qualquer site vira "origem permitida"). O padrão exige exatamente 1 label
+// de subdomínio + DOMINIO_BASE, com https — nunca aceita o domínio nu.
+const DOMINIO_BASE = process.env.DOMINIO_BASE || '';
+const dominioBaseEscapado = DOMINIO_BASE.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const origemSubdominioRegex = DOMINIO_BASE ? new RegExp(`^https://[a-z0-9-]+\\.${dominioBaseEscapado}$`) : null;
+
+// Em dev não há subdomínio real — aceita localhost/127.0.0.1 na porta do
+// FRONTEND_URL (mesmo par que já era aceito antes da Fase 5, só generalizado
+// pro caso de DOMINIO_BASE não estar configurado ainda).
 const frontendUrl = process.env.FRONTEND_URL || 'http://127.0.0.1:5000';
-const origensPermitidas = new Set([
-  frontendUrl,
-  frontendUrl.replace('://localhost', '://127.0.0.1'),
-  frontendUrl.replace('://127.0.0.1', '://localhost'),
-]);
+function origemPermitidaDev(origin) {
+  if (process.env.NODE_ENV !== 'development') return false;
+  try {
+    const o = new URL(origin);
+    const f = new URL(frontendUrl);
+    return (o.hostname === 'localhost' || o.hostname === '127.0.0.1') && o.port === f.port;
+  } catch {
+    return false;
+  }
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || origensPermitidas.has(origin)) callback(null, true);
-      else callback(new Error('Origem não permitida pelo CORS'));
+      if (!origin) return callback(null, true); // requests sem Origin (curl, health check de infra) — sempre passaram
+      if (origemSubdominioRegex && origemSubdominioRegex.test(origin)) return callback(null, true);
+      if (origemPermitidaDev(origin)) return callback(null, true);
+      callback(new Error('Origem não permitida pelo CORS'));
     },
     credentials: true,
   }),
@@ -99,8 +124,50 @@ app.use(
 app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 
-// Fotos de produto enviadas pelo admin (multer salva em disco, nunca base64 no banco).
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+// Fotos de produto enviadas pelo admin (multer salva em disco, nunca base64 no
+// banco) — Fase 5: uploads/{tenantId}/{produtos,banners,categorias}/, um
+// diretório por tenant (ver utils/upload.js). A URL carrega o tenantId
+// (/uploads/:tenantId/...), mas isso sozinho não basta: sem validar contra o
+// tenant resolvido pelo subdomínio da própria requisição, um tenant poderia
+// trocar o id na URL e listar/baixar arquivo de outro cliente. resolveTenant
+// roda só neste path (não em todo /uploads) pra decidir quem está pedindo;
+// o 404 (não 403) não confirma se o arquivo existe pra quem não deveria ver.
+app.use(
+  '/uploads/:tenantId',
+  resolveTenant,
+  (req, res, next) => {
+    if (req.params.tenantId !== req.tenantId) {
+      return res.status(404).json({ erro: 'Não encontrado' });
+    }
+    next();
+  },
+  (req, res, next) => express.static(path.join(__dirname, '..', 'uploads', req.params.tenantId))(req, res, next),
+);
+
+// Health check é infra, não dado de loja — não passa por resolução de tenant.
+// Precisa vir ANTES de app.use('/api', resolveTenant) pra não ser interceptado.
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Resolve o tenant pelo subdomínio (ou header x-tenant-slug em dev) e anexa
+// req.tenantId/req.tenant/req.prisma — precisa vir antes de qualquer rate
+// limit/rota de API, já que o middleware de auth (Fase 3) depende de
+// req.prisma pra buscar o usuário escopado ao tenant certo.
+app.use('/api', resolveTenant);
+
+// Fase 6A — separa por completo o mundo do super admin do mundo dos tenants:
+// o subdomínio "super" só enxerga /api/super/*, e /api/super/* só é alcançável
+// a partir do subdomínio "super" (nem um tenant real com o slug certo no header
+// de dev, nem ninguém mais, chega lá por engano). 404 nos dois sentidos — não
+// 403 — pra não confirmar pra quem não deveria saber que essas rotas existem.
+app.use('/api', (req, res, next) => {
+  const acessandoSuper = req.path.startsWith('/super');
+  if (Boolean(req.ehSuperAdmin) !== acessandoSuper) {
+    return res.status(404).json({ erro: 'Não encontrado' });
+  }
+  next();
+});
 
 // Rotas públicas que criam pedido/validam cupom sem autenticação — limite
 // mais agressivo pra dificultar flood. As demais rotas têm limite geral.
@@ -135,6 +202,8 @@ app.use('/api/auth/login', limitadorLogin);
 app.use('/api/garcom/login', limitadorLogin);
 app.use('/api/entregador/login', limitadorLogin);
 app.use('/api/atendente/login', limitadorLogin);
+app.use('/api/empresa/login', limitadorLogin);
+app.use('/api/super/login', limitadorLogin);
 
 app.use('/api/auth', authRoutes);
 app.use('/api/categorias', categoriasRoutes);
@@ -147,13 +216,30 @@ app.use('/api/banners', bannersRoutes);
 app.use('/api/proteinas', proteinasRoutes);
 app.use('/api/complementos', complementosRoutes);
 app.use('/api/marmita-tamanhos', marmitaTamanhosRoutes);
+app.use('/api/bairros', bairrosRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/garcom', garcomRoutes);
 app.use('/api/entregador', entregadorRoutes);
 app.use('/api/atendente', atendenteRoutes);
+app.use('/api/empresa', empresaRoutes);
+app.use('/api/super', superRoutes);
+app.use('/api/config', configRoutes);
 
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+// Middleware de erro — precisa vir por último, depois de todas as rotas. Sem
+// isso, um erro do multer (arquivo maior que o limite, tipo não permitido)
+// nunca chega num controller pra virar um {erro} amigável — cai direto no
+// handler padrão do Express, que devolve uma página HTML de erro 500 crua.
+// Controllers sempre tratam os próprios erros com try/catch (nunca chamam
+// next(err)), então praticamente todo erro que chega aqui veio do multer.
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ erro: 'Arquivo muito grande — o limite é 5MB' });
+  }
+  if (err && err.message) {
+    return res.status(400).json({ erro: err.message });
+  }
+  console.error('Erro não tratado:', err);
+  res.status(500).json({ erro: 'Erro interno do servidor' });
 });
 
 app.listen(PORT, () => {

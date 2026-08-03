@@ -1,4 +1,4 @@
-const { prisma } = require('../utils/db');
+const { validarHorarioFuncionamento, estaAberto, ErroValidacaoHorario } = require('../utils/horarioFuncionamento');
 
 const HORARIO_REGEX = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
@@ -18,28 +18,45 @@ function gerarHorarios(inicio, fim) {
 }
 
 function comHorariosGaleto(config) {
-  return { ...config, galetoHorarios: gerarHorarios(config.galetoHorarioInicio, config.galetoHorarioFim) };
+  return {
+    ...config,
+    galetoHorarios: gerarHorarios(config.galetoHorarioInicio, config.galetoHorarioFim),
+    // Calculado no servidor pra não depender do relógio/fuso do navegador do cliente.
+    abertoAgora: estaAberto(config.horarioFuncionamento),
+  };
 }
 
-/** Lê a configuração da loja (linha única, id=1) — cria com o padrão se ainda não existir. */
+/** Lê a configuração da loja (1 registro por tenant) — cria com o padrão se ainda não existir. */
 async function obter(req, res) {
   try {
-    const config = await prisma.configuracao.upsert({
-      where: { id: 1 },
+    // where/create vazios: a extension injeta tenantId (único, ver schema) —
+    // já basta pra identificar/criar a linha certa, sem id fixo (Fase 1).
+    const config = await req.prisma.configuracao.upsert({
+      where: {},
       update: {},
-      create: { id: 1 },
+      create: {},
     });
-    res.json(comHorariosGaleto(config));
+    res.json({ ...comHorariosGaleto(config), tenant: { tipo: req.tenant ? req.tenant.tipo : 'RESTAURANTE', slug: req.tenant ? req.tenant.slug : '', nome: req.tenant ? req.tenant.nome : '' } });
   } catch (err) {
     console.error('Erro ao obter configuração:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
   }
 }
 
-/** Atualiza taxa de entrega e/ou janela de horário de retirada dos Galetos — painel admin. */
+/** Atualiza taxa de entrega, janela de retirada dos Galetos e/ou horário de funcionamento — painel admin. */
 async function atualizar(req, res) {
   try {
     const data = {};
+    if (req.body.horarioFuncionamento !== undefined) {
+      try {
+        data.horarioFuncionamento = validarHorarioFuncionamento(req.body.horarioFuncionamento);
+      } catch (err) {
+        if (err instanceof ErroValidacaoHorario) {
+          return res.status(400).json({ erro: err.message });
+        }
+        throw err;
+      }
+    }
     if (req.body.taxaEntrega !== undefined) {
       const taxaEntrega = Number(req.body.taxaEntrega);
       if (!Number.isFinite(taxaEntrega) || taxaEntrega < 0) {
@@ -60,10 +77,10 @@ async function atualizar(req, res) {
       data.galetoHorarioFim = fim;
     }
 
-    const config = await prisma.configuracao.upsert({
-      where: { id: 1 },
+    const config = await req.prisma.configuracao.upsert({
+      where: {},
       update: data,
-      create: { id: 1, ...data },
+      create: { ...data },
     });
     res.json(comHorariosGaleto(config));
   } catch (err) {

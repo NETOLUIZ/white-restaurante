@@ -1,5 +1,3 @@
-const { prisma } = require('../utils/db');
-
 const STATUS_VALIDOS = ['LIVRE', 'OCUPADA', 'RESERVADA', 'CONTA'];
 const FORMAS_PAGAMENTO_VALIDAS = ['PIX', 'CARTAO', 'DINHEIRO'];
 
@@ -32,8 +30,8 @@ function mapMesa(mesa, pedido) {
 /** Lista todas as mesas com a comanda em aberto (se houver) já resolvida — painel admin. */
 async function listarAdmin(req, res) {
   try {
-    const mesas = await prisma.mesa.findMany({ orderBy: { numero: 'asc' } });
-    const pedidosAbertos = await prisma.pedido.findMany({
+    const mesas = await req.prisma.mesa.findMany({ orderBy: { numero: 'asc' } });
+    const pedidosAbertos = await req.prisma.pedido.findMany({
       where: { tipo: 'MESA', mesaId: { in: mesas.map((m) => m.id) }, statusEntrega: { notIn: ['ENTREGUE', 'CANCELADO'] } },
       include: { itens: { include: { produto: true } } },
     });
@@ -52,7 +50,7 @@ async function criar(req, res) {
     if (!numero) {
       return res.status(400).json({ erro: 'Número da mesa é obrigatório' });
     }
-    const mesa = await prisma.mesa.create({
+    const mesa = await req.prisma.mesa.create({
       data: { numero: parseInt(numero, 10), lugares: lugares ? parseInt(lugares, 10) : 4 },
     });
     res.status(201).json(mapMesa(mesa, null));
@@ -70,14 +68,14 @@ async function definirNome(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
     const clienteNome = (req.body.clienteNome || '').trim() || null;
-    const mesa = await prisma.mesa.update({ where: { id }, data: { clienteNome } });
+    const mesa = await req.prisma.mesa.update({ where: { id }, data: { clienteNome } });
 
     // Mantém o nome do pedido em aberto em sincronia (aparece assim na lista de Pedidos).
-    const pedido = await prisma.pedido.findFirst({ where: pedidoAbertoWhere(id) });
+    const pedido = await req.prisma.pedido.findFirst({ where: pedidoAbertoWhere(id) });
     if (pedido) {
-      await prisma.pedido.update({ where: { id: pedido.id }, data: { nomeCliente: clienteNome || 'Mesa ' + mesa.numero } });
+      await req.prisma.pedido.update({ where: { id: pedido.id }, data: { nomeCliente: clienteNome || 'Mesa ' + mesa.numero } });
     }
-    res.json(await mesaComPedido(id));
+    res.json(await mesaComPedido(req.prisma, id));
   } catch (err) {
     console.error('Erro ao definir nome da mesa:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
@@ -102,16 +100,16 @@ async function mudarStatus(req, res) {
     if (status === 'LIVRE') {
       data.clienteNome = null;
       data.abertaEm = null;
-      const pedidoAberto = await prisma.pedido.findFirst({ where: pedidoAbertoWhere(id) });
+      const pedidoAberto = await req.prisma.pedido.findFirst({ where: pedidoAbertoWhere(id) });
       if (pedidoAberto) {
-        await prisma.pedido.update({ where: { id: pedidoAberto.id }, data: { statusEntrega: 'CANCELADO' } });
+        await req.prisma.pedido.update({ where: { id: pedidoAberto.id }, data: { statusEntrega: 'CANCELADO' } });
       }
     }
 
-    await prisma.mesa.update({ where: { id }, data });
+    await req.prisma.mesa.update({ where: { id }, data });
     // Busca o pedido em aberto de novo (não passa null) — senão o valor da conta
     // some da tela bem no momento de fechar a conta (status -> CONTA).
-    res.json(await mesaComPedido(id));
+    res.json(await mesaComPedido(req.prisma, id));
   } catch (err) {
     console.error('Erro ao mudar status da mesa:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
@@ -128,17 +126,20 @@ async function adicionarItem(req, res) {
     const produtoId = parseInt(req.body.produtoId, 10);
     const delta = Math.max(1, parseInt(req.body.quantidade, 10) || 1);
 
-    const mesa = await prisma.mesa.findUnique({ where: { id } });
+    const mesa = await req.prisma.mesa.findFirst({ where: { id } });
     if (!mesa) return res.status(404).json({ erro: 'Mesa não encontrada' });
     if (mesa.status !== 'OCUPADA') {
       return res.status(409).json({ erro: 'Abra a mesa antes de adicionar itens' });
     }
-    const produto = await prisma.produto.findFirst({ where: { id: produtoId, ativo: true } });
+    const produto = await req.prisma.produto.findFirst({ where: { id: produtoId, ativo: true } });
     if (!produto) return res.status(404).json({ erro: 'Produto não encontrado ou indisponível' });
 
-    let pedido = await prisma.pedido.findFirst({ where: pedidoAbertoWhere(id), include: { itens: true } });
+    let pedido = await req.prisma.pedido.findFirst({ where: pedidoAbertoWhere(id), include: { itens: true } });
     if (!pedido) {
-      pedido = await prisma.pedido.create({
+      // pedido.create de raiz sem itens aninhados — a extension já injeta o
+      // tenantId aqui, sem precisar passar explícito (diferente do nested
+      // create de pedidoController.js:189, que tem itens:{create:[...]} junto).
+      pedido = await req.prisma.pedido.create({
         data: {
           tipo: 'MESA', mesaId: id,
           nomeCliente: mesa.clienteNome || 'Mesa ' + mesa.numero,
@@ -150,15 +151,17 @@ async function adicionarItem(req, res) {
 
     const itemExistente = pedido.itens.find((it) => it.produtoId === produtoId);
     if (itemExistente) {
-      await prisma.itemPedido.update({ where: { id: itemExistente.id }, data: { quantidade: itemExistente.quantidade + delta } });
+      await req.prisma.itemPedido.update({ where: { id: itemExistente.id }, data: { quantidade: itemExistente.quantidade + delta } });
     } else {
-      await prisma.itemPedido.create({
+      // itemPedido.create direto (não aninhado em pedido.create) — é a
+      // extension que injeta o tenantId, igual qualquer outro create de raiz.
+      await req.prisma.itemPedido.create({
         data: { pedidoId: pedido.id, produtoId, quantidade: delta, precoUnitarioCongelado: produto.preco },
       });
     }
 
-    await recalcularTotal(pedido.id);
-    res.status(201).json(await mesaComPedido(id));
+    await recalcularTotal(req.prisma, pedido.id);
+    res.status(201).json(await mesaComPedido(req.prisma, id));
   } catch (err) {
     console.error('Erro ao adicionar item à comanda:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
@@ -172,16 +175,16 @@ async function ajustarItem(req, res) {
     const itemId = parseInt(req.params.itemId, 10);
     const quantidade = parseInt(req.body.quantidade, 10);
 
-    const item = await prisma.itemPedido.findUnique({ where: { id: itemId }, include: { pedido: true } });
+    const item = await req.prisma.itemPedido.findFirst({ where: { id: itemId }, include: { pedido: true } });
     if (!item || item.pedido.mesaId !== id) return res.status(404).json({ erro: 'Item não encontrado nessa mesa' });
 
     if (quantidade <= 0) {
-      await prisma.itemPedido.delete({ where: { id: itemId } });
+      await req.prisma.itemPedido.delete({ where: { id: itemId } });
     } else {
-      await prisma.itemPedido.update({ where: { id: itemId }, data: { quantidade } });
+      await req.prisma.itemPedido.update({ where: { id: itemId }, data: { quantidade } });
     }
-    await recalcularTotal(item.pedidoId);
-    res.json(await mesaComPedido(id));
+    await recalcularTotal(req.prisma, item.pedidoId);
+    res.json(await mesaComPedido(req.prisma, id));
   } catch (err) {
     console.error('Erro ao ajustar item da comanda:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
@@ -197,11 +200,11 @@ async function fecharConta(req, res) {
       return res.status(400).json({ erro: 'Forma de pagamento inválida' });
     }
 
-    const pedido = await prisma.pedido.findFirst({ where: pedidoAbertoWhere(id) });
+    const pedido = await req.prisma.pedido.findFirst({ where: pedidoAbertoWhere(id) });
     if (pedido) {
-      await prisma.pedido.update({ where: { id: pedido.id }, data: { formaPagamento, statusEntrega: 'ENTREGUE' } });
+      await req.prisma.pedido.update({ where: { id: pedido.id }, data: { formaPagamento, statusEntrega: 'ENTREGUE' } });
     }
-    const mesa = await prisma.mesa.update({ where: { id }, data: { status: 'LIVRE', clienteNome: null, abertaEm: null } });
+    const mesa = await req.prisma.mesa.update({ where: { id }, data: { status: 'LIVRE', clienteNome: null, abertaEm: null } });
     res.json(mapMesa(mesa, null));
   } catch (err) {
     console.error('Erro ao fechar conta da mesa:', err);
@@ -209,15 +212,16 @@ async function fecharConta(req, res) {
   }
 }
 
-async function recalcularTotal(pedidoId) {
-  const itens = await prisma.itemPedido.findMany({ where: { pedidoId } });
+/** Helpers internos — recebem o client já escopado (req.prisma), não têm req próprio. */
+async function recalcularTotal(prismaEscopado, pedidoId) {
+  const itens = await prismaEscopado.itemPedido.findMany({ where: { pedidoId } });
   const subtotal = itens.reduce((soma, it) => soma + it.precoUnitarioCongelado * it.quantidade, 0);
-  await prisma.pedido.update({ where: { id: pedidoId }, data: { subtotal, total: subtotal } });
+  await prismaEscopado.pedido.update({ where: { id: pedidoId }, data: { subtotal, total: subtotal } });
 }
 
-async function mesaComPedido(mesaId) {
-  const mesa = await prisma.mesa.findUnique({ where: { id: mesaId } });
-  const pedido = await prisma.pedido.findFirst({ where: pedidoAbertoWhere(mesaId), include: { itens: { include: { produto: true } } } });
+async function mesaComPedido(prismaEscopado, mesaId) {
+  const mesa = await prismaEscopado.mesa.findFirst({ where: { id: mesaId } });
+  const pedido = await prismaEscopado.pedido.findFirst({ where: pedidoAbertoWhere(mesaId), include: { itens: { include: { produto: true } } } });
   return mapMesa(mesa, pedido);
 }
 

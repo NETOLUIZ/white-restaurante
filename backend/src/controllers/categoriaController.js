@@ -1,11 +1,10 @@
 const path = require('path');
 const fs = require('fs');
-const { prisma } = require('../utils/db');
 
 /** Lista as categorias, ordenadas por `ordem` — usado pela Home e pelo Cardápio. */
 async function listarPublico(req, res) {
   try {
-    const categorias = await prisma.categoriaProduto.findMany({
+    const categorias = await req.prisma.categoriaProduto.findMany({
       orderBy: [{ ordem: 'asc' }, { nome: 'asc' }],
     });
     res.json(categorias);
@@ -22,7 +21,7 @@ async function criar(req, res) {
     if (!nome) {
       return res.status(400).json({ erro: 'Nome da categoria é obrigatório' });
     }
-    const categoria = await prisma.categoriaProduto.create({
+    const categoria = await req.prisma.categoriaProduto.create({
       data: { nome: String(nome).trim(), ordem: Number(ordem) || 0 },
     });
     res.status(201).json(categoria);
@@ -44,7 +43,7 @@ async function atualizar(req, res) {
     if (nome !== undefined) data.nome = String(nome).trim();
     if (ordem !== undefined) data.ordem = Number(ordem);
 
-    const categoria = await prisma.categoriaProduto.update({ where: { id }, data });
+    const categoria = await req.prisma.categoriaProduto.update({ where: { id }, data });
     res.json(categoria);
   } catch (err) {
     console.error('Erro ao atualizar categoria:', err);
@@ -56,7 +55,7 @@ async function atualizar(req, res) {
 async function deletar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    await prisma.categoriaProduto.delete({ where: { id } });
+    await req.prisma.categoriaProduto.delete({ where: { id } });
     res.json({ ok: true });
   } catch (err) {
     if (err.code === 'P2003') {
@@ -70,7 +69,7 @@ async function deletar(req, res) {
 /**
  * Recebe a foto da categoria via multipart/form-data (campo "foto", ver multer
  * em routes/admin.js) e salva só o caminho relativo no banco — o arquivo em
- * si fica em /uploads/categorias, nunca como base64 no banco.
+ * si fica em /uploads/{tenantId}/categorias, nunca como base64 no banco.
  */
 async function enviarFoto(req, res) {
   try {
@@ -78,8 +77,9 @@ async function enviarFoto(req, res) {
     if (!req.file) {
       return res.status(400).json({ erro: 'Nenhum arquivo de imagem enviado' });
     }
-    const caminhoRelativo = `categorias/${req.file.filename}`;
-    const categoria = await prisma.categoriaProduto.update({ where: { id }, data: { foto: caminhoRelativo } });
+    // Prefixo com tenantId — ver mesmo comentário em produtoController.enviarFoto.
+    const caminhoRelativo = `${req.tenantId}/categorias/${req.file.filename}`;
+    const categoria = await req.prisma.categoriaProduto.update({ where: { id }, data: { foto: caminhoRelativo } });
     res.json({ foto: `/uploads/${caminhoRelativo}`, categoria });
   } catch (err) {
     console.error('Erro ao salvar foto da categoria:', err);
@@ -91,7 +91,7 @@ async function enviarFoto(req, res) {
 async function removerFoto(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    const categoria = await prisma.categoriaProduto.findUnique({ where: { id }, select: { foto: true } });
+    const categoria = await req.prisma.categoriaProduto.findFirst({ where: { id }, select: { foto: true } });
     if (!categoria) return res.status(404).json({ erro: 'Categoria não encontrada' });
 
     if (categoria.foto) {
@@ -101,7 +101,7 @@ async function removerFoto(req, res) {
       });
     }
 
-    const categoriaAtualizada = await prisma.categoriaProduto.update({ where: { id }, data: { foto: null } });
+    const categoriaAtualizada = await req.prisma.categoriaProduto.update({ where: { id }, data: { foto: null } });
     res.json({ categoria: categoriaAtualizada });
   } catch (err) {
     console.error('Erro ao remover foto da categoria:', err);

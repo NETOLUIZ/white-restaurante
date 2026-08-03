@@ -1,9 +1,7 @@
-const { prisma } = require('../utils/db');
-
 /** Lista as subcategorias, ordenadas — usado pelo Cardápio e pelo formulário de produto do Admin. */
 async function listarPublico(req, res) {
   try {
-    const subcategorias = await prisma.subcategoria.findMany({
+    const subcategorias = await req.prisma.subcategoria.findMany({
       orderBy: [{ ordem: 'asc' }, { nome: 'asc' }],
     });
     res.json(subcategorias);

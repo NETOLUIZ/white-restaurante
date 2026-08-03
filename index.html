@@ -9,6 +9,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="scripts/support.js"></script>
+<script src="scripts/tema.js"></script>
 <!-- Runtime DC/React para renderização dos componentes. -->
 </head>
 <body>
@@ -76,7 +77,7 @@
 <!-- ===================== SPLASH ===================== -->
 <sc-if value="{{ isSplash }}" hint-placeholder-val="{{ true }}">
 <div data-screen-label="Splash" onClick="{{ goHome }}" style="height:100%;background:#0A0500;cursor:pointer;overflow:hidden;">
-  <img src="assets/output.gif" alt="Galeteria Bel do Frango — O sabor que você ama" style="width:100%;height:100%;object-fit:cover;display:block;"/>
+  <img src="{{ splashSrc }}" alt="Galeteria Bel do Frango — O sabor que você ama" style="width:100%;height:100%;object-fit:cover;display:block;"/>
 </div>
 </sc-if>
 
@@ -101,7 +102,7 @@
       </button>
       <button onClick="{{ goMenu }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#1D1009;text-align:left;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2Z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
-        Cardápio
+        {{ labelCardapio }}
       </button>
       <button onClick="{{ goConta }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#1D1009;text-align:left;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
@@ -111,11 +112,11 @@
     </sc-if>
   </div>
   </sc-if>
-  <!-- Nav normal — Home e Cardápio -->
+  <!-- Nav normal — Home e Cardápio/Produtos (rótulo varia por tipo de tenant, ver labelCardapio) -->
   <sc-if value="{{ navNotHamburger }}" hint-placeholder-val="{{ true }}">
   <div style="display:flex;gap:6px;margin-left:10px;">
     <button onClick="{{ goHome }}" style="{{ topHomeStyle }}">Início</button>
-    <button onClick="{{ goMenu }}" style="{{ topMenuStyle }}">Cardápio</button>
+    <button onClick="{{ goMenu }}" style="{{ topMenuStyle }}">{{ labelCardapio }}</button>
     <button onClick="{{ goConta }}" style="{{ topContaStyle }}">Conta</button>
   </div>
   </sc-if>
@@ -158,6 +159,16 @@
     </div>
   </div>
 
+  <sc-if value="{{ mostrarAvisoFechado }}" hint-placeholder-val="{{ false }}">
+  <div style="margin:14px 18px 0;background:#FBEAE8;border:1px solid #F0B8B0;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <div>
+      <div style="font-weight:800;font-size:14px;color:#7A1209;">Loja fechada no momento</div>
+      <div style="font-size:12.5px;color:#8A1C12;">Dá pra navegar pelo cardápio, mas o pedido só é aceito dentro do horário de funcionamento.</div>
+    </div>
+  </div>
+  </sc-if>
+
   <!-- promo: carrossel com autoplay + swipe -->
   <div class="bf-promo-wrap" onTouchStart="{{ onPromoTouchStart }}" onTouchMove="{{ onPromoTouchMove }}" onTouchEnd="{{ onPromoTouchEnd }}">
     <div class="bf-promo-track" style="{{ promoTrackStyle }}">
@@ -182,7 +193,7 @@
   </div>
 
   <!-- monte sua marmita (card todo clicável; montar o pedido acontece no Cardápio) -->
-  <div onClick="{{ goMarmitasTab }}" style="margin:14px 18px 0;border-radius:24px;background:linear-gradient(120deg,#F2B705 0%,#E89A3C 100%);color:#7A1209;padding:18px 22px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+  <div data-feature="marmita" onClick="{{ goMarmitasTab }}" style="margin:14px 18px 0;border-radius:24px;background:linear-gradient(120deg,#F2B705 0%,#E89A3C 100%);color:#7A1209;padding:18px 22px;display:flex;align-items:center;gap:12px;cursor:pointer;">
     <img src="assets/marmita.webp" alt="" style="width:78px;height:78px;flex:none;object-fit:contain;"/>
     <div style="flex:1;min-width:0;">
       <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0 0 2px;">Monte sua marmita</h3>
@@ -250,7 +261,7 @@
   <div style="position:sticky;top:0;z-index:5;background:#FFF6D6;padding:calc(16px + env(safe-area-inset-top)) 18px 6px;">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
       <div style="width:40px;height:40px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
-      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;margin:0;flex:1;">Cardápio</h1>
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;margin:0;flex:1;">{{ labelCardapio }}</h1>
     </div>
     <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:15px;padding:0 14px;height:46px;margin-bottom:12px;">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -372,7 +383,7 @@
     </div>
 
     <!-- coupon -->
-    <div style="margin-top:16px;display:flex;gap:10px;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:15px;padding:4px 4px 4px 14px;">
+    <div data-feature="cupom" style="margin-top:16px;display:flex;gap:10px;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:15px;padding:4px 4px 4px 14px;">
       <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1.4" fill="#D62828"/></svg>
       <input value="{{ coupon }}" onChange="{{ onCoupon }}" placeholder="Cupom de desconto" aria-label="Cupom" style="flex:1;border:none;background:none;outline:none;font-size:14px;text-transform:uppercase;"/>
       <button onClick="{{ applyCoupon }}" style="background:#C0271A;color:#FFF3DC;border:none;border-radius:11px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Aplicar</button>
@@ -396,8 +407,8 @@
 <!-- ---------- CONTA ---------- -->
 <sc-if value="{{ isConta }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Conta" style="animation:bfSlideIn .22s cubic-bezier(.16,1,.3,1);padding:calc(16px + env(safe-area-inset-top)) 18px 24px;">
-  <div style="background:#FFF3DC;border:1px solid #F2C078;border-radius:26px;padding:26px 20px 22px;text-align:center;box-shadow:0 8px 22px rgba(29,16,9,.06);">
-    <img src="assets/logo-full.png" alt="Galeteria Bel do Frango — O sabor que você ama" style="width:min(72%,240px);display:block;margin:0 auto;"/>
+  <div style="background:#FFF3DC;border:1px solid #F2C078;border-radius:26px;padding:22px 18px;text-align:center;box-shadow:0 8px 22px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;">
+    <img src="assets/logo-full.png" alt="Galeteria Bel do Frango — O sabor que você ama" style="width:min(76%,250px);max-height:180px;display:block;margin:0 auto;mix-blend-mode:multiply;object-fit:contain;"/>
   </div>
   <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:22px 2px 4px;">Minha Conta</h1>
   <p style="margin:0 2px;color:#8C8075;font-size:14px;font-family:'DM Mono',monospace;">Bem-vindo ao Bel do Frango</p>
@@ -509,6 +520,32 @@
 </div>
 </sc-if>
 
+<!-- ===================== FLOW: BAIRRO (obrigatório após o splash, na 1ª vez) ===================== -->
+<sc-if value="{{ isBairroScreen }}" hint-placeholder-val="{{ false }}">
+<div data-screen-label="Bairro" style="height:100%;display:flex;flex-direction:column;background:#FFF6D6;animation:bfUp .24s ease-out;">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:#FFF6D6;flex:none;">
+    <sc-if value="{{ mostrarVoltarBairro }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    </sc-if>
+    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">Escolha seu bairro</h1>
+  </div>
+  <div style="flex:1;overflow-y:auto;padding:8px 18px 18px;">
+    <p style="margin:4px 2px 18px;font-size:14px;color:#8C8075;">Assim calculamos certinho a taxa de entrega até você.</p>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <sc-for list="{{ bairroOpcoes }}" as="op" hint-placeholder-count="4">
+        <button onClick="{{ op.onClick }}" style="{{ op.style }}">
+          <span>{{ op.nome }}</span>
+          <span style="font-family:'DM Mono',monospace;font-size:13px;color:#8C8075;">{{ op.taxaFmt }}</span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:#FFF6D6;border-top:1px solid rgba(29,16,9,.06);">
+    <button onClick="{{ confirmarBairro }}" disabled="{{ bairroConfirmDisabled }}" style="{{ bairroConfirmStyle }}">Confirmar</button>
+  </div>
+</div>
+</sc-if>
+
 <!-- ===================== FLOW: MONTE SUA MARMITA ===================== -->
 <sc-if value="{{ isMarmita }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Marmita" style="height:100%;display:flex;flex-direction:column;background:#FFF6D6;animation:bfUp .24s ease-out;">
@@ -575,15 +612,24 @@
       <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;margin:0 0 10px;line-height:1.12;">{{ pName }}</h1>
       <p style="margin:0;color:#C0271A;font-size:15px;line-height:1.5;">{{ pDesc }}</p>
 
-      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Quantidade</h2>
-      <div style="display:flex;align-items:center;gap:14px;">
-        <div style="display:flex;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.1);border-radius:14px;padding:5px;">
-          <button onClick="{{ decDetail }}" aria-label="Diminuir" style="width:42px;height:42px;border-radius:11px;border:none;background:#FFF3DC;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
-          <span style="font-family:'DM Mono',monospace;font-weight:500;min-width:44px;text-align:center;font-size:19px;">{{ detailQty }}</span>
-          <button onClick="{{ incDetail }}" aria-label="Aumentar" style="width:42px;height:42px;border-radius:11px;border:none;background:#D62828;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+      <sc-if value="{{ porPesoDetail }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Peso (gramas)</h2>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <input value="{{ detailQty }}" onChange="{{ onDetailGramas }}" inputmode="numeric" placeholder="Ex: 500" style="width:110px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:14px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:19px;text-align:center;outline:none;"/>
+          <span style="color:#8C8075;font-size:13px;">{{ pUnitFmt }}</span>
         </div>
-        <span style="color:#8C8075;font-size:13px;">{{ pUnitFmt }} / un.</span>
-      </div>
+      </sc-if>
+      <sc-if value="{{ naoPorPesoDetail }}" hint-placeholder-val="{{ true }}">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Quantidade</h2>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <div style="display:flex;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.1);border-radius:14px;padding:5px;">
+            <button onClick="{{ decDetail }}" aria-label="Diminuir" style="width:42px;height:42px;border-radius:11px;border:none;background:#FFF3DC;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <span style="font-family:'DM Mono',monospace;font-weight:500;min-width:44px;text-align:center;font-size:19px;">{{ detailQty }}</span>
+            <button onClick="{{ incDetail }}" aria-label="Aumentar" style="width:42px;height:42px;border-radius:11px;border:none;background:#D62828;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          </div>
+          <span style="color:#8C8075;font-size:13px;">{{ pUnitFmt }}</span>
+        </div>
+      </sc-if>
 
       <sc-if value="{{ isGaletoProduto }}" hint-placeholder-val="{{ false }}">
         <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Horário de retirada</h2>
@@ -652,7 +698,25 @@
         <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Cartão na entrega</span><span style="font-size:12px;color:#8C8075;">Crédito ou débito</span></span>
         <span style="{{ cardRadio }}"></span>
       </button>
+      <button onClick="{{ setDinheiro }}" aria-pressed="{{ dinheiroPressed }}" style="{{ dinheiroStyle }}">
+        <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#A8730B;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></span>
+        <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Dinheiro na entrega</span><span style="font-size:12px;color:#8C8075;">Pague em espécie ao entregador</span></span>
+        <span style="{{ dinheiroRadio }}"></span>
+      </button>
     </div>
+
+    <sc-if value="{{ isDinheiroSelecionado }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:10px;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+        <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Precisa de troco para quanto? (opcional)</label>
+        <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="Ex: 100,00" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;color:#1D1009;outline:none;"/>
+        <sc-if value="{{ hasTroco }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;">
+            <span style="font-weight:700;font-size:13px;color:{{ trocoColor }}">{{ trocoLabel }}</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:{{ trocoColor }}">{{ trocoFmt }}</span>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
 
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Resumo do pedido</h2>
     <div style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
@@ -736,9 +800,9 @@
   </button>
   <button onClick="{{ goMenu }}" style="{{ navMenuStyle }}">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H2z"/><path d="M22 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H22z"/></svg>
-    <span style="font-size:11px;font-weight:600;">Cardápio</span>
+    <span style="font-size:11px;font-weight:600;">{{ labelCardapio }}</span>
   </button>
-  <button onClick="{{ goCart }}" style="{{ navCartStyle }}">
+  <button id="bf-cart-target" onClick="{{ goCart }}" style="{{ navCartStyle }}">
     <span style="position:relative;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-9px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#D62828;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;">{{ cartCount }}</span></sc-if>
@@ -799,6 +863,30 @@ class Component extends DCLogic {
   apiBase = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:3010/api'
     : '/api';
+  // Dev não tem subdomínio de verdade — sem isso, index.html sempre mostra o
+  // TENANT_DEV_PADRAO do backend (belfrango), não importa qual tenant o super
+  // admin queira abrir (ver link "Abrir loja" em super.html). Só funciona em
+  // localhost e só se a URL tiver ?_tenant=slug — sem isso, comportamento
+  // idêntico a sempre foi.
+  headersExtras = (() => {
+    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return {};
+    const tenantDev = new URLSearchParams(location.search).get('_tenant');
+    return tenantDev ? { 'x-tenant-slug': tenantDev } : {};
+  })();
+
+  // A splash (assets/output.gif) é uma arte fixa com a galinha do Bel do Frango —
+  // não dá pra trocar o que tá desenhado dentro de um gif por tenant, então ela
+  // só faz sentido pro tenant original; os demais pulam direto pro fluxo normal
+  // (ver componentDidMount). Produção: primeiro label do subdomínio; dev: mesma
+  // convenção de ?_tenant= do headersExtras acima (sem o param, assume padrão).
+  ehBelDoFrango = (() => {
+    const isDevLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+    if (isDevLocal) {
+      const tenantDev = new URLSearchParams(location.search).get('_tenant');
+      return !tenantDev || tenantDev === 'belfrango';
+    }
+    return location.hostname.split('.')[0] === 'belfrango';
+  })();
 
   state = {
     screen: 'splash',
@@ -810,12 +898,14 @@ class Component extends DCLogic {
     detailObs: '',
     galetoHorarios: [], // janela de horários de retirada (só pra categoria Galetos) — vem de /api/configuracao
     horarioRetirada: null,
+    lojaAberta: true, // otimista até carregarConfiguracao() resolver — evita flash de "fechado" no primeiro paint
     coupon: '',
     couponApplied: false,
     couponMsg: '',
     couponOk: false,
     pedidoTipo: 'entrega', // 'entrega' | 'retirada' — escolhido no checkout
     payment: 'pix',
+    valorRecebido: '', // só usado quando payment === 'money', pro cálculo do troco (nunca enviado à API)
     placing: false,
     pedidoAtual: null, // { codigo, id, total } do ultimo pedido criado de verdade na API
     orderStep: 0,
@@ -868,18 +958,26 @@ class Component extends DCLogic {
     cadastroGeocoding: false,
     toast: '',
 
+    features: {}, // vem de /api/config — { marmita, mesas, entregador, empresa, cupom } (chave ausente = tratado como ativo)
+    tipoTenant: 'RESTAURANTE', // vem de /api/config — decide "Cardápio" (restaurante) vs "Produtos" (mercantil)
+    bairros: [], // vem de /api/bairros
+    bairroSelecionado: null, // { id, nome, taxaEntrega } | { outro:true } | null — bairro confirmado (persistido)
+    bairroEscolhaTemp: null, // seleção pendente na tela de escolha, antes de "Confirmar"
+    bairroReturnScreen: 'home', // pra onde ir depois de confirmar — 'home' (fluxo obrigatório do splash) ou 'conta' (trocar depois)
+
     promoIndex: 0 // slide atual do carrossel de promoções da Home
   };
 
   // ---- API pública (sem login — produtos/categorias/banners/marmita são leitura aberta) ----
   async apiGet(path){
-    const res = await fetch(this.apiBase + path);
+    const res = await fetch(this.apiBase + path, { headers: this.headersExtras });
     if (!res.ok) throw new Error('Erro ' + res.status);
     return res.json();
   }
 
   mapProduto(p){
     return { id:p.id, cat:p.categoriaId, subcat:p.subcategoriaId, name:p.nome, desc:p.descricaoCurta, price:p.preco,
+      vendidoPorPeso: !!p.vendidoPorPeso,
       rating: p.avaliacao != null ? String(p.avaliacao) : '', tag:p.tag || '', pop:p.destaque,
       adicionais: (p.adicionais || []).map((a) => ({ id:a.id, nome:a.nome, preco:a.preco })),
       foto: p.foto ? this.apiBase.replace('/api', '') + '/uploads/' + p.foto : null };
@@ -904,7 +1002,27 @@ class Component extends DCLogic {
   }
 
   async carregarTudo(){
-    await Promise.all([this.carregarCategorias(), this.carregarSubcategorias(), this.carregarProdutos(), this.carregarBanners(), this.carregarMarmitaConfig(), this.carregarConfiguracao()]);
+    await Promise.all([this.carregarCategorias(), this.carregarSubcategorias(), this.carregarProdutos(), this.carregarBanners(), this.carregarMarmitaConfig(), this.carregarConfiguracao(), this.carregarBairros(), this.carregarFeatures()]);
+    // "Marmitas" é uma categoria real (sem produtos nela — abre o construtor de marmita,
+    // ver isMarmitasTab), mas se a feature "Monte sua Marmita" estiver desligada pro
+    // tenant ela some da lista (ver menuTabs/categories); corrige aqui pra não deixar o
+    // cliente "preso" numa categoria escondida caso ela tenha virado a selecionada por
+    // padrão (carregarCategorias roda em paralelo e não sabe ainda se a feature tá ligada).
+    if (this.state.features.marmita === false) {
+      const marmitaCatId = (this.state.cats.find(c => c.label === 'Marmitas') || {}).id;
+      if (this.state.selectedCat === marmitaCatId) {
+        const outraCat = this.state.cats.find(c => c.id !== marmitaCatId);
+        this.setState({ selectedCat: outraCat ? outraCat.id : null });
+      }
+    }
+  }
+  async carregarBairros(){
+    const bairros = await this.apiGet('/bairros');
+    this.setState({ bairros });
+  }
+  async carregarFeatures(){
+    const config = await this.apiGet('/config');
+    this.setState({ features: config.features || {}, tipoTenant: (config.tenant && config.tenant.tipo) || 'RESTAURANTE' });
   }
   async carregarCategorias(){
     const categorias = await this.apiGet('/categorias');
@@ -934,7 +1052,9 @@ class Component extends DCLogic {
   async carregarConfiguracao(){
     const config = await this.apiGet('/configuracao');
     this.fee = config.taxaEntrega;
-    this.setState({ galetoHorarios: config.galetoHorarios || [] }); // fee é campo de classe — setState aqui só pra reavaliar cartTotals()
+    // abertoAgora vem calculado do servidor (ver configuracaoController.js) — nunca do
+    // relógio do navegador, pra não depender do fuso/hora do aparelho do cliente.
+    this.setState({ galetoHorarios: config.galetoHorarios || [], lojaAberta: config.abertoAgora !== false }); // fee é campo de classe — setState aqui só pra reavaliar cartTotals()
   }
 
   fee = 7.9; // padrão de fábrica até carregarConfiguracao() resolver
@@ -998,10 +1118,57 @@ class Component extends DCLogic {
     try { localStorage.setItem(this.USUARIO_STORAGE_KEY, JSON.stringify(usuario)); } catch (e) { /* localStorage indisponível (modo privado etc) — segue sem persistir */ }
   }
 
+  // Bairro escolhido pelo cliente (tela obrigatória logo após o splash) — persistido
+  // como o cadastro, só localStorage do próprio aparelho, pra não perguntar de novo.
+  BAIRRO_STORAGE_KEY = 'bf_bairro';
+  carregarBairroSalvo(){
+    try {
+      const raw = localStorage.getItem(this.BAIRRO_STORAGE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
+  salvarBairroLocal(bairro){
+    try { localStorage.setItem(this.BAIRRO_STORAGE_KEY, JSON.stringify(bairro)); } catch (e) { /* localStorage indisponível — segue sem persistir */ }
+  }
+
+  // Telas que fazem sentido reabrir depois de um F5 — "splash"/"home" ficam de
+  // fora (home já é o padrão) e "cadastro" fica de fora (formulário em
+  // andamento, os campos digitados não sobrevivem a um F5 de qualquer jeito).
+  TELAS_RESTAURAVEIS = new Set(['product', 'menu', 'marmita', 'conta', 'tracking']);
+  STORAGE_KEY = 'bf_tela_cliente';
+  restaurarTela(){
+    try {
+      const salvo = JSON.parse(sessionStorage.getItem(this.STORAGE_KEY) || 'null');
+      if (salvo && this.TELAS_RESTAURAVEIS.has(salvo.screen)) return salvo;
+    } catch (e) { /* sessionStorage corrompido ou indisponível — cai no padrão (splash) */ }
+    return null;
+  }
+
   componentDidMount() {
+    // Precisa ser setado ANTES de qualquer outro setState — senão o setState
+    // que restaura o "usuario" logo abaixo já dispara um componentDidUpdate
+    // "fantasma" (screen ainda "splash", _lastScreen nunca inicializado) que
+    // apaga o sessionStorage antes do restaurarTela() ler.
+    this._lastScreen = this.state.screen;
     const usuarioSalvo = this.carregarUsuarioSalvo();
     if (usuarioSalvo) this.setState({ usuario: usuarioSalvo });
-    this._t = setTimeout(() => { if (this.state.screen === 'splash') this.setState({ screen:'home' }); }, 2100);
+    const bairroSalvo = this.carregarBairroSalvo();
+    if (bairroSalvo) this.setState({ bairroSelecionado: bairroSalvo });
+    const telaSalva = this.restaurarTela();
+    if (telaSalva) {
+      this.setState({
+        screen: telaSalva.screen, selectedId: telaSalva.selectedId ?? null, selectedCat: telaSalva.selectedCat ?? null,
+        marmitaSizeId: telaSalva.marmitaSizeId ?? null, pedidoAtual: telaSalva.pedidoAtual ?? null,
+      });
+      if (telaSalva.screen === 'tracking' && telaSalva.pedidoAtual) this.iniciarAcompanhamento();
+    } else if (!this.ehBelDoFrango) {
+      // Outro tenant: pula a splash (arte fixa do Bel do Frango) direto pro fluxo normal.
+      this.setState({ screen: bairroSalvo ? 'home' : 'bairro' });
+    } else {
+      // Sem bairro salvo ainda, a tela obrigatória de escolha de bairro entra no
+      // lugar da Home — só uma vez por aparelho (ver BAIRRO_STORAGE_KEY acima).
+      this._t = setTimeout(() => { if (this.state.screen === 'splash') this.setState({ screen: bairroSalvo ? 'home' : 'bairro' }); }, 2100);
+    }
     this._lastScreen = this.state.screen;
     this._r = () => this.setState({ vw: window.innerWidth });
     window.addEventListener('resize', this._r);
@@ -1039,6 +1206,14 @@ class Component extends DCLogic {
     if (this.state.screen !== this._lastScreen) {
       if (this._main) this._main.scrollTop = 0;
       this._lastScreen = this.state.screen;
+      if (this.TELAS_RESTAURAVEIS.has(this.state.screen)) {
+        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify({
+          screen: this.state.screen, selectedId: this.state.selectedId, selectedCat: this.state.selectedCat,
+          marmitaSizeId: this.state.marmitaSizeId, pedidoAtual: this.state.pedidoAtual,
+        }));
+      } else {
+        sessionStorage.removeItem(this.STORAGE_KEY);
+      }
     }
     // Move o marcador do entregador ao longo da rota conforme o pedido avança (orderStep 0..3).
     if (this._trackingMap && this._trackingCourier && this._trackingRestLL && this._trackingDestLL) {
@@ -1069,7 +1244,12 @@ class Component extends DCLogic {
     if (h < 15) return 'Hora do almoço! O galeto tá na brasa';
     return 'Boa tarde! Tá com fome?';
   }
-  openProduct(id){ this.setState({ screen:'product', selectedId:id, detailQty:1, detailObs:'', horarioRetirada:null }); }
+  openProduct(id){
+    const produto = this.prod(id);
+    // Produto por peso já abre sugerindo meio quilo — o cliente ajusta digitando.
+    const detailQty = (produto && produto.vendidoPorPeso) ? 500 : 1;
+    this.setState({ screen:'product', selectedId:id, detailQty, detailObs:'', horarioRetirada:null });
+  }
   selecionarHorarioRetirada(h){ this.setState({ horarioRetirada:h }); }
 
   // ---- popup de adicionais (botão extra no card do produto) ----
@@ -1114,12 +1294,15 @@ class Component extends DCLogic {
       return { cart };
     });
   }
-  incCart(id){ this.setState(s => ({ cart: { ...s.cart, [id]: { ...s.cart[id], qty: s.cart[id].qty + 1 } } })); }
-  decCart(id){ this.setState(s => {
-    const cart = { ...s.cart }; const q = cart[id].qty - 1;
-    if (q <= 0) delete cart[id]; else cart[id] = { ...cart[id], qty:q };
-    return { cart };
-  }); }
+  incCart(id, step){ step = step || 1; this.setState(s => ({ cart: { ...s.cart, [id]: { ...s.cart[id], qty: s.cart[id].qty + step } } })); }
+  decCart(id, step){
+    step = step || 1;
+    this.setState(s => {
+      const cart = { ...s.cart }; const q = cart[id].qty - step;
+      if (q <= 0) delete cart[id]; else cart[id] = { ...cart[id], qty:q };
+      return { cart };
+    });
+  }
   removeCart(id){ this.setState(s => { const cart = { ...s.cart }; delete cart[id]; return { cart }; }); }
 
   applyCoupon(){
@@ -1137,6 +1320,9 @@ class Component extends DCLogic {
   placeOrder(){
     if (this.state.placing) return;
     const s = this.state;
+    // Aviso na hora — o backend recusa de qualquer forma (nunca confia só no client),
+    // isso só evita a viagem até o servidor pra descobrir que a loja está fechada.
+    if (!s.lojaAberta) { this.showToast('A loja está fechada no momento. Volte no horário de funcionamento.'); return; }
     const usuario = s.usuario;
     if (!usuario || !usuario.nome || !usuario.telefone) {
       this.showToast('Complete seu cadastro (nome e telefone) antes de pedir');
@@ -1162,17 +1348,19 @@ class Component extends DCLogic {
       tipo: s.pedidoTipo === 'retirada' ? 'RETIRADA' : 'ENTREGA',
       endereco: s.pedidoTipo === 'retirada' ? null : usuario.endereco,
       itens,
-      formaPagamento: s.payment === 'pix' ? 'PIX' : 'CARTAO',
+      formaPagamento: s.payment === 'pix' ? 'PIX' : s.payment === 'money' ? 'DINHEIRO' : 'CARTAO',
     };
     if (s.couponApplied && s.coupon) payload.cupomCodigo = s.coupon.trim().toUpperCase();
+    if (s.pedidoTipo !== 'retirada' && s.bairroSelecionado && !s.bairroSelecionado.outro) payload.bairroId = s.bairroSelecionado.id;
 
     this.setState({ placing:true });
-    fetch(this.apiBase + '/pedidos', { method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload) })
+    fetch(this.apiBase + '/pedidos', { method:'POST', headers:{ 'Content-Type':'application/json', ...this.headersExtras }, body: JSON.stringify(payload) })
       .then(async (res) => {
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data.erro || 'Erro ao enviar pedido');
         this.setState({
           screen:'tracking', placing:false, orderStep:0, pedidoCancelado:false, cart:{}, coupon:'', couponApplied:false, couponMsg:'',
+          valorRecebido:'',
           pedidoAtual: { codigo:data.codigoAcompanhamento, id:data.id, total:data.total },
         });
         this.iniciarAcompanhamento();
@@ -1209,6 +1397,47 @@ class Component extends DCLogic {
     this.setState({ toast:msg });
     clearTimeout(this._toast);
     this._toast = setTimeout(() => this.setState({ toast:'' }), 2400);
+  }
+
+  /**
+   * Animação "voar pro carrinho": clona a foto do produto num elemento fixo
+   * por cima da tela, anima até o ícone de Carrinho da nav inferior (#bf-cart-target)
+   * e remove. Vive em document.body, fora da árvore do componente — não mexe
+   * em nenhum estado nem re-render, só feedback visual de que o item entrou.
+   * Nunca deve travar o fluxo de adicionar ao carrinho, por isso o try/catch.
+   */
+  voarParaCarrinho(origemEl, fotoSrc){
+    try {
+      const alvo = document.getElementById('bf-cart-target');
+      if (!origemEl || !alvo) return;
+      const rOrigem = origemEl.getBoundingClientRect();
+      const rAlvo = alvo.getBoundingClientRect();
+      const tamanho = 54;
+
+      const voador = document.createElement('div');
+      voador.style.cssText = 'position:fixed;z-index:9999;border-radius:50%;overflow:hidden;pointer-events:none;'
+        + 'width:' + tamanho + 'px;height:' + tamanho + 'px;'
+        + 'left:' + (rOrigem.left + rOrigem.width / 2 - tamanho / 2) + 'px;'
+        + 'top:' + (rOrigem.top + rOrigem.height / 2 - tamanho / 2) + 'px;'
+        + 'background:#FFE9C2;box-shadow:0 8px 22px rgba(29,16,9,.3);'
+        + 'transition:transform .55s cubic-bezier(.3,.85,.4,1), opacity .55s ease .1s;';
+      if (fotoSrc) {
+        const img = document.createElement('img');
+        img.src = fotoSrc;
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;';
+        voador.appendChild(img);
+      }
+      document.body.appendChild(voador);
+
+      const dx = (rAlvo.left + rAlvo.width / 2) - (rOrigem.left + rOrigem.width / 2);
+      const dy = (rAlvo.top + rAlvo.height / 2) - (rOrigem.top + rOrigem.height / 2);
+
+      requestAnimationFrame(() => {
+        voador.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(.12)';
+        voador.style.opacity = '0.2';
+      });
+      setTimeout(() => voador.remove(), 650);
+    } catch (e) { /* cosmético — nunca deve impedir o item de ser adicionado */ }
   }
 
   // ---- cadastro (opcional) ----
@@ -1301,6 +1530,17 @@ class Component extends DCLogic {
   // ---- monte sua marmita ----
   abrirMarmita(sizeId){ this.setState({ screen:'marmita', marmitaSizeId:sizeId, marmitaSelProteinas:[], marmitaSelComplementos:[] }); }
 
+  // ---- bairro de entrega (tela obrigatória logo após o splash, na 1ª vez) ----
+  selecionarBairroTemp(bairro){ this.setState({ bairroEscolhaTemp: bairro }); }
+  /** Reabre a tela de escolha a partir de "Conta", já com o bairro atual marcado — volta pra "Conta" ao confirmar (ver bairroReturnScreen). */
+  abrirTrocarBairro(){ this.setState({ screen:'bairro', bairroEscolhaTemp: this.state.bairroSelecionado, bairroReturnScreen:'conta' }); }
+  confirmarBairro(){
+    const escolha = this.state.bairroEscolhaTemp;
+    if (!escolha) { this.showToast('Escolha um bairro para continuar'); return; }
+    this.salvarBairroLocal(escolha);
+    this.setState({ bairroSelecionado: escolha, screen: this.state.bairroReturnScreen });
+  }
+
   // Lê um texto em voz alta (Web Speech API, voz do próprio aparelho em pt-BR) —
   // acessibilidade pra quem não sabe ler escolher proteínas/complementos da marmita.
   falar(texto){
@@ -1330,7 +1570,7 @@ class Component extends DCLogic {
     });
   }
   // Marmita montada vira um "produto" sintético (id único) só pra reaproveitar carrinho/checkout/cart já existentes.
-  adicionarMarmitaAoCarrinho(){
+  adicionarMarmitaAoCarrinho(e){
     const s = this.state;
     const mc = s.marmitaConfig;
     const size = mc.marmitaSizes[s.marmitaSizeId];
@@ -1347,15 +1587,19 @@ class Component extends DCLogic {
     // o "produto" sintetico acima e so pra reaproveitar a UI de carrinho/checkout; o
     // pedido enviado ao backend usa esses ids, nunca o id sintetico "marmita-...".
     this.addToCart(id, 1, null, { tamanhoMarmitaId: s.marmitaSizeId, proteinaIds: selP.slice(), complementoIds: s.marmitaSelComplementos.slice() });
+    if (e && e.currentTarget) this.voarParaCarrinho(e.currentTarget, 'assets/marmita.webp');
     this.showToast('Marmita adicionada ao carrinho');
     this.go('cart');
   }
 
   cartTotals(){
     const lines = Object.entries(this.state.cart).map(([id, v]) => { const p = this.prod(id); return { p, v }; }).filter(x => x.p);
-    const subtotal = lines.reduce((a, x) => a + x.p.price * x.v.qty, 0);
-    const count = lines.reduce((a, x) => a + x.v.qty, 0);
-    let fee = (subtotal > 0 && this.state.pedidoTipo !== 'retirada') ? this.fee : 0;
+    const subtotal = lines.reduce((a, x) => a + (x.p.vendidoPorPeso ? (x.p.price * x.v.qty) / 1000 : x.p.price * x.v.qty), 0);
+    // Item por peso conta como 1 "item" (não as gramas) — evita um badge tipo "500" no carrinho pra 500g de um produto só.
+    const count = lines.reduce((a, x) => a + (x.p.vendidoPorPeso ? 1 : x.v.qty), 0);
+    const bairro = this.state.bairroSelecionado;
+    const taxaBairro = (bairro && !bairro.outro) ? bairro.taxaEntrega : this.fee;
+    let fee = (subtotal > 0 && this.state.pedidoTipo !== 'retirada') ? taxaBairro : 0;
     let discount = 0;
     const code = (this.state.coupon || '').trim().toUpperCase();
     if (this.state.couponApplied) {
@@ -1373,6 +1617,7 @@ class Component extends DCLogic {
     const isHome = s.screen === 'home', isMenu = s.screen === 'menu', isCart = s.screen === 'cart', isConta = s.screen === 'conta';
     const isCadastro = s.screen === 'cadastro';
     const isMarmita = s.screen === 'marmita';
+    const isBairroScreen = s.screen === 'bairro';
     const isMainTab = isHome || isMenu || isCart || isConta;
     const wide = isDesktop && (isHome || isMenu);
 
@@ -1427,27 +1672,34 @@ class Component extends DCLogic {
         descStyle = { margin:'0', fontSize:'13px', color:'#7A6C5D', lineHeight:'1.4', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' };
       }
       return {
-        id:p.id, name:p.name, desc:p.desc, rating:p.rating || '—', priceFmt:this.fmt(p.price),
+        id:p.id, name:p.name, desc:p.desc, rating:p.rating || '—', priceFmt:this.fmt(p.price) + (p.vendidoPorPeso ? '/kg' : ''),
         tag:p.tag, hasTag: !!p.tag, tileStyle, fotoTileStyle, tileLabel:'foto',
         hasFoto: !!foto, semFoto: !foto, fotoSrc: foto || '',
         cardStyle, bodyStyle, descStyle,
         onOpen:() => this.openProduct(p.id),
-        onAdd:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.addToCart(p.id, 1); this.showToast(p.name + ' adicionado ao carrinho'); },
+        // Produto por peso não dá pra "adicionar rápido" (precisa do peso) — abre o detalhe, como o próprio card.
+        onAdd: p.vendidoPorPeso
+          ? (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.openProduct(p.id); }
+          : (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.voarParaCarrinho(e.currentTarget, foto); this.addToCart(p.id, 1); this.showToast(p.name + ' adicionado ao carrinho'); },
         hasAdicionais: (p.adicionais || []).length > 0,
         onOpenAdicionais:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.abrirAdicionaisModal(p.id); }
       };
     };
 
-    const categories = s.cats.map(c => {
+    // "Marmitas" é uma categoria real (pra aparecer na lista), mas sem produtos nela — selecioná-la
+    // abre o construtor de marmita em vez de uma grade filtrada (ver isMarmitasTab abaixo).
+    // Some da lista (Home e Cardápio) quando o tenant desliga a feature "Monte sua Marmita".
+    const marmitaCatId = (s.cats.find(c => c.label === 'Marmitas') || {}).id;
+    const marmitaAtiva = s.features.marmita !== false;
+    const labelCardapio = s.tipoTenant === 'MERCANTIL' ? 'Produtos' : 'Cardápio';
+    const catsVisiveis = marmitaAtiva ? s.cats : s.cats.filter(c => c.id !== marmitaCatId);
+    const categories = catsVisiveis.map(c => {
       return {
         id:c.id, label:c.label,
         hasFoto: !!c.foto, semFoto: !c.foto, fotoSrc: c.foto || '',
         onClick:() => this.setState({ screen:'menu', selectedCat:c.id, search:'' })
       };
     });
-    // "Marmitas" é uma categoria real (pra aparecer na lista), mas sem produtos nela — selecioná-la
-    // abre o construtor de marmita em vez de uma grade filtrada (ver isMarmitasTab abaixo).
-    const marmitaCatId = (s.cats.find(c => c.label === 'Marmitas') || {}).id;
 
     // ---- carrossel de promoções (Home) ----
     const banners = s.banners;
@@ -1466,7 +1718,7 @@ class Component extends DCLogic {
       onClick:() => this.goToPromo(i)
     }));
 
-    const menuTabs = s.cats.map(c => {
+    const menuTabs = catsVisiveis.map(c => {
       const active = s.selectedCat === c.id && !s.search;
       return {
         label:c.label,
@@ -1499,7 +1751,10 @@ class Component extends DCLogic {
 
     // ---- monte sua marmita: cards de tamanho (Cardápio) + opções da tela de montagem ----
     const mc = s.marmitaConfig;
-    const isMarmitasTab = s.selectedCat === marmitaCatId && !q;
+    // marmitaCatId != null evita que um catálogo ainda vazio (selectedCat e marmitaCatId
+    // ambos undefined) caia aqui por acidente (undefined === undefined) — só entra na
+    // aba de montar marmita quando a categoria "Marmitas" realmente existe.
+    const isMarmitasTab = marmitaCatId != null && s.selectedCat === marmitaCatId && !q && marmitaAtiva;
     const marmitaSizeDefault = (id) => ({ nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas:1, price:0 });
     const marmitaSizeCards = ['pequena','grande'].map(id => {
       const sz = mc.marmitaSizes[id] || marmitaSizeDefault(id);
@@ -1529,7 +1784,7 @@ class Component extends DCLogic {
     });
 
     const sp = this.prod(s.selectedId) || s.products[0] || { id:null, cat:null, name:'', desc:'', price:0, rating:'', tag:'', foto:null };
-    const detailTotal = sp.price * s.detailQty;
+    const detailTotal = sp.vendidoPorPeso ? (sp.price * s.detailQty) / 1000 : sp.price * s.detailQty;
     const spFoto = sp.foto;
 
     // Horário de retirada — só pra categoria Galetos (janela definida pelo admin em /api/configuracao).
@@ -1545,12 +1800,13 @@ class Component extends DCLogic {
     const cartLines = T.lines.map(({ p, v }) => {
       const foto = p.foto;
       const isMarmitaCustom = String(p.id).indexOf('marmita-') === 0 || String(p.id).indexOf('-ad-') !== -1;
+      const lineTotal = p.vendidoPorPeso ? (p.price * v.qty) / 1000 : p.price * v.qty;
       return {
-        id:p.id, name:p.name, qty:v.qty, obs:v.obs, hasObs: !!(v.obs && v.obs.length),
+        id:p.id, name:p.name, qty: p.vendidoPorPeso ? (v.qty + 'g') : v.qty, obs:v.obs, hasObs: !!(v.obs && v.obs.length),
         isMarmitaCustom, marmitaDesc: isMarmitaCustom ? p.desc : '',
-        lineFmt:this.fmt(p.price * v.qty), tileStyle:{ ...this.tile(), width:'62px', height:'62px', borderRadius:'13px' },
+        lineFmt:this.fmt(lineTotal), tileStyle:{ ...this.tile(), width:'62px', height:'62px', borderRadius:'13px' },
         hasFoto: !!foto, semFoto: !foto, fotoSrc: foto || '', fotoTileStyle:{ width:'62px', height:'62px', borderRadius:'13px', flex:'none', overflow:'hidden' },
-        onInc:() => this.incCart(p.id), onDec:() => this.decCart(p.id), onRemove:() => this.removeCart(p.id)
+        onInc:() => this.incCart(p.id, p.vendidoPorPeso ? 100 : 1), onDec:() => this.decCart(p.id, p.vendidoPorPeso ? 100 : 1), onRemove:() => this.removeCart(p.id)
       };
     });
 
@@ -1614,12 +1870,39 @@ class Component extends DCLogic {
 
     const ce = React.createElement;
     const ic = (ch) => ce('svg', { width:20, height:20, viewBox:'0 0 24 24', fill:'none', stroke:'currentColor', strokeWidth:2, strokeLinecap:'round', strokeLinejoin:'round' }, ch);
+    const bairroLabel = s.bairroSelecionado ? (s.bairroSelecionado.outro ? 'Trocar bairro — Outro' : 'Trocar bairro — ' + s.bairroSelecionado.nome) : 'Escolher bairro';
     const contaRows = [
       { label:'Meus pedidos', icon: ic([ce('path',{key:1,d:'M8 2h8a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2Z'}), ce('line',{key:2,x1:9,y1:8,x2:15,y2:8}), ce('line',{key:3,x1:9,y1:12,x2:15,y2:12})]) },
-      { label:'Endereços', icon: ic([ce('path',{key:1,d:'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z'}), ce('circle',{key:2,cx:12,cy:10,r:3})]) },
+      { label: bairroLabel, icon: ic([ce('path',{key:1,d:'M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z'}), ce('circle',{key:2,cx:12,cy:10,r:3})]), onClick:() => this.abrirTrocarBairro() },
       { label:'Formas de pagamento', icon: ic([ce('rect',{key:1,x:2,y:5,width:20,height:14,rx:2}), ce('line',{key:2,x1:2,y1:10,x2:22,y2:10})]) },
       { label:'Sobre a galeteria', icon: ic([ce('circle',{key:1,cx:12,cy:12,r:10}), ce('path',{key:2,d:'M12 16v-4'}), ce('path',{key:3,d:'M12 8h.01'})]) }
-    ].map(r => ({ label:r.label, icon:r.icon, onClick:() => {} }));
+    ].map(r => ({ label:r.label, icon:r.icon, onClick: r.onClick || (() => {}) }));
+
+    // ---- tela de escolha de bairro (obrigatória após o splash, na 1ª vez) ----
+    const bairroOptStyle = (selecionado) => ({
+      display:'flex', alignItems:'center', justifyContent:'space-between', gap:'10px', width:'100%', textAlign:'left',
+      border: selecionado ? '2px solid #D62828' : '1px solid rgba(29,16,9,.1)',
+      background:'#fff', borderRadius:'13px', padding:'14px 15px',
+      cursor:'pointer', fontWeight:700, fontSize:'15px', color:'#1D1009'
+    });
+    const escolhaBairro = s.bairroEscolhaTemp;
+    const bairroOpcoes = s.bairros.filter(b => b.ativo).map(b => {
+      const selecionado = !!(escolhaBairro && !escolhaBairro.outro && escolhaBairro.id === b.id);
+      return { nome:b.nome, taxaFmt:this.fmt(b.taxaEntrega), style:bairroOptStyle(selecionado),
+        onClick:() => this.selecionarBairroTemp({ id:b.id, nome:b.nome, taxaEntrega:b.taxaEntrega }) };
+    }).concat([{
+      nome:'Outro bairro', taxaFmt:this.fmt(this.fee),
+      style:bairroOptStyle(!!(escolhaBairro && escolhaBairro.outro)),
+      onClick:() => this.selecionarBairroTemp({ outro:true })
+    }]);
+    const mostrarVoltarBairro = s.bairroReturnScreen === 'conta';
+    const bairroConfirmDisabled = !escolhaBairro;
+    const bairroConfirmStyle = {
+      width:'100%', border:'none', borderRadius:'16px', padding:'16px', fontWeight:700, fontSize:'16px',
+      color:'#fff', background: bairroConfirmDisabled ? '#C9BBA6' : '#2D9E60',
+      cursor: bairroConfirmDisabled ? 'not-allowed' : 'pointer',
+      boxShadow: bairroConfirmDisabled ? 'none' : '0 10px 24px rgba(45,158,96,.3)'
+    };
 
     const pageWrap = wide
       ? { maxWidth:'1400px', margin:'0 auto', width:'100%' }
@@ -1627,11 +1910,16 @@ class Component extends DCLogic {
 
     return {
       rootStyle, shellStyle, gridStyle, pageWrap, categoriesRowStyle,
-      isSplash: s.screen === 'splash', isHome, isMenu, isCart, isConta, isMainTab,
+      isSplash: s.screen === 'splash', splashSrc: localStorage.getItem('bf_custom_splash') || 'assets/output.gif', isHome, isMenu, isCart, isConta, isMainTab,
       isProduct: s.screen === 'product', isCheckout: s.screen === 'checkout', isTracking: s.screen === 'tracking', isCadastro, isMarmita,
+      isBairroScreen,
       showTop: isDesktop && isMainTab, showBottom: !isDesktop && isMainTab,
 
+      bairroOpcoes, mostrarVoltarBairro, bairroConfirmDisabled, bairroConfirmStyle,
+      confirmarBairro:() => this.confirmarBairro(),
+
       saudacao: this.saudacao(),
+      mostrarAvisoFechado: !s.lojaAberta,
       navIsHamburger: isDesktop && isCart,
       navNotHamburger: !(isDesktop && isCart),
       hamburgerOpen: s.hamburgerOpen,
@@ -1687,7 +1975,7 @@ class Component extends DCLogic {
       search:s.search, hasSearch: !!s.search,
       onSearch:(e) => this.setState({ search:e.target.value }),
 
-      categories, menuTabs, menuList, homeFeatured,
+      categories, menuTabs, menuList, homeFeatured, labelCardapio,
       menuEmpty: menuList.length === 0 && !isMarmitasTab,
       isMarmitasTab, showMenuGrid: !isMarmitasTab, marmitaSizeCards,
       subcatTabs, hasSubcats: hasSubcats && !isMarmitasTab && !q,
@@ -1697,7 +1985,7 @@ class Component extends DCLogic {
       marmitaProteinaOptions, marmitaComplementoOptions,
       onFalarTituloProteinas:() => this.falar('Escolha ' + (marmitaSize.proteinas === 1 ? '1 proteína' : marmitaSize.proteinas + ' proteínas')),
       onFalarTituloComplementos:() => this.falar('Complementos. Escolha quantos quiser'),
-      adicionarMarmitaAoCarrinho:() => this.adicionarMarmitaAoCarrinho(),
+      adicionarMarmitaAoCarrinho:(e) => this.adicionarMarmitaAoCarrinho(e),
 
       cartLines, hasCart: T.count > 0, isCartEmpty: T.count === 0, cartCount: T.count,
       subtotalFmt:this.fmt(T.subtotal), feeFmt: T.fee === 0 ? 'Grátis' : this.fmt(T.fee),
@@ -1709,29 +1997,40 @@ class Component extends DCLogic {
       couponMsgStyle:{ margin:'8px 2px 0', fontSize:'13px', fontWeight:600, color: s.couponOk ? '#2D9E60' : '#C0392B' },
 
       pName:sp.name, pDesc:sp.desc, pCat:(s.cats.find(c => c.id === sp.cat) || {}).label || '',
-      pRating:sp.rating || '—', pUnitFmt:this.fmt(sp.price),
+      pRating:sp.rating || '—', pUnitFmt: this.fmt(sp.price) + (sp.vendidoPorPeso ? ' / kg' : ' / un.'),
       pHasFoto: !!spFoto, pSemFoto: !spFoto, pFotoSrc: spFoto || '',
       detailQty:s.detailQty, detailObs:s.detailObs, detailTotalFmt:this.fmt(detailTotal),
+      porPesoDetail: !!sp.vendidoPorPeso, naoPorPesoDetail: !sp.vendidoPorPeso,
       heroStyle:{ position:'relative', height:'260px', background:'linear-gradient(135deg,#FFE9C2 0%,#F2C078 60%,#E89A3C 120%)', display:'flex', alignItems:'flex-end', justifyContent:'center', paddingBottom:'18px' },
       incDetail:() => this.setState(st => ({ detailQty: st.detailQty + 1 })),
       decDetail:() => this.setState(st => ({ detailQty: Math.max(1, st.detailQty - 1) })),
+      onDetailGramas:(e) => { const g = parseInt(String(e.target.value).replace(/\D/g,''), 10); this.setState({ detailQty: g > 0 ? g : 0 }); },
       onObs:(e) => this.setState({ detailObs:e.target.value }),
       isGaletoProduto, horarioOptions, hasHorarioRetirada: !!s.horarioRetirada,
-      addDetail:() => {
+      addDetail:(e) => {
+        if (sp.vendidoPorPeso && !(s.detailQty > 0)) { this.showToast('Informe o peso desejado'); return; }
         if (isGaletoProduto && !s.horarioRetirada) { this.showToast('Escolha um horário de retirada'); return; }
         const obsComHorario = (isGaletoProduto && s.horarioRetirada)
           ? 'Retirar às ' + s.horarioRetirada + (s.detailObs ? ' — ' + s.detailObs : '')
           : s.detailObs;
+        this.voarParaCarrinho(e.currentTarget, spFoto);
         this.addToCart(sp.id, s.detailQty, obsComHorario);
         this.go('cart');
       },
       toggleFav:() => this.setState(st => ({ fav: { ...st.fav, [sp.id]: !st.fav[sp.id] } })),
       favFill: s.fav[sp.id] ? '#D62828' : 'none',
 
-      pixStyle:payBtn(s.payment === 'pix'), cardStyle:payBtn(s.payment === 'card'),
-      pixPressed: s.payment === 'pix', cardPressed: s.payment === 'card',
-      pixRadio:radio(s.payment === 'pix'), cardRadio:radio(s.payment === 'card'),
+      pixStyle:payBtn(s.payment === 'pix'), cardStyle:payBtn(s.payment === 'card'), dinheiroStyle:payBtn(s.payment === 'money'),
+      pixPressed: s.payment === 'pix', cardPressed: s.payment === 'card', dinheiroPressed: s.payment === 'money',
+      pixRadio:radio(s.payment === 'pix'), cardRadio:radio(s.payment === 'card'), dinheiroRadio:radio(s.payment === 'money'),
       setPix:() => this.setState({ payment:'pix' }), setCard:() => this.setState({ payment:'card' }),
+      setDinheiro:() => this.setState({ payment:'money' }),
+      isDinheiroSelecionado: s.payment === 'money',
+      valorRecebido: s.valorRecebido, onValorRecebido:(e) => this.setState({ valorRecebido: e.target.value }),
+      hasTroco: s.payment === 'money' && parseFloat(String(s.valorRecebido).replace(',', '.')) > 0,
+      trocoLabel: (parseFloat(String(s.valorRecebido).replace(',', '.')) || 0) - T.total < 0 ? 'Falta' : 'Troco',
+      trocoFmt: this.fmt(Math.abs((parseFloat(String(s.valorRecebido).replace(',', '.')) || 0) - T.total)),
+      trocoColor: (parseFloat(String(s.valorRecebido).replace(',', '.')) || 0) - T.total < 0 ? '#C0392B' : '#2D9E60',
       placeOrder:() => this.placeOrder(), placing:s.placing,
       confirmLabel: s.placing ? 'Enviando pedido...' : (s.pedidoTipo === 'retirada' ? 'Pedir agora — retirar em ~20 min' : 'Pedir agora — chega em ~40 min'),
 

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Entregas — Bel do Frango</title>
 <script src="scripts/support.js"></script>
+<script src="scripts/tema.js"></script>
 </head>
 <body>
 <x-dc>
@@ -196,13 +197,39 @@ class Component extends DCLogic {
   apiGet(path){ return this.apiCall(path, { method:'GET' }); }
   apiSend(method, path, body){ return this.apiCall(path, { method, headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) }); }
 
+  // Telas que fazem sentido reabrir depois de um F5 — login/loading nunca entram aqui.
+  TELAS_RESTAURAVEIS = new Set(['pedidos', 'senha']);
+  STORAGE_KEY = 'bf_tela_entregador';
+  restaurarTela(){
+    try {
+      const salvo = JSON.parse(sessionStorage.getItem(this.STORAGE_KEY) || 'null');
+      if (salvo && this.TELAS_RESTAURAVEIS.has(salvo.screen)) return salvo.screen;
+    } catch (e) { /* sessionStorage corrompido ou indisponível — cai no padrão */ }
+    return null;
+  }
+
   async componentDidMount(){
+    // Precisa ser setado ANTES de qualquer outro setState (ex: o que guarda o
+    // "entregador" logo abaixo) — senão esse outro setState já dispara um
+    // componentDidUpdate "fantasma" (screen ainda no padrão, _lastScreen
+    // nunca inicializado) que apaga o sessionStorage antes do restaurarTela() ler.
+    this._lastScreen = this.state.screen;
     try {
       const { entregador } = await this.apiGet('/entregador/me');
-      this.setState({ entregador, screen:'pedidos' });
+      this.setState({ entregador, screen: this.restaurarTela() || 'pedidos' });
       await this.carregarPedidos();
     } catch (e) {
       this.setState({ screen:'login' });
+    }
+  }
+  componentDidUpdate(){
+    if (this.state.screen !== this._lastScreen) {
+      this._lastScreen = this.state.screen;
+      if (this.TELAS_RESTAURAVEIS.has(this.state.screen)) {
+        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify({ screen: this.state.screen }));
+      } else {
+        sessionStorage.removeItem(this.STORAGE_KEY);
+      }
     }
   }
 
@@ -227,6 +254,7 @@ class Component extends DCLogic {
   }
   async logout(){
     try { await this.apiSend('POST', '/entregador/logout', {}); } catch (e) { /* mesmo se falhar, limpa a sessão local */ }
+    sessionStorage.removeItem(this.STORAGE_KEY);
     this.setState({ entregador:null, pedidos:[], screen:'login' });
   }
 

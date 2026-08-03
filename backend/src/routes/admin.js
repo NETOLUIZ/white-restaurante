@@ -1,6 +1,7 @@
 const express = require('express');
 const { autenticarAdmin } = require('../middleware/auth');
-const { uploadFoto, uploadFotoBanner, uploadFotoCategoria } = require('../utils/upload');
+const { uploadFoto, uploadFotoBanner, uploadFotoCategoria, uploadPlanilha } = require('../utils/upload');
+const { converterWebp } = require('../middleware/converterWebp');
 const categoriaController = require('../controllers/categoriaController');
 const produtoController = require('../controllers/produtoController');
 const cupomController = require('../controllers/cupomController');
@@ -8,11 +9,13 @@ const pedidoController = require('../controllers/pedidoController');
 const bannerController = require('../controllers/bannerController');
 const proteinaController = require('../controllers/proteinaController');
 const complementoController = require('../controllers/complementoController');
+const bairroController = require('../controllers/bairroController');
 const adicionalController = require('../controllers/adicionalController');
 const marmitaTamanhoController = require('../controllers/marmitaTamanhoController');
 const entregadorController = require('../controllers/entregadorController');
 const garcomAdminController = require('../controllers/garcomAdminController');
 const atendenteAdminController = require('../controllers/atendenteAdminController');
+const empresaAdminController = require('../controllers/empresaAdminController');
 const caixaController = require('../controllers/caixaController');
 const configuracaoController = require('../controllers/configuracaoController');
 const mesaController = require('../controllers/mesaController');
@@ -24,18 +27,28 @@ const mesaController = require('../controllers/mesaController');
 const router = express.Router();
 router.use(autenticarAdmin);
 
+/** "Empresas" (clientes corporativos, pedido em lote) só faz sentido pra tenant tipo RESTAURANTE. */
+function exigirRestaurante(req, res, next) {
+  if (req.tenant.tipo !== 'RESTAURANTE') {
+    return res.status(403).json({ erro: 'Recurso disponível só para tenants do tipo restaurante' });
+  }
+  next();
+}
+
 router.get('/categorias', categoriaController.listarPublico);
 router.post('/categorias', categoriaController.criar);
 router.put('/categorias/:id', categoriaController.atualizar);
 router.delete('/categorias/:id', categoriaController.deletar);
-router.post('/categorias/:id/foto', uploadFotoCategoria.single('foto'), categoriaController.enviarFoto);
+router.post('/categorias/:id/foto', uploadFotoCategoria.single('foto'), converterWebp, categoriaController.enviarFoto);
 router.delete('/categorias/:id/foto', categoriaController.removerFoto);
 
 router.get('/produtos', produtoController.listarAdmin);
+router.get('/produtos/import/modelo', produtoController.baixarModeloImportacao);
+router.post('/produtos/import', uploadPlanilha.single('arquivo'), produtoController.importarProdutos);
 router.post('/produtos', produtoController.criar);
 router.put('/produtos/:id', produtoController.atualizar);
 router.delete('/produtos/:id', produtoController.deletar);
-router.post('/produtos/:id/foto', uploadFoto.single('foto'), produtoController.enviarFoto);
+router.post('/produtos/:id/foto', uploadFoto.single('foto'), converterWebp, produtoController.enviarFoto);
 router.delete('/produtos/:id/foto', produtoController.removerFoto);
 router.put('/produtos/:id/estoque', produtoController.ajustarEstoque);
 router.post('/produtos/:produtoId/adicionais', adicionalController.criar);
@@ -52,7 +65,7 @@ router.get('/banners', bannerController.listarAdmin);
 router.post('/banners', bannerController.criar);
 router.put('/banners/:id', bannerController.atualizar);
 router.delete('/banners/:id', bannerController.deletar);
-router.post('/banners/:id/foto', uploadFotoBanner.single('foto'), bannerController.enviarFoto);
+router.post('/banners/:id/foto', uploadFotoBanner.single('foto'), converterWebp, bannerController.enviarFoto);
 router.delete('/banners/:id/foto', bannerController.removerFoto);
 
 router.get('/proteinas', proteinaController.listarAdmin);
@@ -64,6 +77,11 @@ router.get('/complementos', complementoController.listarAdmin);
 router.post('/complementos', complementoController.criar);
 router.put('/complementos/:id', complementoController.atualizar);
 router.delete('/complementos/:id', complementoController.deletar);
+
+router.get('/bairros', bairroController.listarAdmin);
+router.post('/bairros', bairroController.criar);
+router.put('/bairros/:id', bairroController.atualizar);
+router.delete('/bairros/:id', bairroController.deletar);
 
 router.put('/marmita-tamanhos/:id', marmitaTamanhoController.atualizar);
 
@@ -81,6 +99,12 @@ router.put('/garcons/:id', garcomAdminController.atualizar);
 router.get('/atendentes', atendenteAdminController.listarAdmin);
 router.post('/atendentes', atendenteAdminController.criar);
 router.put('/atendentes/:id', atendenteAdminController.atualizar);
+
+router.get('/empresas', exigirRestaurante, empresaAdminController.listarAdmin);
+router.post('/empresas', exigirRestaurante, empresaAdminController.criar);
+router.put('/empresas/:id', exigirRestaurante, empresaAdminController.atualizar);
+router.post('/empresas/:id/pedidos', exigirRestaurante, empresaAdminController.criarPedidoAdmin);
+router.delete('/empresas/:id/funcionarios/:funcId', exigirRestaurante, empresaAdminController.removerFuncionario);
 
 const { atribuirEntregador } = require('../controllers/pedidoController');
 router.put('/pedidos/:id/entregador', atribuirEntregador);

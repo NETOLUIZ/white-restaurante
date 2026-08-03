@@ -1,9 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { prisma } = require('../utils/db');
 const { verificarBloqueio, registrarFalha, limparFalhas } = require('../utils/loginThrottle');
 
-const NOME_COOKIE = 'bel_do_frango_atu_garcom_token';
+const NOME_COOKIE = 'ba_garcom_token';
 const COOKIE_MAX_IDADE_MS = 12 * 60 * 60 * 1000; // 12h, mesma duracao do token
 
 /** Opcoes do cookie do token de garçom — httpOnly, igual ao padrão usado pro admin. */
@@ -29,7 +28,7 @@ async function login(req, res) {
       return res.status(429).json({ erro: `Muitas tentativas para esta conta. Tente novamente em ${segundosRestantes}s.` });
     }
 
-    const garcom = await prisma.garcom.findUnique({ where: { email: String(email).trim().toLowerCase() } });
+    const garcom = await req.prisma.garcom.findFirst({ where: { email: String(email).trim().toLowerCase() } });
     if (!garcom || !garcom.ativo) {
       registrarFalha(email);
       return res.status(401).json({ erro: 'Email ou senha incorretos' });
@@ -42,7 +41,7 @@ async function login(req, res) {
     }
     limparFalhas(email);
 
-    const token = jwt.sign({ id: garcom.id, email: garcom.email }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ id: garcom.id, email: garcom.email, tenantId: req.tenantId }, process.env.JWT_SECRET, {
       expiresIn: '12h',
     });
 
@@ -61,7 +60,7 @@ function logout(req, res) {
 
 /** Confirma se a sessão do garçom (cookie) ainda é válida — usado pela tela ao carregar. */
 async function me(req, res) {
-  const garcom = await prisma.garcom.findUnique({ where: { id: req.garcom.id } });
+  const garcom = await req.prisma.garcom.findFirst({ where: { id: req.garcom.id } });
   if (!garcom || !garcom.ativo) {
     return res.status(401).json({ erro: 'Sessao invalida' });
   }
@@ -79,14 +78,14 @@ async function alterarSenha(req, res) {
       return res.status(400).json({ erro: 'A nova senha precisa de ao menos 6 caracteres' });
     }
 
-    const garcom = await prisma.garcom.findUnique({ where: { id: req.garcom.id } });
+    const garcom = await req.prisma.garcom.findFirst({ where: { id: req.garcom.id } });
     const senhaValida = await bcrypt.compare(senhaAtual, garcom.senha);
     if (!senhaValida) {
       return res.status(401).json({ erro: 'Senha atual incorreta' });
     }
 
     const senhaHash = await bcrypt.hash(String(novaSenha), 12);
-    await prisma.garcom.update({ where: { id: garcom.id }, data: { senha: senhaHash, senhaAlteradaEm: new Date() } });
+    await req.prisma.garcom.update({ where: { id: garcom.id }, data: { senha: senhaHash, senhaAlteradaEm: new Date() } });
     res.json({ ok: true });
   } catch (err) {
     console.error('Erro ao trocar senha do garçom:', err);

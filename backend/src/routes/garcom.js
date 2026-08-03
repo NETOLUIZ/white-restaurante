@@ -1,5 +1,6 @@
 const express = require('express');
 const { autenticarGarcom } = require('../middleware/auth');
+const { exigirFeature } = require('../middleware/exigirFeature');
 const garcomAuthController = require('../controllers/garcomAuthController');
 const mesaController = require('../controllers/mesaController');
 
@@ -11,6 +12,8 @@ const mesaController = require('../controllers/mesaController');
  * com o admin/caixa.
  */
 const router = express.Router();
+
+router.use(exigirFeature('mesas'));
 
 router.post('/login', garcomAuthController.login);
 router.post('/logout', garcomAuthController.logout);

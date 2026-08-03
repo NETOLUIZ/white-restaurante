@@ -1,9 +1,7 @@
-const { prisma } = require('../utils/db');
-
 /** Lista complementos ativos — usado pela tela "Monte sua marmita". */
 async function listarPublico(req, res) {
   try {
-    const complementos = await prisma.complemento.findMany({ where: { ativo: true }, orderBy: { nome: 'asc' } });
+    const complementos = await req.prisma.complemento.findMany({ where: { ativo: true }, orderBy: { nome: 'asc' } });
     res.json(complementos);
   } catch (err) {
     console.error('Erro ao listar complementos:', err);
@@ -14,7 +12,7 @@ async function listarPublico(req, res) {
 /** Lista todos os complementos (inclusive inativos) — painel admin. */
 async function listarAdmin(req, res) {
   try {
-    const complementos = await prisma.complemento.findMany({ orderBy: { nome: 'asc' } });
+    const complementos = await req.prisma.complemento.findMany({ orderBy: { nome: 'asc' } });
     res.json(complementos);
   } catch (err) {
     console.error('Erro ao listar complementos (admin):', err);
@@ -29,7 +27,7 @@ async function criar(req, res) {
     if (!nome || !String(nome).trim()) {
       return res.status(400).json({ erro: 'Informe o nome do complemento' });
     }
-    const complemento = await prisma.complemento.create({ data: { nome: String(nome).trim() } });
+    const complemento = await req.prisma.complemento.create({ data: { nome: String(nome).trim() } });
     res.status(201).json(complemento);
   } catch (err) {
     console.error('Erro ao criar complemento:', err);
@@ -46,7 +44,7 @@ async function atualizar(req, res) {
     if (nome !== undefined) data.nome = String(nome).trim();
     if (ativo !== undefined) data.ativo = Boolean(ativo);
     if (esgotado !== undefined) data.esgotado = Boolean(esgotado);
-    const complemento = await prisma.complemento.update({ where: { id }, data });
+    const complemento = await req.prisma.complemento.update({ where: { id }, data });
     res.json(complemento);
   } catch (err) {
     console.error('Erro ao atualizar complemento:', err);
@@ -58,7 +56,7 @@ async function atualizar(req, res) {
 async function deletar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    await prisma.complemento.delete({ where: { id } });
+    await req.prisma.complemento.delete({ where: { id } });
     res.json({ ok: true });
   } catch (err) {
     if (err.code === 'P2003') {

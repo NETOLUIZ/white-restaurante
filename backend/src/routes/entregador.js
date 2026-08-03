@@ -1,5 +1,6 @@
 const express = require('express');
 const { autenticarEntregador } = require('../middleware/auth');
+const { exigirFeature } = require('../middleware/exigirFeature');
 const entregadorAuthController = require('../controllers/entregadorAuthController');
 const entregadorController = require('../controllers/entregadorController');
 
@@ -8,6 +9,8 @@ const entregadorController = require('../controllers/entregadorController');
  * restrito às entregas atribuídas a ele. Sem acesso a /api/admin/* nem /api/garcom/*.
  */
 const router = express.Router();
+
+router.use(exigirFeature('entregador'));
 
 router.post('/login', entregadorAuthController.login);
 router.post('/logout', entregadorAuthController.logout);

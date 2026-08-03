@@ -1,5 +1,3 @@
-const { prisma } = require('../utils/db');
-
 /**
  * Retorna o caixa atualmente aberto (fechadoEm = null), ou { aberto: false }
  * se não houver nenhum. Usado pelo painel admin para saber o estado do caixa
@@ -7,7 +5,7 @@ const { prisma } = require('../utils/db');
  */
 async function status(req, res) {
   try {
-    const caixa = await prisma.caixa.findFirst({
+    const caixa = await req.prisma.caixa.findFirst({
       where: { fechadoEm: null },
       orderBy: { abertoEm: 'desc' },
     });
@@ -30,13 +28,13 @@ async function status(req, res) {
 async function abrir(req, res) {
   try {
     // Garante que não há outro caixa aberto
-    const jaAberto = await prisma.caixa.findFirst({ where: { fechadoEm: null } });
+    const jaAberto = await req.prisma.caixa.findFirst({ where: { fechadoEm: null } });
     if (jaAberto) {
       return res.status(409).json({ erro: 'Já existe um caixa aberto — feche-o antes de abrir um novo' });
     }
 
     const valorInicial = Number(req.body.valorInicial) || 0;
-    const caixa = await prisma.caixa.create({ data: { valorInicial } });
+    const caixa = await req.prisma.caixa.create({ data: { valorInicial } });
     res.status(201).json(caixa);
   } catch (err) {
     console.error('Erro ao abrir caixa:', err);
@@ -52,7 +50,7 @@ async function abrir(req, res) {
  */
 async function fechar(req, res) {
   try {
-    const caixa = await prisma.caixa.findFirst({
+    const caixa = await req.prisma.caixa.findFirst({
       where: { fechadoEm: null },
       orderBy: { abertoEm: 'desc' },
     });
@@ -63,7 +61,7 @@ async function fechar(req, res) {
     const fechadoEm = new Date();
 
     // Soma os totais dos pedidos ENTREGUE criados durante o período do caixa
-    const pedidosEntregues = await prisma.pedido.findMany({
+    const pedidosEntregues = await req.prisma.pedido.findMany({
       where: {
         statusEntrega: 'ENTREGUE',
         createdAt: { gte: caixa.abertoEm, lte: fechadoEm },
@@ -73,7 +71,7 @@ async function fechar(req, res) {
 
     const totalVendas = pedidosEntregues.reduce((soma, p) => soma + p.total, 0);
 
-    const caixaFechado = await prisma.caixa.update({
+    const caixaFechado = await req.prisma.caixa.update({
       where: { id: caixa.id },
       data: {
         fechadoEm,

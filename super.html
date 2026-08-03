@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Super Admin — Plataforma</title>
+<script src="scripts/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#1D1009;background:#F6F1E7;}
+  input,button,select{font-family:inherit;}
+  input[type="color"]{padding:2px;height:42px;cursor:pointer;}
+  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #D97706;outline-offset:2px;}
+  button{-webkit-tap-highlight-color:transparent;transition:transform .12s ease;}
+  button:active{transform:scale(.97);}
+  @keyframes suIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes suRing{to{transform:rotate(360deg);}}
+  @media (max-width:820px){
+    .su-sidebar{position:fixed;top:0;left:0;bottom:0;z-index:55;transform:translateX(-100%);transition:transform .2s ease;}
+    .su-sidebar.open{transform:translateX(0);}
+    .su-hamburger{display:flex!important;}
+  }
+</style>
+</helmet>
+
+<!-- ===================== LOADING ===================== -->
+<sc-if value="{{ isLoading }}" hint-placeholder-val="{{ true }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#23130B;">
+  <span style="width:34px;height:34px;border:3px solid rgba(217,119,6,.25);border-top-color:#D97706;border-radius:50%;animation:suRing .7s linear infinite;"></span>
+</div>
+</sc-if>
+
+<!-- ===================== LOGIN ===================== -->
+<sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(120% 90% at 50% 0%, #6B2E12 0%, #23130B 70%);padding:24px;">
+  <div style="width:100%;max-width:380px;background:#FFFBF3;border-radius:24px;padding:32px 28px;box-shadow:0 30px 70px rgba(0,0,0,.4);animation:suIn .3s ease-out;">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:24px;">
+      <div style="width:56px;height:56px;"><img src="assets/logo tranparente.png" alt="Plataforma" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;color:#1D1009;">Super Admin</div>
+      <div style="font-size:13px;color:#8C8075;">Painel do dono da plataforma</div>
+    </div>
+    <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">E-mail</label>
+    <input value="{{ loginEmail }}" onChange="{{ onLoginEmail }}" placeholder="super@beldofrango.com" style="{{ inputStyle }}"/>
+    <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:14px 0 6px;">Senha</label>
+    <div style="position:relative;">
+      <input type="{{ tipoLoginSenha }}" value="{{ loginSenha }}" onChange="{{ onLoginSenha }}" placeholder="••••••••" style="{{ inputStyleSenha }}"/>
+      <button type="button" onClick="{{ toggleLoginSenha }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+        <sc-if value="{{ mostrarLoginSenha }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+        <sc-if value="{{ ocultarLoginSenha }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+      </button>
+    </div>
+    <sc-if value="{{ hasLoginErro }}" hint-placeholder-val="{{ false }}"><p style="margin:12px 0 0;font-size:13px;font-weight:600;color:#C0392B;">{{ loginErro }}</p></sc-if>
+    <button onClick="{{ fazerLogin }}" style="margin-top:18px;width:100%;background:#D97706;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(217,119,6,.28);">{{ loginBtnLabel }}</button>
+  </div>
+</div>
+</sc-if>
+
+<!-- ===================== PAINEL (logado) ===================== -->
+<sc-if value="{{ isLogado }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;height:100vh;width:100%;overflow:hidden;background:#F6F1E7;">
+
+  <sc-if value="{{ sidebarOpen }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeSidebar }}" style="position:fixed;inset:0;background:rgba(29,16,9,.5);z-index:54;"></div>
+  </sc-if>
+  <aside class="{{ sidebarClass }}" style="width:240px;flex:none;background:#23130B;display:flex;flex-direction:column;padding:22px 16px;color:#F4E6CF;">
+    <div style="display:flex;align-items:center;gap:12px;padding:4px 6px 22px;">
+      <div style="width:44px;height:44px;flex:none;"><img src="assets/logo tranparente.png" alt="Plataforma" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div style="min-width:0;">
+        <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:#FFF3DC;line-height:1.05;">Super Admin</div>
+        <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;color:#C99A5B;text-transform:uppercase;margin-top:2px;">Plataforma</div>
+      </div>
+    </div>
+
+    <nav style="display:flex;flex-direction:column;gap:4px;margin-top:6px;">
+      <button onClick="{{ goTenants }}" style="{{ navTenants }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M10 21v-4h4v4"/></svg>
+        <span style="flex:1;text-align:left;">Tenants</span>
+      </button>
+      <button onClick="{{ goLogs }}" style="{{ navLogs }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span style="flex:1;text-align:left;">Logs de acesso</span>
+      </button>
+      <button onClick="{{ goSenha }}" style="{{ navSenha }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.4"/></svg>
+        <span style="flex:1;text-align:left;">Trocar senha</span>
+      </button>
+    </nav>
+
+    <div style="margin-top:auto;border-top:1px solid rgba(244,230,207,.12);padding-top:14px;display:flex;align-items:center;gap:11px;">
+      <div style="width:38px;height:38px;border-radius:50%;background:#6B2E12;color:#F2C078;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;flex:none;">{{ superInicial }}</div>
+      <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:13px;color:#FFF3DC;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ superNome }}</div><div style="font-size:11px;color:#C99A5B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ superEmail }}</div></div>
+      <button onClick="{{ logout }}" aria-label="Sair" style="width:34px;height:34px;border-radius:10px;background:rgba(244,230,207,.08);border:none;color:#C99A5B;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+    </div>
+  </aside>
+
+  <main style="flex:1;min-width:0;display:flex;flex-direction:column;overflow:hidden;">
+    <header style="flex:none;display:flex;align-items:center;gap:18px;padding:18px 28px;background:#FFFBF3;border-bottom:1px solid rgba(29,16,9,.07);">
+      <button onClick="{{ openSidebar }}" aria-label="Abrir menu" class="su-hamburger" style="display:none;width:38px;height:38px;flex:none;border-radius:11px;background:#F6F1E7;border:none;color:#6B2E12;align-items:center;justify-content:center;cursor:pointer;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+      <div style="min-width:0;">
+        <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:22px;margin:0;line-height:1.1;">{{ pageTitle }}</h1>
+        <p style="margin:3px 0 0;font-size:13px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ pageSubtitle }}</p>
+      </div>
+    </header>
+
+    <div style="flex:1;overflow-y:auto;padding:26px 28px 40px;">
+
+      <!-- ---------- TENANTS (lista) ---------- -->
+      <sc-if value="{{ isTenants }}" hint-placeholder-val="{{ true }}">
+      <div style="animation:suIn .25s ease-out;max-width:920px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <p style="margin:0;font-size:13px;color:#8C8075;flex:1;">Cada linha é uma loja isolada (dados, cardápio e admin próprios).</p>
+          <button onClick="{{ novoTenant }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);flex:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo tenant
+          </button>
+        </div>
+
+        <sc-if value="{{ isNovoTenant }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;background:#FFFBF3;border:1px solid rgba(29,16,9,.08);border-radius:14px;padding:14px;">
+            <div style="display:flex;gap:8px;">
+              <input value="{{ novoSlug }}" onChange="{{ onNovoSlug }}" placeholder="slug (ex: meurestaurante)" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <input value="{{ novoNome }}" onChange="{{ onNovoNome }}" placeholder="Nome da loja" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <input value="{{ novoAdminEmail }}" onChange="{{ onNovoAdminEmail }}" placeholder="email do admin inicial" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <div style="position:relative;flex:1;">
+                <input type="{{ tipoNovoAdminSenha }}" value="{{ novoAdminSenha }}" onChange="{{ onNovoAdminSenha }}" placeholder="senha do admin inicial" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 42px 10px 13px;font-size:14px;outline:none;"/>
+                <button type="button" onClick="{{ toggleNovoAdminSenha }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+                  <sc-if value="{{ mostrarNovoAdminSenha }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+                  <sc-if value="{{ ocultarNovoAdminSenha }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+                </button>
+              </div>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Tipo de negócio</label>
+              <div style="display:flex;gap:7px;">
+                <sc-for list="{{ novoTenantTipoOpcoes }}" as="op" hint-placeholder-count="2">
+                  <button type="button" onClick="{{ op.onClick }}" style="{{ op.style }}">{{ op.label }}</button>
+                </sc-for>
+              </div>
+            </div>
+            <sc-if value="{{ hasNovoTenantErro }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:13px;font-weight:600;color:#C0392B;">{{ novoTenantErro }}</p></sc-if>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ salvarNovoTenant }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">{{ novoTenantBtnLabel }}</button>
+              <button onClick="{{ cancelarNovoTenant }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:1.1fr 1.3fr 75px 75px 75px 175px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Slug</span><span>Nome</span><span>Produtos</span><span>Pedidos</span><span>Status</span><span style="text-align:right;">Ações</span>
+          </div>
+          <sc-for list="{{ tenantRows }}" as="t" hint-placeholder-count="3">
+            <div onClick="{{ t.onOpen }}" style="display:grid;grid-template-columns:1.1fr 1.3fr 75px 75px 75px 175px;gap:14px;padding:14px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;">
+              <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;">{{ t.slug }}</span>
+              <span style="font-weight:700;font-size:14px;">{{ t.nome }}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:13px;">{{ t.totalProdutos }}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:13px;">{{ t.totalPedidos }}</span>
+              <span style="{{ t.badgeStyle }}">{{ t.badgeLabel }}</span>
+              <div style="display:flex;gap:6px;justify-content:flex-end;">
+                <button onClick="{{ t.onTrocarSenha }}" title="Trocar Senha do Admin" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:8px;padding:6px 9px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>Senha</button>
+                <button onClick="{{ t.onExcluirRapido }}" title="Excluir Tenant" style="background:#FBEAE8;color:#C0392B;border:1px solid #F0CFCB;border-radius:8px;padding:6px 9px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Excluir</button>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ tenantsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum tenant cadastrado.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- DETALHE DO TENANT ---------- -->
+      <sc-if value="{{ isTenantDetalhe }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:suIn .25s ease-out;max-width:760px;">
+        <button onClick="{{ voltarTenants }}" style="display:flex;align-items:center;gap:7px;background:none;border:none;color:#6B2E12;font-weight:700;font-size:13px;cursor:pointer;padding:0;margin-bottom:16px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Todos os tenants</button>
+
+        <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+          <button onClick="{{ goAbaGeral }}" style="{{ abaGeral }}">Geral</button>
+          <button onClick="{{ goAbaMarca }}" style="{{ abaMarca }}">Marca</button>
+          <button onClick="{{ goAbaFeatures }}" style="{{ abaFeatures }}">Features</button>
+          <button onClick="{{ goAbaImpersonar }}" style="{{ abaImpersonar }}">Impersonar</button>
+        </div>
+
+        <!-- GERAL -->
+        <sc-if value="{{ isAbaGeral }}" hint-placeholder-val="{{ true }}">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Slug (fixo)</label>
+          <input value="{{ tenantSlug }}" disabled style="width:100%;border:1px solid rgba(29,16,9,.1);background:#F6F1E7;color:#8C8075;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;margin-bottom:14px;"/>
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Nome</label>
+          <div style="display:flex;gap:8px;margin-bottom:14px;">
+            <input value="{{ nomeEditavel }}" onChange="{{ onNomeEditavel }}" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            <button onClick="{{ salvarNome }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;flex:none;">{{ salvarNomeLabel }}</button>
+          </div>
+          <p style="font-size:12.5px;color:#8C8075;margin:0 0 14px;">Criado em {{ tenantCriadoEm }} · {{ tenantTotalProdutos }} produtos · {{ tenantTotalPedidos }} pedidos</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(29,16,9,.07);padding-top:14px;margin-bottom:14px;">
+            <div>
+              <div style="font-weight:700;font-size:14px;">{{ tenantStatusLabel }}</div>
+              <div style="font-size:12.5px;color:#8C8075;">Desativar tira a loja do ar imediatamente.</div>
+            </div>
+            <button onClick="{{ toggleTenantAtivo }}" style="{{ tenantToggleStyle }}"><span style="{{ tenantKnobStyle }}"></span></button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;border-top:1px solid rgba(29,16,9,.07);padding-top:14px;">
+            <div style="min-width:0;">
+              <div style="font-weight:700;font-size:14px;">Loja do cliente</div>
+              <div style="font-size:12px;color:#8C8075;font-family:'DM Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ lojaUrl }}</div>
+            </div>
+            <a href="{{ lojaUrl }}" target="_blank" rel="noopener noreferrer" style="background:#6B2E12;color:#FFF3DC;border-radius:10px;padding:9px 16px;font-weight:700;font-size:13px;text-decoration:none;flex:none;">Abrir loja ↗</a>
+          </div>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;margin-top:16px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="font-weight:700;font-size:14px;color:#1D1009;margin-bottom:4px;">Trocar Senha do Administrador</div>
+          <p style="font-size:12.5px;color:#8C8075;margin:0 0 12px;">Redefina a senha de acesso do admin da empresa <strong>{{ tenantNome }}</strong>.</p>
+          <div style="display:flex;gap:8px;">
+            <input type="password" value="{{ tenantNovaSenhaAdmin }}" onChange="{{ onTenantNovaSenhaAdmin }}" placeholder="Nova senha (min 6 caracteres)" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            <button onClick="{{ salvarSenhaAdminTenant }}" style="background:#D97706;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;flex:none;">{{ salvarSenhaAdminLabel }}</button>
+          </div>
+          <sc-if value="{{ hasTenantSenhaMsg }}" hint-placeholder-val="{{ false }}"><p style="margin:8px 0 0;font-size:13px;font-weight:600;color:{{ tenantSenhaMsgCor }};">{{ tenantSenhaMsg }}</p></sc-if>
+        </div>
+
+        <div style="background:#FBEAE8;border:1px solid #F0CFCB;border-radius:18px;padding:20px;margin-top:16px;">
+          <div style="font-weight:800;font-size:14px;color:#7A1209;margin-bottom:4px;">Zona de perigo</div>
+          <p style="font-size:12.5px;color:#8C4E44;margin:0 0 12px;">Apaga o tenant de vez — produtos, pedidos, clientes, admin, tudo. Não tem como desfazer. Digite o slug (<strong>{{ tenantSlug }}</strong>) pra confirmar.</p>
+          <div style="display:flex;gap:8px;">
+            <input value="{{ excluirTenantConfirmacao }}" onChange="{{ onExcluirTenantConfirmacao }}" placeholder="{{ tenantSlug }}" style="flex:1;border:1px solid #F0CFCB;background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            <button onClick="{{ excluirTenant }}" disabled="{{ excluirTenantDesabilitado }}" style="{{ excluirTenantBtnStyle }}">{{ excluirTenantLabel }}</button>
+          </div>
+          <sc-if value="{{ hasExcluirTenantErro }}" hint-placeholder-val="{{ false }}"><p style="margin:8px 0 0;font-size:13px;font-weight:600;color:#C0392B;">{{ excluirTenantErro }}</p></sc-if>
+        </div>
+        </sc-if>
+
+        <!-- MARCA -->
+        <sc-if value="{{ isAbaMarca }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+            <div style="width:64px;height:64px;border-radius:14px;overflow:hidden;background:#F6F1E7;border:1px solid rgba(29,16,9,.08);flex:none;display:flex;align-items:center;justify-content:center;">
+              <sc-if value="{{ hasLogoPreview }}" hint-placeholder-val="{{ false }}"><img src="{{ logoPreviewSrc }}" alt="Logo" style="width:100%;height:100%;object-fit:contain;"/></sc-if>
+              <sc-if value="{{ semLogoPreview }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px;color:#8C8075;">sem logo</span></sc-if>
+            </div>
+            <div style="flex:1;">
+              <input type="file" accept="image/*" onChange="{{ onLogoFile }}" style="font-size:12.5px;"/>
+              <button onClick="{{ enviarLogo }}" style="display:block;margin-top:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:10px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;">{{ enviarLogoLabel }}</button>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Cor primária</label><input type="color" value="{{ corPrimaria }}" onChange="{{ onCorPrimaria }}" style="width:100%;border:1px solid rgba(29,16,9,.14);border-radius:8px;"/></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Cor secundária</label><input type="color" value="{{ corSecundaria }}" onChange="{{ onCorSecundaria }}" style="width:100%;border:1px solid rgba(29,16,9,.14);border-radius:8px;"/></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Cor do botão</label><input type="color" value="{{ corBotao }}" onChange="{{ onCorBotao }}" style="width:100%;border:1px solid rgba(29,16,9,.14);border-radius:8px;"/></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Texto do botão</label><input type="color" value="{{ corTextoBotao }}" onChange="{{ onCorTextoBotao }}" style="width:100%;border:1px solid rgba(29,16,9,.14);border-radius:8px;"/></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo</label><input type="color" value="{{ corFundo }}" onChange="{{ onCorFundo }}" style="width:100%;border:1px solid rgba(29,16,9,.14);border-radius:8px;"/></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Texto</label><input type="color" value="{{ corTexto }}" onChange="{{ onCorTexto }}" style="width:100%;border:1px solid rgba(29,16,9,.14);border-radius:8px;"/></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Card</label><input type="color" value="{{ corCard }}" onChange="{{ onCorCard }}" style="width:100%;border:1px solid rgba(29,16,9,.14);border-radius:8px;"/></div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fonte dos títulos</label>
+              <select value="{{ fonteTitulo }}" onChange="{{ onFonteTitulo }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;">
+                <sc-for list="{{ fontesOptions }}" as="f" hint-placeholder-count="8"><option value="{{ f }}">{{ f }}</option></sc-for>
+              </select>
+            </div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fonte dos textos</label>
+              <select value="{{ fonteTexto }}" onChange="{{ onFonteTexto }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;">
+                <sc-for list="{{ fontesOptions }}" as="f2" hint-placeholder-count="8"><option value="{{ f2 }}">{{ f2 }}</option></sc-for>
+              </select>
+            </div>
+          </div>
+
+          <sc-if value="{{ hasContrasteAviso }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 14px;font-size:12.5px;font-weight:600;color:#B45309;background:#FFF3DC;border:1px solid #F2C078;border-radius:10px;padding:9px 12px;">⚠ Contraste baixo em: {{ contrasteAvisoLabel }} — ainda pode salvar, mas pode ficar difícil de ler.</p>
+          </sc-if>
+          <sc-if value="{{ hasBrandingMsg }}" hint-placeholder-val="{{ false }}"><p style="margin:0 0 14px;font-size:13px;font-weight:600;color:{{ brandingMsgCor }};">{{ brandingMsg }}</p></sc-if>
+
+          <button onClick="{{ salvarBranding }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:14px;cursor:pointer;">{{ salvarBrandingLabel }}</button>
+        </div>
+        </sc-if>
+
+        <!-- FEATURES -->
+        <sc-if value="{{ isAbaFeatures }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <sc-for list="{{ featureRows }}" as="ft" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid rgba(29,16,9,.06);">
+              <div>
+                <div style="font-weight:700;font-size:14px;">{{ ft.label }}</div>
+                <div style="font-size:12.5px;color:#8C8075;">{{ ft.desc }}</div>
+              </div>
+              <button onClick="{{ ft.onToggle }}" style="{{ ft.toggleStyle }}"><span style="{{ ft.knobStyle }}"></span></button>
+            </div>
+          </sc-for>
+        </div>
+        </sc-if>
+
+        <!-- IMPERSONAR -->
+        <sc-if value="{{ isAbaImpersonar }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <p style="margin:0 0 16px;font-size:13px;color:#8C8075;">Gera um código de uso único (expira em 60s) pra entrar como o admin desse tenant, sem saber a senha de ninguém.</p>
+          <button onClick="{{ gerarImpersonacao }}" style="background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:12px 18px;font-weight:700;font-size:14px;cursor:pointer;">{{ gerarImpersonacaoLabel }}</button>
+
+          <sc-if value="{{ hasImpersonarUrl }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:18px;background:#F6F1E7;border-radius:12px;padding:14px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Link de acesso (expira em ~60s — use assim que copiar)</label>
+              <div style="display:flex;gap:8px;">
+                <input value="{{ impersonarUrl }}" readonly style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:12.5px;font-family:'DM Mono',monospace;outline:none;"/>
+                <button onClick="{{ copiarImpersonacao }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;flex:none;">{{ copiarLabel }}</button>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <!-- ---------- LOGS ---------- -->
+      <sc-if value="{{ isLogs }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:suIn .25s ease-out;max-width:920px;">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:1.2fr 1.4fr 1.4fr 1fr;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Tenant</span><span>Início</span><span>Fim</span><span>IP</span>
+          </div>
+          <sc-for list="{{ logRows }}" as="lg" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:1.2fr 1.4fr 1.4fr 1fr;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <span style="font-weight:700;font-size:13.5px;">{{ lg.tenantNome }}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:12px;color:#8C8075;">{{ lg.inicio }}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:12px;color:#8C8075;">{{ lg.fim }}</span>
+              <span style="font-family:'DM Mono',monospace;font-size:12px;color:#8C8075;">{{ lg.ip }}</span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ logsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum acesso de impersonation ainda.</div></sc-if>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:14px;">
+          <button onClick="{{ logsAnterior }}" disabled="{{ logsPrimeiraPagina }}" style="background:#fff;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;">‹ Anterior</button>
+          <button onClick="{{ logsProximo }}" disabled="{{ logsUltimaPagina }}" style="background:#fff;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:8px 14px;font-weight:700;font-size:13px;cursor:pointer;">Próximo ›</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- TROCAR SENHA ---------- -->
+      <sc-if value="{{ isSenha }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:suIn .25s ease-out;max-width:420px;">
+        <div style="background:#FFFBF3;border-radius:20px;padding:22px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Senha atual</label>
+          <div style="position:relative;">
+            <input type="{{ tipoPwdAtual }}" value="{{ pwdAtual }}" onChange="{{ onPwdAtual }}" placeholder="••••••••" style="{{ inputStyleSenha }}"/>
+            <button type="button" onClick="{{ togglePwdAtual }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+              <sc-if value="{{ mostrarPwdAtual }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+              <sc-if value="{{ ocultarPwdAtual }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+            </button>
+          </div>
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Nova senha</label>
+          <div style="position:relative;">
+            <input type="{{ tipoPwdNova }}" value="{{ pwdNova }}" onChange="{{ onPwdNova }}" placeholder="Mín. 6 caracteres" style="{{ inputStyleSenha }}"/>
+            <button type="button" onClick="{{ togglePwdNova }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+              <sc-if value="{{ mostrarPwdNova }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+              <sc-if value="{{ ocultarPwdNova }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+            </button>
+          </div>
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin:16px 0 6px;">Confirmar nova senha</label>
+          <div style="position:relative;">
+            <input type="{{ tipoPwdConf }}" value="{{ pwdConf }}" onChange="{{ onPwdConf }}" placeholder="••••••••" style="{{ inputStyleSenha }}"/>
+            <button type="button" onClick="{{ togglePwdConf }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+              <sc-if value="{{ mostrarPwdConf }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+              <sc-if value="{{ ocultarPwdConf }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+            </button>
+          </div>
+          <sc-if value="{{ hasPwdMsg }}" hint-placeholder-val="{{ false }}"><p style="{{ pwdMsgStyle }}">{{ pwdMsg }}</p></sc-if>
+          <button onClick="{{ savePwd }}" style="margin-top:18px;width:100%;background:#D97706;color:#fff;border:none;border-radius:14px;padding:14px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 10px 24px rgba(217,119,6,.28);">Salvar nova senha</button>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+</sc-if>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  apiBase = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+    ? 'http://localhost:3010/api'
+    : '/api';
+  isDevLocal = (location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+  headersExtras = this.isDevLocal ? { 'x-tenant-slug': 'super' } : {};
+  /**
+   * Monta a URL de um arquivo em /uploads pro tenant sendo editado. Em dev,
+   * a checagem de posse do arquivo (server.js: /uploads/:tenantId) resolve
+   * o tenant da requisição por header x-tenant-slug — mas uma tag <img src>
+   * não manda header customizado, só cai no TENANT_DEV_PADRAO. Sem isto, a
+   * logo de qualquer tenant que não seja o padrão do .env sempre dá 404 no
+   * navegador (o upload em si funciona — é só a exibição que quebra).
+   */
+  uploadsUrl(caminhoRelativo, tenantSlug) {
+    const base = this.apiBase.replace('/api', '') + caminhoRelativo;
+    return this.isDevLocal && tenantSlug ? base + '?_tenant=' + encodeURIComponent(tenantSlug) : base;
+  }
+
+  fontesOptions = ['Inter', 'Roboto', 'Open Sans', 'Lato', 'Source Sans 3', 'Nunito Sans', 'Atkinson Hyperlegible', 'Verdana'];
+  featureDefs = [
+    { chave: 'empresa', label: 'Empresas (B2B)', desc: 'Portal de pedido em lote pra clientes corporativos.' },
+    { chave: 'entregador', label: 'Entregadores', desc: 'Portal de entregas e atribuição de pedidos.' },
+    { chave: 'mesas', label: 'Mesas (garçom)', desc: 'Atendimento de salão via comanda do garçom.' },
+    { chave: 'cupom', label: 'Cupons de desconto', desc: 'Campo de cupom no checkout do cliente.' },
+    { chave: 'marmita', label: 'Monte sua Marmita', desc: 'Seção de montar marmita no cardápio do cliente.' },
+  ];
+
+  state = {
+    screen: 'loading', // loading | login | app
+    view: 'tenants', // tenants | tenantDetalhe | logs | senha
+    sidebarOpen: false,
+
+    superAdmin: null,
+    loginForm: { email: '', senha: '' }, loginErro: '', loggingIn: false,
+    mostrarSenha: {},
+
+    tenants: [],
+    novoTenantForm: null,
+    salvandoNovoTenant: false, novoTenantErro: '',
+
+    tenantDetalheId: null, tenantAtual: null, abaDetalhe: 'geral',
+    excluirTenantConfirmacao: '', excluindoTenant: false, excluirTenantErro: '',
+    nomeEditavel: '', salvandoNome: false,
+
+    branding: null, contraste: null, brandingSalvando: false, brandingMsg: '', brandingMsgOk: true,
+    logoFile: null, logoPreviewLocal: null, enviandoLogo: false,
+
+    features: [], featuresSalvando: {},
+
+    impersonarUrl: '', impersonarGerando: false, copiado: false,
+
+    logs: [], logsPagina: 1, logsTotal: 0, logsTamanhoPagina: 20,
+
+    pwd: { atual: '', nova: '', conf: '' }, pwdMsg: '', pwdOk: false,
+  };
+
+  toggleMostrarSenha(campo) { this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
+
+  fmtData(iso) {
+    if (!iso) return '—';
+    return new Date(iso).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+
+  toggleStyle(on) { return { width: '46px', height: '26px', borderRadius: '14px', border: 'none', cursor: 'pointer', padding: '3px', display: 'flex', justifyContent: on ? 'flex-end' : 'flex-start', background: on ? '#2D9E60' : '#D8CDBC', transition: 'background .15s' }; }
+  knobStyle() { return { width: '20px', height: '20px', borderRadius: '50%', background: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,.2)', display: 'block' }; }
+
+  async apiCall(path, opts) {
+    const headers = opts && opts.body instanceof FormData ? { ...this.headersExtras } : { ...this.headersExtras, ...(opts && opts.headers) };
+    const res = await fetch(this.apiBase + path, { credentials: 'include', ...opts, headers });
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* resposta sem corpo (ex: 204) */ }
+    if (!res.ok) { const erro = new Error((data && data.erro) || ('Erro ' + res.status)); erro.status = res.status; throw erro; }
+    return data;
+  }
+  apiGet(path) { return this.apiCall(path, { method: 'GET' }); }
+  apiSend(method, path, body) { return this.apiCall(path, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }); }
+  apiUpload(path, formData) { return this.apiCall(path, { method: 'POST', body: formData }); }
+
+  openSidebar() { this.setState({ sidebarOpen: true }); }
+  closeSidebar() { this.setState({ sidebarOpen: false }); }
+
+  // Views conhecidas — nunca restaura um valor desconhecido/corrompido do sessionStorage.
+  VIEWS_VALIDAS = new Set(['tenants', 'tenantDetalhe', 'logs', 'senha']);
+  STORAGE_KEY = 'bf_tela_super';
+  async restaurarViewSalva() {
+    let salvo;
+    try { salvo = JSON.parse(sessionStorage.getItem(this.STORAGE_KEY) || 'null'); }
+    catch (e) { return; }
+    if (!salvo || !this.VIEWS_VALIDAS.has(salvo.view)) return;
+    if (salvo.view === 'logs') { this.goLogs(); return; }
+    if (salvo.view === 'senha') { this.goSenha(); return; }
+    if (salvo.view === 'tenantDetalhe' && salvo.tenantDetalheId) {
+      try {
+        await this.abrirTenant(salvo.tenantDetalheId);
+        if (salvo.abaDetalhe === 'marca') this.goAbaMarca();
+        else if (salvo.abaDetalhe === 'features') this.goAbaFeatures();
+        else if (salvo.abaDetalhe === 'impersonar') this.goAbaImpersonar();
+      } catch (e) { this.voltarTenants(); /* tenant apagado nesse meio tempo — volta pra lista */ }
+    }
+  }
+
+  async componentDidMount() {
+    // Precisa ser setado ANTES de qualquer outro setState — senão o setState
+    // que guarda o "superAdmin" logo abaixo já dispara um componentDidUpdate
+    // "fantasma" que apaga o sessionStorage antes do restaurarViewSalva() ler.
+    this._lastView = this.state.view;
+    this._lastTenantId = this.state.tenantDetalheId;
+    this._lastAba = this.state.abaDetalhe;
+    try {
+      const { superAdmin } = await this.apiGet('/super/me');
+      this.setState({ superAdmin, screen: 'app' });
+      await this.carregarTenants();
+      await this.restaurarViewSalva();
+    } catch (e) {
+      this.setState({ screen: 'login' });
+    }
+  }
+  componentDidUpdate() {
+    if (this.state.view !== this._lastView || this.state.tenantDetalheId !== this._lastTenantId || this.state.abaDetalhe !== this._lastAba) {
+      this._lastView = this.state.view;
+      this._lastTenantId = this.state.tenantDetalheId;
+      this._lastAba = this.state.abaDetalhe;
+      if (this.VIEWS_VALIDAS.has(this.state.view)) {
+        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify({ view: this.state.view, tenantDetalheId: this.state.tenantDetalheId, abaDetalhe: this.state.abaDetalhe }));
+      }
+    }
+  }
+
+  onLoginEmail(e) { this.setState(s => ({ loginForm: { ...s.loginForm, email: e.target.value } })); }
+  onLoginSenha(e) { this.setState(s => ({ loginForm: { ...s.loginForm, senha: e.target.value } })); }
+  async fazerLogin() {
+    const { email, senha } = this.state.loginForm;
+    if (!email || !senha) { this.setState({ loginErro: 'Informe email e senha' }); return; }
+    this.setState({ loggingIn: true, loginErro: '' });
+    try {
+      const { superAdmin } = await this.apiSend('POST', '/super/login', { email, senha });
+      this.setState({ superAdmin, loggingIn: false, loginForm: { email: '', senha: '' }, screen: 'app' });
+      await this.carregarTenants();
+    } catch (e) {
+      this.setState({ loggingIn: false, loginErro: e.message || 'Email ou senha incorretos' });
+    }
+  }
+  async logout() {
+    try { await this.apiSend('POST', '/super/logout', {}); } catch (e) { /* mesmo se falhar, limpa a sessão local */ }
+    sessionStorage.removeItem(this.STORAGE_KEY);
+    this.setState({ superAdmin: null, screen: 'login' });
+  }
+
+  nav(view) { this.setState({ view, sidebarOpen: false }); }
+  goTenants() { this.nav('tenants'); }
+  goLogs() { this.nav('logs'); this.carregarLogs(1); }
+  goSenha() { this.nav('senha'); this.setState({ pwd: { atual: '', nova: '', conf: '' }, pwdMsg: '' }); }
+
+  // ---- tenants ----
+  async carregarTenants() {
+    const tenants = await this.apiGet('/super/tenants');
+    this.setState({ tenants });
+  }
+  novoTenant() { this.setState({ novoTenantForm: { slug: '', nome: '', adminEmail: '', adminSenha: '', tipo: 'RESTAURANTE' }, novoTenantErro: '' }); }
+  cancelarNovoTenant() { this.setState({ novoTenantForm: null }); }
+  onNovoSlug(e) { this.setState(s => ({ novoTenantForm: { ...s.novoTenantForm, slug: e.target.value.toLowerCase() } })); }
+  onNovoNome(e) { this.setState(s => ({ novoTenantForm: { ...s.novoTenantForm, nome: e.target.value } })); }
+  onNovoAdminEmail(e) { this.setState(s => ({ novoTenantForm: { ...s.novoTenantForm, adminEmail: e.target.value } })); }
+  onNovoAdminSenha(e) { this.setState(s => ({ novoTenantForm: { ...s.novoTenantForm, adminSenha: e.target.value } })); }
+  onNovoTipo(tipo) { this.setState(s => ({ novoTenantForm: { ...s.novoTenantForm, tipo } })); }
+  async salvarNovoTenant() {
+    const f = this.state.novoTenantForm;
+    this.setState({ salvandoNovoTenant: true, novoTenantErro: '' });
+    try {
+      await this.apiSend('POST', '/super/tenants', { slug: f.slug, nome: f.nome, adminEmail: f.adminEmail, adminSenha: f.adminSenha, tipo: f.tipo });
+      this.setState({ salvandoNovoTenant: false, novoTenantForm: null });
+      await this.carregarTenants();
+    } catch (e) {
+      this.setState({ salvandoNovoTenant: false, novoTenantErro: e.message || 'Erro ao criar tenant' });
+    }
+  }
+
+  async abrirTenant(id) {
+    this.setState({ view: 'tenantDetalhe', tenantDetalheId: id, abaDetalhe: 'geral', tenantAtual: null, excluirTenantConfirmacao: '', excluirTenantErro: '', tenantNovaSenhaAdmin: '', tenantSenhaMsg: '' });
+    const tenant = await this.apiGet('/super/tenants/' + id);
+    this.setState({ tenantAtual: tenant, nomeEditavel: tenant.nome });
+  }
+  voltarTenants() { this.setState({ view: 'tenants', tenantDetalheId: null, tenantAtual: null, excluirTenantConfirmacao: '', excluirTenantErro: '', tenantNovaSenhaAdmin: '', tenantSenhaMsg: '' }); this.carregarTenants(); }
+  onExcluirTenantConfirmacao(e) { this.setState({ excluirTenantConfirmacao: e.target.value, excluirTenantErro: '' }); }
+  async excluirTenant() {
+    const tenant = this.state.tenantAtual;
+    if (!tenant || this.state.excluirTenantConfirmacao !== tenant.slug) return;
+    this.setState({ excluindoTenant: true, excluirTenantErro: '' });
+    try {
+      await this.apiSend('DELETE', '/super/tenants/' + tenant.id, { confirmarSlug: this.state.excluirTenantConfirmacao });
+      this.setState({ excluindoTenant: false });
+      this.voltarTenants();
+    } catch (e) {
+      this.setState({ excluindoTenant: false, excluirTenantErro: e.message || 'Erro ao excluir tenant' });
+    }
+  }
+
+  onTenantNovaSenhaAdmin(e) { this.setState({ tenantNovaSenhaAdmin: e.target.value, tenantSenhaMsg: '' }); }
+  async salvarSenhaAdminTenant() {
+    const id = this.state.tenantDetalheId;
+    const senha = this.state.tenantNovaSenhaAdmin;
+    if (!senha || senha.trim().length < 6) {
+      this.setState({ tenantSenhaMsg: 'A senha deve ter no mínimo 6 caracteres', tenantSenhaMsgOk: false });
+      return;
+    }
+    this.setState({ salvandoSenhaAdmin: true, tenantSenhaMsg: '' });
+    try {
+      await this.apiSend('PUT', '/super/tenants/' + id + '/senha', { novaSenha: senha.trim() });
+      this.setState({ salvandoSenhaAdmin: false, tenantNovaSenhaAdmin: '', tenantSenhaMsg: 'Senha alterada com sucesso!', tenantSenhaMsgOk: true });
+    } catch (e) {
+      this.setState({ salvandoSenhaAdmin: false, tenantSenhaMsg: e.message || 'Erro ao alterar senha', tenantSenhaMsgOk: false });
+    }
+  }
+
+  async trocarSenhaTenantAdmin(tenantId, slug, nome) {
+    const novaSenha = prompt('Digite a nova senha para o administrador da empresa "' + nome + '" (' + slug + '):');
+    if (!novaSenha) return;
+    if (novaSenha.trim().length < 6) {
+      alert('A nova senha precisa ter no mínimo 6 caracteres.');
+      return;
+    }
+    try {
+      await this.apiSend('PUT', '/super/tenants/' + tenantId + '/senha', { novaSenha: novaSenha.trim() });
+      alert('Senha do administrador da empresa "' + nome + '" alterada com sucesso!');
+    } catch (err) {
+      alert(err.message || 'Erro ao alterar senha');
+    }
+  }
+
+  async excluirTenantRapido(tenantId, slug, nome) {
+    if (!confirm('Deseja realmente excluir a empresa "' + nome + '" (' + slug + ')? Todos os dados serão apagados permanentemente.')) return;
+    const confirmacao = prompt('Para confirmar a exclusão permanente, digite o slug da empresa (' + slug + '):');
+    if (!confirmacao) return;
+    if (confirmacao.trim().toLowerCase() !== slug.toLowerCase()) {
+      alert('Slug incorreto. Exclusão cancelada.');
+      return;
+    }
+    try {
+      await this.apiSend('DELETE', '/super/tenants/' + tenantId, { confirmarSlug: slug });
+      alert('Empresa "' + nome + '" excluída com sucesso!');
+      await this.carregarTenants();
+    } catch (err) {
+      alert(err.message || 'Erro ao excluir empresa');
+    }
+  }
+
+  goAbaGeral() { this.setState({ abaDetalhe: 'geral' }); }
+  goAbaMarca() {
+    this.setState({ abaDetalhe: 'marca' });
+    this.carregarBranding();
+  }
+  goAbaFeatures() {
+    this.setState({ abaDetalhe: 'features' });
+    this.carregarFeatures();
+  }
+  goAbaImpersonar() { this.setState({ abaDetalhe: 'impersonar', impersonarUrl: '', copiado: false }); }
+
+  onNomeEditavel(e) { this.setState({ nomeEditavel: e.target.value }); }
+  async salvarNome() {
+    const id = this.state.tenantDetalheId;
+    this.setState({ salvandoNome: true });
+    const tenant = await this.apiSend('PUT', '/super/tenants/' + id, { nome: this.state.nomeEditavel });
+    this.setState({ salvandoNome: false, tenantAtual: { ...this.state.tenantAtual, ...tenant } });
+  }
+  async toggleTenantAtivo() {
+    const t = this.state.tenantAtual;
+    if (t.ativo && !confirm('Desativar "' + t.nome + '"? A loja para de responder imediatamente.')) return;
+    const atualizado = await this.apiSend('PATCH', '/super/tenants/' + t.id + '/status', { ativo: !t.ativo });
+    this.setState({ tenantAtual: { ...t, ...atualizado } });
+  }
+
+  // ---- branding ----
+  async carregarBranding() {
+    const { branding, contraste } = await this.apiGet('/super/tenants/' + this.state.tenantDetalheId + '/branding');
+    this.setState({ branding, contraste, brandingMsg: '', logoFile: null, logoPreviewLocal: null });
+  }
+  onCorCampo(campo, e) { this.setState(s => ({ branding: { ...s.branding, [campo]: e.target.value } })); }
+  onCorPrimaria(e) { this.onCorCampo('corPrimaria', e); }
+  onCorSecundaria(e) { this.onCorCampo('corSecundaria', e); }
+  onCorBotao(e) { this.onCorCampo('corBotao', e); }
+  onCorTextoBotao(e) { this.onCorCampo('corTextoBotao', e); }
+  onCorFundo(e) { this.onCorCampo('corFundo', e); }
+  onCorTexto(e) { this.onCorCampo('corTexto', e); }
+  onCorCard(e) { this.onCorCampo('corCard', e); }
+  onFonteTitulo(e) { this.setState(s => ({ branding: { ...s.branding, fonteTitulo: e.target.value } })); }
+  onFonteTexto(e) { this.setState(s => ({ branding: { ...s.branding, fonteTexto: e.target.value } })); }
+
+  async salvarBranding() {
+    const id = this.state.tenantDetalheId;
+    const b = this.state.branding;
+    this.setState({ brandingSalvando: true, brandingMsg: '' });
+    try {
+      const { branding, contraste } = await this.apiSend('PATCH', '/super/tenants/' + id + '/branding', {
+        corPrimaria: b.corPrimaria, corSecundaria: b.corSecundaria, corBotao: b.corBotao, corTextoBotao: b.corTextoBotao,
+        corFundo: b.corFundo, corTexto: b.corTexto, corCard: b.corCard, fonteTitulo: b.fonteTitulo, fonteTexto: b.fonteTexto,
+      });
+      this.setState({ brandingSalvando: false, branding, contraste, brandingMsg: 'Marca salva!', brandingMsgOk: true });
+    } catch (e) {
+      this.setState({ brandingSalvando: false, brandingMsg: e.message || 'Erro ao salvar', brandingMsgOk: false });
+    }
+  }
+
+  onLogoFile(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    this.setState({ logoFile: file, logoPreviewLocal: URL.createObjectURL(file) });
+  }
+  async enviarLogo() {
+    if (!this.state.logoFile) return;
+    const id = this.state.tenantDetalheId;
+    const formData = new FormData();
+    formData.append('logo', this.state.logoFile);
+    this.setState({ enviandoLogo: true });
+    try {
+      const { branding } = await this.apiUpload('/super/tenants/' + id + '/branding/logo', formData);
+      this.setState({ enviandoLogo: false, branding, logoFile: null, logoPreviewLocal: null });
+    } catch (e) {
+      this.setState({ enviandoLogo: false, brandingMsg: e.message || 'Erro ao enviar logo', brandingMsgOk: false });
+    }
+  }
+
+  // ---- features ----
+  async carregarFeatures() {
+    const features = await this.apiGet('/super/tenants/' + this.state.tenantDetalheId + '/features');
+    this.setState({ features });
+  }
+  async toggleFeature(chave, atual) {
+    const id = this.state.tenantDetalheId;
+    this.setState(s => ({ featuresSalvando: { ...s.featuresSalvando, [chave]: true } }));
+    const atualizado = await this.apiSend('PATCH', '/super/tenants/' + id + '/features/' + chave, { ativo: !atual });
+    this.setState(s => ({
+      features: s.features.map(f => f.chave === chave ? atualizado : f),
+      featuresSalvando: { ...s.featuresSalvando, [chave]: false },
+    }));
+  }
+
+  // URL da loja do cliente pro tenant — em dev não existe subdomínio de
+  // verdade, então usa o mesmo truque de ?_tenant= que tema.js/index.html já
+  // sabem ler; em produção monta o subdomínio de verdade a partir do próprio
+  // domínio do painel super (super.dominio.com -> dominio.com).
+  urlLoja(slug) {
+    if (this.isDevLocal) return 'http://localhost:5000/index.html?_tenant=' + slug;
+    const dominioBase = location.hostname.replace(/^super\./, '');
+    return 'https://' + slug + '.' + dominioBase + '/';
+  }
+
+  // ---- impersonar ----
+  async gerarImpersonacao() {
+    const id = this.state.tenantDetalheId;
+    this.setState({ impersonarGerando: true, copiado: false });
+    try {
+      const { url } = await this.apiSend('POST', '/super/tenants/' + id + '/impersonar', {});
+      const dominioBase = this.isDevLocal ? 'http://localhost:5000' : (location.origin);
+      const urlCompleta = url.startsWith('http') ? url : dominioBase + url;
+      this.setState({ impersonarGerando: false, impersonarUrl: urlCompleta });
+    } catch (e) {
+      this.setState({ impersonarGerando: false, impersonarUrl: '' });
+      alert(e.message || 'Erro ao gerar link');
+    }
+  }
+  copiarImpersonacao() {
+    navigator.clipboard.writeText(this.state.impersonarUrl).then(() => {
+      this.setState({ copiado: true });
+      setTimeout(() => this.setState({ copiado: false }), 2000);
+    });
+  }
+
+  // ---- logs ----
+  async carregarLogs(pagina) {
+    const { logs, total, tamanhoPagina } = await this.apiGet('/super/impersonacoes?pagina=' + pagina + '&tamanhoPagina=20');
+    this.setState({ logs, logsTotal: total, logsPagina: pagina, logsTamanhoPagina: tamanhoPagina });
+  }
+  logsAnterior() { if (this.state.logsPagina > 1) this.carregarLogs(this.state.logsPagina - 1); }
+  logsProximo() { if (this.state.logsPagina * this.state.logsTamanhoPagina < this.state.logsTotal) this.carregarLogs(this.state.logsPagina + 1); }
+
+  // ---- trocar senha ----
+  onPwdAtual(e) { this.setState(s => ({ pwd: { ...s.pwd, atual: e.target.value } })); }
+  onPwdNova(e) { this.setState(s => ({ pwd: { ...s.pwd, nova: e.target.value } })); }
+  onPwdConf(e) { this.setState(s => ({ pwd: { ...s.pwd, conf: e.target.value } })); }
+  async savePwd() {
+    const { atual, nova, conf } = this.state.pwd;
+    if (!atual) { this.setState({ pwdMsg: 'Digite sua senha atual.', pwdOk: false }); return; }
+    if (nova.length < 6) { this.setState({ pwdMsg: 'A nova senha precisa de ao menos 6 caracteres.', pwdOk: false }); return; }
+    if (nova !== conf) { this.setState({ pwdMsg: 'A confirmação não confere.', pwdOk: false }); return; }
+    try {
+      await this.apiSend('PUT', '/super/senha', { senhaAtual: atual, novaSenha: nova });
+      this.setState({ pwd: { atual: '', nova: '', conf: '' }, pwdMsg: 'Senha alterada com sucesso!', pwdOk: true });
+    } catch (e) {
+      this.setState({ pwdMsg: e.message || 'Erro ao trocar senha', pwdOk: false });
+    }
+  }
+
+  renderVals() {
+    const s = this.state;
+    const navStyle = (on) => ({ display: 'flex', alignItems: 'center', gap: '12px', width: '100%', border: 'none', cursor: 'pointer', borderRadius: '12px', padding: '12px 14px', fontWeight: 700, fontSize: '14.5px', textAlign: 'left',
+      background: on ? '#D97706' : 'transparent', color: on ? '#fff' : '#C9B79D', boxShadow: on ? '0 6px 16px rgba(217,119,6,.3)' : 'none' });
+    const abaStyle = (on) => ({ border: 'none', cursor: 'pointer', borderRadius: '10px', padding: '9px 16px', fontWeight: 700, fontSize: '13.5px',
+      background: on ? '#6B2E12' : '#fff', color: on ? '#FFF3DC' : '#6B2E12', border: on ? 'none' : '1px solid rgba(29,16,9,.12)' });
+
+    const inputStyle = { width: '100%', border: '1px solid rgba(29,16,9,.14)', background: '#fff', borderRadius: '12px', padding: '13px 14px', fontSize: '15px', color: '#1D1009', outline: 'none' };
+    const inputStyleSenha = { width: '100%', border: '1px solid rgba(29,16,9,.14)', background: '#fff', borderRadius: '12px', padding: '13px 42px 13px 14px', fontSize: '15px', color: '#1D1009', outline: 'none' };
+    const olhoBtnStyle = { position: 'absolute', right: '6px', top: '50%', transform: 'translateY(-50%)', width: '32px', height: '32px', border: 'none', background: 'transparent', color: '#8C8075', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' };
+
+    const titles = {
+      tenants: ['Tenants', 'Todas as lojas cadastradas na plataforma'],
+      tenantDetalhe: [s.tenantAtual ? s.tenantAtual.nome : 'Tenant', 'Detalhe, marca, features e impersonation'],
+      logs: ['Logs de acesso', 'Histórico de impersonation, mais recente primeiro'],
+      senha: ['Trocar senha', 'Atualize a senha do seu login de super admin'],
+    };
+    const [pageTitle, pageSubtitle] = titles[s.view] || titles.tenants;
+
+    const tenantRows = (s.tenants || []).map(t => ({
+      slug: t.slug, nome: t.nome, totalProdutos: t.totalProdutos, totalPedidos: t.totalPedidos,
+      badgeLabel: t.ativo ? 'Ativo' : 'Inativo',
+      badgeStyle: { textAlign: 'right', fontSize: '11px', fontWeight: 700, color: t.ativo ? '#2D9E60' : '#C0392B' },
+      onOpen: () => this.abrirTenant(t.id),
+      onTrocarSenha: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.trocarSenhaTenantAdmin(t.id, t.slug, t.nome); },
+      onExcluirRapido: (ev) => { if (ev && ev.stopPropagation) ev.stopPropagation(); this.excluirTenantRapido(t.id, t.slug, t.nome); },
+    }));
+
+    const featureRows = this.featureDefs.map(def => {
+      const f = (s.features || []).find(x => x.chave === def.chave);
+      const ativo = f ? f.ativo : true;
+      return {
+        label: def.label, desc: def.desc,
+        toggleStyle: this.toggleStyle(ativo), knobStyle: this.knobStyle(),
+        onToggle: () => this.toggleFeature(def.chave, ativo),
+      };
+    });
+
+    const logRows = (s.logs || []).map(l => ({
+      tenantNome: l.tenant ? l.tenant.nome : l.tenantId,
+      inicio: this.fmtData(l.iniciadoEm),
+      fim: l.encerradoEm ? this.fmtData(l.encerradoEm) : 'em andamento',
+      ip: l.ip || '—',
+    }));
+
+    const contrasteAvisoLabel = s.contraste && s.contraste.aviso && s.contraste.aviso.length
+      ? s.contraste.aviso.map(a => a === 'botao' ? 'botão' : 'texto').join(', ')
+      : '';
+
+    return {
+      isLoading: s.screen === 'loading', isLogin: s.screen === 'login', isLogado: s.screen === 'app',
+
+      loginEmail: s.loginForm.email, onLoginEmail: (e) => this.onLoginEmail(e),
+      loginSenha: s.loginForm.senha, onLoginSenha: (e) => this.onLoginSenha(e),
+      fazerLogin: () => this.fazerLogin(), loginBtnLabel: s.loggingIn ? 'Entrando...' : 'Entrar',
+      loginErro: s.loginErro, hasLoginErro: !!s.loginErro,
+      inputStyle, inputStyleSenha, olhoBtnStyle,
+      tipoLoginSenha: s.mostrarSenha.login ? 'text' : 'password',
+      mostrarLoginSenha: !!s.mostrarSenha.login, ocultarLoginSenha: !s.mostrarSenha.login,
+      toggleLoginSenha: () => this.toggleMostrarSenha('login'),
+
+      sidebarOpen: s.sidebarOpen, sidebarClass: 'su-sidebar' + (s.sidebarOpen ? ' open' : ''),
+      openSidebar: () => this.openSidebar(), closeSidebar: () => this.closeSidebar(),
+      goTenants: () => this.goTenants(), goLogs: () => this.goLogs(), goSenha: () => this.goSenha(), logout: () => this.logout(),
+      navTenants: navStyle(s.view === 'tenants' || s.view === 'tenantDetalhe'), navLogs: navStyle(s.view === 'logs'), navSenha: navStyle(s.view === 'senha'),
+      superNome: s.superAdmin ? s.superAdmin.nome : '', superEmail: s.superAdmin ? s.superAdmin.email : '',
+      superInicial: s.superAdmin && s.superAdmin.nome ? s.superAdmin.nome[0].toUpperCase() : 'S',
+      pageTitle, pageSubtitle,
+
+      isTenants: s.view === 'tenants', isTenantDetalhe: s.view === 'tenantDetalhe', isLogs: s.view === 'logs', isSenha: s.view === 'senha',
+
+      tenantRows, tenantsEmpty: tenantRows.length === 0,
+      novoTenant: () => this.novoTenant(), cancelarNovoTenant: () => this.cancelarNovoTenant(),
+      isNovoTenant: !!s.novoTenantForm,
+      novoSlug: s.novoTenantForm ? s.novoTenantForm.slug : '', onNovoSlug: (e) => this.onNovoSlug(e),
+      novoNome: s.novoTenantForm ? s.novoTenantForm.nome : '', onNovoNome: (e) => this.onNovoNome(e),
+      novoAdminEmail: s.novoTenantForm ? s.novoTenantForm.adminEmail : '', onNovoAdminEmail: (e) => this.onNovoAdminEmail(e),
+      novoAdminSenha: s.novoTenantForm ? s.novoTenantForm.adminSenha : '', onNovoAdminSenha: (e) => this.onNovoAdminSenha(e),
+      tipoNovoAdminSenha: s.mostrarSenha.novoAdmin ? 'text' : 'password',
+      mostrarNovoAdminSenha: !!s.mostrarSenha.novoAdmin, ocultarNovoAdminSenha: !s.mostrarSenha.novoAdmin,
+      toggleNovoAdminSenha: () => this.toggleMostrarSenha('novoAdmin'),
+      novoTenantTipoOpcoes: [['RESTAURANTE', 'Restaurante'], ['MERCANTIL', 'Mercantil']].map(([tipo, label]) => {
+        const on = s.novoTenantForm && s.novoTenantForm.tipo === tipo;
+        return {
+          label, onClick: () => this.onNovoTipo(tipo),
+          style: {
+            flex: '1', border: on ? 'none' : '1px solid rgba(29,16,9,.14)', cursor: 'pointer', borderRadius: '10px',
+            padding: '9px 13px', fontWeight: 700, fontSize: '13px',
+            background: on ? '#6B2E12' : '#fff', color: on ? '#FFF3DC' : '#6B2E12',
+          },
+        };
+      }),
+      hasNovoTenantErro: !!s.novoTenantErro, novoTenantErro: s.novoTenantErro,
+      salvarNovoTenant: () => this.salvarNovoTenant(), novoTenantBtnLabel: s.salvandoNovoTenant ? 'Criando...' : 'Criar tenant',
+
+      voltarTenants: () => this.voltarTenants(),
+      goAbaGeral: () => this.goAbaGeral(), goAbaMarca: () => this.goAbaMarca(), goAbaFeatures: () => this.goAbaFeatures(), goAbaImpersonar: () => this.goAbaImpersonar(),
+      abaGeral: abaStyle(s.abaDetalhe === 'geral'), abaMarca: abaStyle(s.abaDetalhe === 'marca'), abaFeatures: abaStyle(s.abaDetalhe === 'features'), abaImpersonar: abaStyle(s.abaDetalhe === 'impersonar'),
+      isAbaGeral: s.abaDetalhe === 'geral', isAbaMarca: s.abaDetalhe === 'marca', isAbaFeatures: s.abaDetalhe === 'features', isAbaImpersonar: s.abaDetalhe === 'impersonar',
+
+      tenantSlug: s.tenantAtual ? s.tenantAtual.slug : '',
+      tenantNome: s.tenantAtual ? s.tenantAtual.nome : '',
+      nomeEditavel: s.nomeEditavel, onNomeEditavel: (e) => this.onNomeEditavel(e),
+      salvarNome: () => this.salvarNome(), salvarNomeLabel: s.salvandoNome ? 'Salvando...' : 'Salvar',
+      tenantCriadoEm: s.tenantAtual ? this.fmtData(s.tenantAtual.criadoEm) : '—',
+      tenantTotalProdutos: s.tenantAtual ? s.tenantAtual.totalProdutos : 0,
+      tenantTotalPedidos: s.tenantAtual ? s.tenantAtual.totalPedidos : 0,
+      tenantStatusLabel: s.tenantAtual && s.tenantAtual.ativo ? 'Loja ativa' : 'Loja desativada',
+      toggleTenantAtivo: () => this.toggleTenantAtivo(),
+      tenantToggleStyle: this.toggleStyle(!!(s.tenantAtual && s.tenantAtual.ativo)), tenantKnobStyle: this.knobStyle(),
+      tenantNovaSenhaAdmin: s.tenantNovaSenhaAdmin || '', onTenantNovaSenhaAdmin: (e) => this.onTenantNovaSenhaAdmin(e),
+      salvarSenhaAdminTenant: () => this.salvarSenhaAdminTenant(), salvarSenhaAdminLabel: s.salvandoSenhaAdmin ? 'Alterando...' : 'Alterar Senha',
+      hasTenantSenhaMsg: !!s.tenantSenhaMsg, tenantSenhaMsg: s.tenantSenhaMsg, tenantSenhaMsgCor: s.tenantSenhaMsgOk ? '#2D9E60' : '#C0392B',
+      lojaUrl: s.tenantAtual ? this.urlLoja(s.tenantAtual.slug) : '',
+
+      excluirTenantConfirmacao: s.excluirTenantConfirmacao, onExcluirTenantConfirmacao: (e) => this.onExcluirTenantConfirmacao(e),
+      excluirTenant: () => this.excluirTenant(),
+      excluirTenantDesabilitado: !s.tenantAtual || s.excluirTenantConfirmacao !== s.tenantAtual.slug || s.excluindoTenant,
+      excluirTenantBtnStyle: {
+        background: (!s.tenantAtual || s.excluirTenantConfirmacao !== s.tenantAtual.slug) ? '#F0CFCB' : '#C0392B',
+        color: '#fff', border: 'none', borderRadius: '10px', padding: '10px 16px', fontWeight: 700, fontSize: '13px',
+        cursor: (!s.tenantAtual || s.excluirTenantConfirmacao !== s.tenantAtual.slug) ? 'not-allowed' : 'pointer', flex: 'none',
+      },
+      excluirTenantLabel: s.excluindoTenant ? 'Excluindo...' : 'Excluir tenant',
+      hasExcluirTenantErro: !!s.excluirTenantErro, excluirTenantErro: s.excluirTenantErro,
+
+      corPrimaria: s.branding ? s.branding.corPrimaria : '#C8102E',
+      corSecundaria: s.branding ? s.branding.corSecundaria : '#F5A623',
+      corBotao: s.branding ? s.branding.corBotao : '#C8102E',
+      corTextoBotao: s.branding ? s.branding.corTextoBotao : '#FFFFFF',
+      corFundo: s.branding ? s.branding.corFundo : '#FFFFFF',
+      corTexto: s.branding ? s.branding.corTexto : '#1A1A1A',
+      corCard: s.branding ? s.branding.corCard : '#FFFFFF',
+      onCorPrimaria: (e) => this.onCorPrimaria(e), onCorSecundaria: (e) => this.onCorSecundaria(e),
+      onCorBotao: (e) => this.onCorBotao(e), onCorTextoBotao: (e) => this.onCorTextoBotao(e),
+      onCorFundo: (e) => this.onCorFundo(e), onCorTexto: (e) => this.onCorTexto(e), onCorCard: (e) => this.onCorCard(e),
+      fonteTitulo: s.branding ? s.branding.fonteTitulo : 'Inter', onFonteTitulo: (e) => this.onFonteTitulo(e),
+      fonteTexto: s.branding ? s.branding.fonteTexto : 'Inter', onFonteTexto: (e) => this.onFonteTexto(e),
+      fontesOptions: this.fontesOptions,
+      hasContrasteAviso: !!contrasteAvisoLabel, contrasteAvisoLabel,
+      hasBrandingMsg: !!s.brandingMsg, brandingMsg: s.brandingMsg, brandingMsgCor: s.brandingMsgOk ? '#2D9E60' : '#C0392B',
+      salvarBranding: () => this.salvarBranding(), salvarBrandingLabel: s.brandingSalvando ? 'Salvando...' : 'Salvar marca',
+      hasLogoPreview: !!(s.logoPreviewLocal || (s.branding && s.branding.logoUrl)),
+      semLogoPreview: !(s.logoPreviewLocal || (s.branding && s.branding.logoUrl)),
+      logoPreviewSrc: s.logoPreviewLocal || (s.branding && s.branding.logoUrl ? this.uploadsUrl(s.branding.logoUrl, s.tenantAtual && s.tenantAtual.slug) : 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"/>'),
+      onLogoFile: (e) => this.onLogoFile(e), enviarLogo: () => this.enviarLogo(),
+      enviarLogoLabel: s.enviandoLogo ? 'Enviando...' : 'Enviar logo',
+
+      featureRows,
+
+      gerarImpersonacao: () => this.gerarImpersonacao(), gerarImpersonacaoLabel: s.impersonarGerando ? 'Gerando...' : 'Gerar link de acesso',
+      hasImpersonarUrl: !!s.impersonarUrl, impersonarUrl: s.impersonarUrl,
+      copiarImpersonacao: () => this.copiarImpersonacao(), copiarLabel: s.copiado ? 'Copiado!' : 'Copiar',
+
+      logRows, logsEmpty: logRows.length === 0,
+      logsAnterior: () => this.logsAnterior(), logsProximo: () => this.logsProximo(),
+      logsPrimeiraPagina: s.logsPagina <= 1, logsUltimaPagina: s.logsPagina * s.logsTamanhoPagina >= s.logsTotal,
+
+      pwdAtual: s.pwd.atual, onPwdAtual: (e) => this.onPwdAtual(e),
+      pwdNova: s.pwd.nova, onPwdNova: (e) => this.onPwdNova(e),
+      pwdConf: s.pwd.conf, onPwdConf: (e) => this.onPwdConf(e),
+      tipoPwdAtual: s.mostrarSenha.atual ? 'text' : 'password',
+      mostrarPwdAtual: !!s.mostrarSenha.atual, ocultarPwdAtual: !s.mostrarSenha.atual,
+      togglePwdAtual: () => this.toggleMostrarSenha('atual'),
+      tipoPwdNova: s.mostrarSenha.nova ? 'text' : 'password',
+      mostrarPwdNova: !!s.mostrarSenha.nova, ocultarPwdNova: !s.mostrarSenha.nova,
+      togglePwdNova: () => this.toggleMostrarSenha('nova'),
+      tipoPwdConf: s.mostrarSenha.conf ? 'text' : 'password',
+      mostrarPwdConf: !!s.mostrarSenha.conf, ocultarPwdConf: !s.mostrarSenha.conf,
+      togglePwdConf: () => this.toggleMostrarSenha('conf'),
+      hasPwdMsg: !!s.pwdMsg, pwdMsg: s.pwdMsg, pwdMsgStyle: { margin: '10px 2px 0', fontSize: '13px', fontWeight: 600, color: s.pwdOk ? '#2D9E60' : '#C0392B' },
+      savePwd: () => this.savePwd(),
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -26,7 +26,8 @@ Se você é novo no projeto, comece nesta ordem:
 - **Como validar dados?** → [DESENVOLVIMENTO.md](./DESENVOLVIMENTO.md#usando-validadores)
 
 ### Arquiteto / Líder
-- **Estatísticas do projeto** → [RESUMO_ORGANIZACAO.md](./RESUMO_ORGANIZACAO.md#total-34-arquivos)
+- **Estatísticas do projeto** → [RESUMO_ORGANIZACAO.md](./RESUMO_ORGANIZACAO.md#total-34-arquivos)npm run start
+
 - **Fluxos de dados** → [ARVORE_COMPLETA.md](./ARVORE_COMPLETA.md#🔄-fluxos-de-dados-principais)
 - **Próximos passos** → [RESUMO_ORGANIZACAO.md](./RESUMO_ORGANIZACAO.md#próximos-passos)
 
