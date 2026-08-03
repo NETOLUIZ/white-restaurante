@@ -70,13 +70,15 @@
     document.head.appendChild(link);
   }
 
-  // body{} e a fonte de título são seguros via CSS puro: body{} não tem
-  // style inline (só o <style> de bloco, mesma especificidade, cascata
-  // normal decide); a fonte usa substring do NOME (não é cor, não sofre a
-  // normalização rgb()) então o seletor de atributo funciona igual.
+  // !important necessário: o runtime do DC (helmet.compile em support.js)
+  // re-anexa o <style> estático original (com a cor padrão do Bel do Frango)
+  // no <head> a cada render — como isso acontece DEPOIS do tema.js injetar
+  // este <style>, um body{color:...} sem !important perde a cascata (mesma
+  // especificidade, o que veio depois vence). background não sofria porque
+  // o <style> estático nunca definia background, só color — sem concorrência.
   function montarCssBase(branding, features) {
     var linhas = [];
-    linhas.push('body{background:' + (branding.corFundo || '') + ';color:' + (branding.corTexto || '') + '}');
+    linhas.push('body{background:' + (branding.corFundo || '') + ' !important;color:' + (branding.corTexto || '') + ' !important}');
     if (branding.fonteTexto) {
       linhas.push("body{font-family:'" + branding.fonteTexto + "',system-ui,sans-serif !important}");
     }
