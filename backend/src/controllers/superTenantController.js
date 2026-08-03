@@ -3,6 +3,7 @@ const { prismaBase } = require('../lib/prismaBase');
 const { validarSlug } = require('../utils/slugTenant');
 const { CHAVES_FEATURE } = require('../utils/tenantFeatures');
 const { invalidarCacheTenant } = require('../middleware/resolveTenant');
+const { registrarAuditoria } = require('../utils/auditLogger');
 
 /**
  * Super admin não reimplementa CRUD de conteúdo — só gerencia o tenant como
@@ -188,6 +189,7 @@ async function ativarDesativar(req, res) {
     }
     const tenant = await prismaBase.tenant.update({ where: { id }, data: { ativo } });
     invalidarCacheTenant(tenant.slug);
+    registrarAuditoria({ acao: 'TENANT_STATUS_ALTERADO', ator: req.superAdmin?.email, tenantId: tenant.id, detalhes: { slug: tenant.slug, ativo }, req });
     res.json({ id: tenant.id, slug: tenant.slug, nome: tenant.nome, ativo: tenant.ativo });
   } catch (err) {
     if (err.code === 'P2025') {
@@ -198,13 +200,6 @@ async function ativarDesativar(req, res) {
   }
 }
 
-/**
- * Apaga um tenant de vez — cascata no banco (onDelete: Cascade em toda
- * relação com Tenant) limpa produtos, pedidos, clientes, admin, branding,
- * features, tudo. Sem volta. Por isso exige repetir o SLUG no corpo como
- * confirmação — mesmo padrão de "digite o nome pra confirmar" de painéis
- * como GitHub, pra um clique errado não apagar a loja de um cliente de verdade.
- */
 async function deletar(req, res) {
   try {
     const { id } = req.params;
@@ -220,6 +215,7 @@ async function deletar(req, res) {
 
     await prismaBase.tenant.delete({ where: { id } });
     invalidarCacheTenant(tenant.slug);
+    registrarAuditoria({ acao: 'TENANT_EXCLUIDO', ator: req.superAdmin?.email, tenantId: tenant.id, detalhes: { slug: tenant.slug, nome: tenant.nome }, req });
     res.json({ ok: true });
   } catch (err) {
     if (err.code === 'P2025') {
@@ -230,7 +226,6 @@ async function deletar(req, res) {
   }
 }
 
-/** Altera a senha do administrador do tenant — painel do super admin. */
 async function alterarSenhaAdmin(req, res) {
   try {
     const { id } = req.params;
@@ -247,6 +242,7 @@ async function alterarSenhaAdmin(req, res) {
       where: { tenantId: id },
       data: { senha: senhaHash },
     });
+    registrarAuditoria({ acao: 'ADMIN_SENHA_ALTERADA_PELO_SUPER', ator: req.superAdmin?.email, tenantId: tenant.id, detalhes: { slug: tenant.slug }, req });
     res.json({ ok: true, mensagem: 'Senha alterada com sucesso' });
   } catch (err) {
     console.error('Erro ao alterar senha do admin do tenant:', err);
