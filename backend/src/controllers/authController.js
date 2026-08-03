@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { verificarBloqueio, registrarFalha, limparFalhas } = require('../utils/loginThrottle');
+const { registrarAuditoria } = require('../utils/auditLogger');
 
 const NOME_COOKIE = 'ba_admin_token';
 const COOKIE_MAX_IDADE_MS = 12 * 60 * 60 * 1000; // 12h, mesma duracao do token
@@ -38,13 +39,13 @@ async function login(req, res) {
 
     const admin = await req.prisma.admin.findFirst({ where: { email: String(email).trim().toLowerCase() } });
     if (!admin) {
-      registrarFalha(email);
+      registrarFalha(email, req);
       return res.status(401).json({ erro: 'Email ou senha incorretos' });
     }
 
     const senhaValida = await bcrypt.compare(senha, admin.senha);
     if (!senhaValida) {
-      registrarFalha(email);
+      registrarFalha(email, req);
       return res.status(401).json({ erro: 'Email ou senha incorretos' });
     }
     limparFalhas(email);
@@ -101,6 +102,7 @@ async function alterarSenha(req, res) {
 
     const senhaHash = await bcrypt.hash(String(novaSenha), 12);
     await req.prisma.admin.update({ where: { id: admin.id }, data: { senha: senhaHash, senhaAlteradaEm: new Date() } });
+    registrarAuditoria({ acao: 'ADMIN_SENHA_ALTERADA', ator: req.admin?.email, req });
     res.json({ ok: true });
   } catch (err) {
     console.error('Erro ao trocar senha do admin:', err);

@@ -205,10 +205,14 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
       // Nunca confia numa taxa vinda do client — só no bairroId, cuja taxaEntrega
       // é buscada aqui. Sem bairro válido, cai no padrão de sempre (Configuracao).
       const bairroIdNum = parseInt(bairroId, 10);
-      const bairro = Number.isInteger(bairroIdNum)
-        ? await req.prisma.bairro.findFirst({ where: { id: bairroIdNum, ativo: true } })
-        : null;
-      if (bairro) {
+      if (bairroId !== undefined && bairroId !== null && bairroId !== '') {
+        if (!Number.isInteger(bairroIdNum)) {
+          return res.status(400).json({ erro: 'Bairro inválido' });
+        }
+        const bairro = await req.prisma.bairro.findFirst({ where: { id: bairroIdNum, ativo: true } });
+        if (!bairro) {
+          return res.status(400).json({ erro: 'Bairro não encontrado ou indisponível para entrega' });
+        }
         taxaEntrega = bairro.taxaEntrega;
       } else {
         const config = await req.prisma.configuracao.findFirst();
