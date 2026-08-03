@@ -121,6 +121,33 @@
     });
   }
 
+  // A moldura decorativa atrás do "celular" em telas desktop (fora de
+  // Início/Cardápio, que usam layout wide) é um radial-gradient fixo — não
+  // está nas REGRAS_COR porque gradiente não reduz a um rgb() único pra
+  // comparar. Detecta pelo backgroundImage conter "gradient" (o layout wide
+  // usa cor sólida) e recria o mesmo gradiente com a cor primária do tenant.
+  function escurecer(hex, fator) {
+    var m = /^#([0-9a-f]{6})$/i.exec(hex || '');
+    if (!m) return hex;
+    var n = parseInt(m[1], 16);
+    var r = Math.round(((n >> 16) & 255) * fator);
+    var g = Math.round(((n >> 8) & 255) * fator);
+    var b = Math.round((n & 255) * fator);
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  function aplicarBackdropDesktop(branding) {
+    var el = document.querySelector('[data-bf-app-root]');
+    if (!el || !branding.corPrimaria) return;
+    if (getComputedStyle(el).backgroundImage.indexOf('gradient') === -1) return;
+    var escuro = escurecer(branding.corPrimaria, 0.35);
+    el.style.setProperty(
+      'background',
+      'radial-gradient(900px 520px at 50% 0%, ' + branding.corPrimaria + ' 0%, ' + escuro + ' 55%, #000 130%)',
+      'important',
+    );
+  }
+
   function aplicarNomeELogo(config) {
     var nome = config.tenant && config.tenant.nome;
     var logoUrl = config.branding && config.branding.logoUrl;
@@ -150,6 +177,7 @@
     var id = setInterval(function () {
       tentativas++;
       aplicarCoresDom(config.branding);
+      aplicarBackdropDesktop(config.branding);
       aplicarNomeELogo(config);
       if (tentativas >= MAX_TENTATIVAS) clearInterval(id);
     }, 300);
