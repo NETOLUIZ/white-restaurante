@@ -171,16 +171,28 @@
     }
   }
 
+  // Poll de tempo fixo (janela curta após o load) não é suficiente: as telas
+  // logado/deslogado (<sc-if>) só montam a árvore real de cada uma quando o
+  // usuário troca de estado (ex: só depois de efetivamente logar) — e digitar
+  // e-mail/senha rotineiramente leva mais que a janela do poll, então o
+  // sidebar do painel (que só existe após o login) nunca era alcançado.
+  // MutationObserver reaplica sempre que o DOM muda, sem prazo de validade —
+  // disconnect/observe em volta da aplicação evita a mutação que a própria
+  // função causa virar um novo evento (loop infinito).
   function iniciarPollDom(config) {
-    var tentativas = 0;
-    var MAX_TENTATIVAS = 30; // ~9s a 300ms — dá folga pro CDN do React carregar em conexão lenta
-    var id = setInterval(function () {
-      tentativas++;
+    function aplicarTudo() {
+      observer.disconnect();
       aplicarCoresDom(config.branding);
       aplicarBackdropDesktop(config.branding);
       aplicarNomeELogo(config);
-      if (tentativas >= MAX_TENTATIVAS) clearInterval(id);
-    }, 300);
+      observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+    }
+    var debounceId = null;
+    var observer = new MutationObserver(function () {
+      clearTimeout(debounceId);
+      debounceId = setTimeout(aplicarTudo, 50);
+    });
+    aplicarTudo();
   }
 
   configPromise.then(function (config) {
