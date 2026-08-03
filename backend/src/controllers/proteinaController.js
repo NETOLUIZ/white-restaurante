@@ -1,9 +1,7 @@
-const { prisma } = require('../utils/db');
-
 /** Lista proteínas ativas (esgotadas continuam aparecendo, mas marcadas) — usado pela tela "Monte sua marmita". */
 async function listarPublico(req, res) {
   try {
-    const proteinas = await prisma.proteina.findMany({ where: { ativo: true }, orderBy: { nome: 'asc' } });
+    const proteinas = await req.prisma.proteina.findMany({ where: { ativo: true }, orderBy: { nome: 'asc' } });
     res.json(proteinas);
   } catch (err) {
     console.error('Erro ao listar proteínas:', err);
@@ -14,7 +12,7 @@ async function listarPublico(req, res) {
 /** Lista todas as proteínas (inclusive inativas) — painel admin. */
 async function listarAdmin(req, res) {
   try {
-    const proteinas = await prisma.proteina.findMany({ orderBy: { nome: 'asc' } });
+    const proteinas = await req.prisma.proteina.findMany({ orderBy: { nome: 'asc' } });
     res.json(proteinas);
   } catch (err) {
     console.error('Erro ao listar proteínas (admin):', err);
@@ -29,7 +27,7 @@ async function criar(req, res) {
     if (!nome || !String(nome).trim()) {
       return res.status(400).json({ erro: 'Informe o nome da proteína' });
     }
-    const proteina = await prisma.proteina.create({ data: { nome: String(nome).trim() } });
+    const proteina = await req.prisma.proteina.create({ data: { nome: String(nome).trim() } });
     res.status(201).json(proteina);
   } catch (err) {
     console.error('Erro ao criar proteína:', err);
@@ -46,7 +44,7 @@ async function atualizar(req, res) {
     if (nome !== undefined) data.nome = String(nome).trim();
     if (ativo !== undefined) data.ativo = Boolean(ativo);
     if (esgotado !== undefined) data.esgotado = Boolean(esgotado);
-    const proteina = await prisma.proteina.update({ where: { id }, data });
+    const proteina = await req.prisma.proteina.update({ where: { id }, data });
     res.json(proteina);
   } catch (err) {
     console.error('Erro ao atualizar proteína:', err);
@@ -58,7 +56,7 @@ async function atualizar(req, res) {
 async function deletar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    await prisma.proteina.delete({ where: { id } });
+    await req.prisma.proteina.delete({ where: { id } });
     res.json({ ok: true });
   } catch (err) {
     if (err.code === 'P2003') {

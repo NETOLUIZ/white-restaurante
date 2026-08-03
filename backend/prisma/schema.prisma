@@ -1,5 +1,6 @@
 // Schema do backend do protótipo Bel do Frango ATU.
-// Banco e processo próprios (bel_do_frango_atu) — nenhuma relação com outros bancos/projetos.
+// Multitenant row-level (1 banco, coluna tenantId) — resolução de tenant por
+// subdomínio (fases seguintes). Banco e processo próprios (bel_do_frango_atu).
 // Portado do backend "Bel do frango" original e estendido com o catálogo de
 // "Monte sua marmita" (proteínas/complementos/tamanhos) e foto de produto.
 generator client {
@@ -39,6 +40,7 @@ enum TipoPedido {
   ENTREGA
   MESA
   RETIRADA
+  EMPRESA
 }
 
 enum StatusMesa {
@@ -48,61 +50,152 @@ enum StatusMesa {
   CONTA
 }
 
-/// Configurações gerais da loja — linha única (id sempre 1). Hoje só a taxa
-/// de entrega; antes vivia fixa no .env, sem o admin poder mudar sem reiniciar o servidor.
+/// Ramo de negócio do tenant — decide qual variação de tela/campo o Admin
+/// mostra (ex: código de barras e custo só fazem sentido pra MERCANTIL).
+/// RESTAURANTE é o default: todo tenant existente hoje continua exatamente
+/// como está, sem precisar de migration de dado nenhuma.
+enum TipoTenant {
+  RESTAURANTE
+  MERCANTIL
+}
+
+/// Uma loja/tenant do sistema, resolvida pelo subdomínio (ex: "belfrango" ->
+/// belfrango.dominio.com). Todo o resto do schema é escopado por tenantId.
+model Tenant {
+  id       String     @id @default(uuid())
+  slug     String     @unique // "belfrango" -> belfrango.dominio.com
+  nome     String
+  tipo     TipoTenant @default(RESTAURANTE)
+  ativo    Boolean    @default(true)
+  criadoEm DateTime   @default(now())
+
+  configuracao        Configuracao?
+  admins              Admin[]
+  garcons             Garcom[]
+  atendentes          Atendente[]
+  categorias          CategoriaProduto[]
+  subcategorias       Subcategoria[]
+  produtos            Produto[]
+  adicionais          Adicional[]
+  cupons              Cupom[]
+  clientes            Cliente[]
+  pedidos             Pedido[]
+  itensPedido         ItemPedido[]
+  proteinas           Proteina[]
+  complementos        Complemento[]
+  tamanhosMarmita     TamanhoMarmita[]
+  banners             Banner[]
+  mesas               Mesa[]
+  caixas              Caixa[]
+  empresas            Empresa[]
+  empresaFuncionarios EmpresaFuncionario[]
+  entregadores        Entregador[]
+  bairros             Bairro[]
+
+  // Fase 6A — Super Admin
+  branding            TenantBranding?
+  features            TenantFeature[]
+  impersonacaoCodigos ImpersonacaoCodigo[]
+  logsImpersonacao    LogImpersonacao[]
+}
+
+/// Configurações gerais da loja — 1 registro por tenant. `taxaEntrega` aqui é
+/// o padrão pra "Outro bairro"/bairros não cadastrados (ver model Bairro) —
+/// antes vivia fixa no .env, sem o admin poder mudar sem reiniciar o servidor.
 model Configuracao {
-  id          Int      @id @default(1)
-  taxaEntrega Float    @default(7.9)
+  id                   Int      @id @default(autoincrement())
+  tenantId             String   @unique
+  tenant               Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  taxaEntrega          Float    @default(7.9)
   /// Janela de horário de retirada pra produtos da categoria Galetos (formato "HH:MM").
   /// A lista de horários de 30 em 30 min é gerada a partir desses dois campos, nunca salva pronta.
-  galetoHorarioInicio String @default("10:00")
-  galetoHorarioFim    String @default("20:00")
-  updatedAt   DateTime @updatedAt
+  galetoHorarioInicio  String   @default("10:00")
+  galetoHorarioFim     String   @default("20:00")
+  /// Horário de funcionamento da loja, por dia da semana — chaves "dom".."sab",
+  /// cada uma com até 2 turnos [{inicio,fim}] em "HH:MM" (turno vazio = fechado
+  /// nesse dia). null = sem restrição cadastrada (loja sempre aberta, mesmo
+  /// comportamento de antes deste campo existir — ver utils/horarioFuncionamento.js).
+  horarioFuncionamento Json?
+  updatedAt            DateTime @updatedAt
+}
+
+/// Bairro cadastrado pela loja com sua própria taxa de entrega — o cliente
+/// escolhe um logo depois do splash (ver index.html) e essa taxa substitui o
+/// `Configuracao.taxaEntrega` padrão pro pedido dele. "Outro bairro" (não
+/// cadastrado aqui) continua usando o padrão.
+model Bairro {
+  id          Int      @id @default(autoincrement())
+  tenantId    String
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nome        String
+  taxaEntrega Float
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@unique([tenantId, nome])
+  @@index([tenantId])
 }
 
 /// Usuario do painel administrativo (cozinha/gestao da galeteria).
 model Admin {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  senha     String
-  nome      String
+  id              Int       @id @default(autoincrement())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email           String
+  senha           String
+  nome            String
   /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
   /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
   senhaAlteradaEm DateTime?
-  createdAt DateTime @default(now())
+  createdAt       DateTime  @default(now())
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
 }
 
 /// Garçom — login próprio, separado do Admin. Acesso restrito à tela de
 /// salão (mesas + cardápio pra anotar pedido), nunca ao painel completo.
 model Garcom {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  senha     String
-  nome      String
-  ativo     Boolean  @default(true)
+  id              Int       @id @default(autoincrement())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email           String
+  senha           String
+  nome            String
+  ativo           Boolean   @default(true)
   /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
   /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
   senhaAlteradaEm DateTime?
-  createdAt DateTime @default(now())
+  createdAt       DateTime  @default(now())
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
 }
 
 /// Atendente de balcão — login próprio, separado do Admin. Acesso restrito à
 /// tela de criar pedido manual (retirada), nunca ao painel completo.
 model Atendente {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  senha     String
-  nome      String
-  ativo     Boolean  @default(true)
+  id              Int       @id @default(autoincrement())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  email           String
+  senha           String
+  nome            String
+  ativo           Boolean   @default(true)
   /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
   /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
   senhaAlteradaEm DateTime?
-  createdAt DateTime @default(now())
+  createdAt       DateTime  @default(now())
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
 }
 
 model CategoriaProduto {
   id            Int            @id @default(autoincrement())
-  nome          String         @unique
+  tenantId      String
+  tenant        Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nome          String
   ordem         Int            @default(0)
   /// Caminho relativo do arquivo em /uploads/categorias (ex: "categorias/abc123.jpg") — nunca base64 no banco.
   foto          String?
@@ -110,6 +203,9 @@ model CategoriaProduto {
   subcategorias Subcategoria[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
+
+  @@unique([tenantId, nome])
+  @@index([tenantId])
 }
 
 /// Subdivisão opcional de uma categoria (ex: dentro de "Bebidas" — Cervejas,
@@ -117,6 +213,8 @@ model CategoriaProduto {
 /// uma categoria sem subcategorias cadastradas simplesmente não usa isso.
 model Subcategoria {
   id          Int              @id @default(autoincrement())
+  tenantId    String
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   nome        String
   ordem       Int              @default(0)
   categoriaId Int
@@ -125,35 +223,52 @@ model Subcategoria {
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
-  @@unique([categoriaId, nome])
+  @@unique([tenantId, categoriaId, nome])
+  @@index([tenantId])
 }
 
 model Produto {
-  id                Int                  @id @default(autoincrement())
+  id                Int              @id @default(autoincrement())
+  tenantId          String
+  tenant            Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   categoriaId       Int
-  categoria         CategoriaProduto     @relation(fields: [categoriaId], references: [id])
+  categoria         CategoriaProduto @relation(fields: [categoriaId], references: [id])
   subcategoriaId    Int?
-  subcategoria      Subcategoria?        @relation(fields: [subcategoriaId], references: [id], onDelete: SetNull)
+  subcategoria      Subcategoria?    @relation(fields: [subcategoriaId], references: [id], onDelete: SetNull)
   nome              String
   descricaoCurta    String
   descricaoCompleta String
   /// Fonte unica de verdade do preco — nunca aceito do corpo da requisicao ao criar pedido.
   preco             Float
+  /// Só usado por tenant MERCANTIL (margem = preco - custo) — null pro resto.
+  custo             Float?
+  /// Só usado por tenant MERCANTIL (leitor de código de barras no PDV) — null pro resto.
+  /// Único por tenant quando preenchido (dois produtos não podem ter o mesmo código).
+  codigoBarras      String?
   avaliacao         Float?
   tag               String?
   /// Caminho relativo do arquivo em /uploads/produtos (ex: "produtos/abc123.jpg") — nunca base64 no banco.
   foto              String?
-  estoque           Int                  @default(0)
-  destaque          Boolean              @default(false)
-  ativo             Boolean              @default(true)
+  estoque           Int              @default(0)
+  destaque          Boolean          @default(false)
+  ativo             Boolean          @default(true)
+  /// "Prato do dia" do canal empresa — só produtos marcados aqui aparecem no
+  /// cardápio restrito que a empresa (cliente corporativo) vê pra pedir.
+  disponivelEmpresa Boolean          @default(false)
+  /// Quando true, `preco` vira preço por KG (não por unidade) — quem compra
+  /// informa o peso em gramas, que fica gravado em ItemPedido.quantidade
+  /// (ver montarItemValidado em pedidoController.js).
+  vendidoPorPeso    Boolean          @default(false)
   itensPedido       ItemPedido[]
   banners           Banner[]
   /// Adicionais pagos próprios deste produto (ex: "Bacon +R$3" só no Galeto) —
   /// cadastrados e editados direto no modal do produto, nunca compartilhados entre produtos.
   adicionais        Adicional[]
-  createdAt         DateTime             @default(now())
-  updatedAt         DateTime             @updatedAt
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 
+  @@unique([tenantId, codigoBarras])
+  @@index([tenantId])
   @@index([categoriaId])
   @@index([subcategoriaId])
 }
@@ -162,6 +277,8 @@ model Produto {
 /// Cada linha pertence a exatamente um produto — sem catálogo compartilhado.
 model Adicional {
   id          Int                   @id @default(autoincrement())
+  tenantId    String
+  tenant      Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   produtoId   Int
   produto     Produto               @relation(fields: [produtoId], references: [id], onDelete: Cascade)
   nome        String
@@ -172,12 +289,15 @@ model Adicional {
   createdAt   DateTime              @default(now())
   updatedAt   DateTime              @updatedAt
 
+  @@index([tenantId])
   @@index([produtoId])
 }
 
 model Cupom {
   id         Int       @id @default(autoincrement())
-  codigo     String    @unique
+  tenantId   String
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  codigo     String
   tipo       TipoCupom
   /// Percentual de desconto (0-100) quando tipo = PERCENTUAL; ignorado se FRETE_GRATIS.
   percentual Int?
@@ -185,65 +305,84 @@ model Cupom {
   pedidos    Pedido[]
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+
+  @@unique([tenantId, codigo])
+  @@index([tenantId])
 }
 
 /// Cliente identificado por telefone no checkout (guest checkout, sem senha).
 /// Dado pessoal (LGPD): vive só aqui no backend — nunca cacheado no frontend.
 model Cliente {
   id             Int      @id @default(autoincrement())
+  tenantId       String
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   nome           String
-  telefone       String   @unique
+  telefone       String
   enderecoPadrao Json?
   pedidos        Pedido[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+
+  @@unique([tenantId, telefone])
+  @@index([tenantId])
 }
 
 model Pedido {
-  id             Int            @id @default(autoincrement())
+  id                   Int             @id @default(autoincrement())
+  tenantId             String
+  tenant               Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   /// Chave pública pra tela de acompanhamento (guest, sem login) — nunca o id
   /// sequencial, que permitiria enumerar/ver pedidos de outros clientes (IDOR).
-  codigoAcompanhamento String   @unique @default(uuid())
+  codigoAcompanhamento String          @default(uuid())
   /// ENTREGA (delivery, fluxo padrão) | MESA (comanda de salão) | RETIRADA (balcão).
-  tipo           TipoPedido     @default(ENTREGA)
-  clienteId      Int?
-  cliente        Cliente?       @relation(fields: [clienteId], references: [id], onDelete: SetNull)
+  tipo                 TipoPedido      @default(ENTREGA)
+  clienteId            Int?
+  cliente              Cliente?        @relation(fields: [clienteId], references: [id], onDelete: SetNull)
   /// Pedido de mesa não tem cliente identificado (guest) — nomeCliente vira só "Mesa N" se em branco.
-  mesaId         Int?
-  mesa           Mesa?          @relation(fields: [mesaId], references: [id], onDelete: SetNull)
-  nomeCliente    String
+  mesaId               Int?
+  mesa                 Mesa?           @relation(fields: [mesaId], references: [id], onDelete: SetNull)
+  /// Preenchido só quando tipo = EMPRESA — pedido em lote de um cliente
+  /// corporativo (construtora etc.), nomeCliente vira o nome do funcionário.
+  empresaId            Int?
+  empresa              Empresa?        @relation(fields: [empresaId], references: [id], onDelete: SetNull)
+  nomeCliente          String
   /// Obrigatorio para ENTREGA; nulo para MESA/RETIRADA.
-  telefone       String?
-  endereco       Json?
-  itens          ItemPedido[]
-  cupomId        Int?
-  cupom          Cupom?         @relation(fields: [cupomId], references: [id], onDelete: SetNull)
+  telefone             String?
+  endereco             Json?
+  itens                ItemPedido[]
+  cupomId              Int?
+  cupom                Cupom?          @relation(fields: [cupomId], references: [id], onDelete: SetNull)
   /// subtotal/desconto/taxaEntrega/total sao calculados e congelados no servidor na criacao — nunca recebidos prontos do client.
-  subtotal       Float
-  desconto       Float          @default(0)
-  taxaEntrega    Float          @default(0)
-  total          Float
+  subtotal             Float
+  desconto             Float           @default(0)
+  taxaEntrega          Float           @default(0)
+  total                Float
   /// Definida na criacao (ENTREGA) ou só no fechamento da conta (MESA).
-  formaPagamento FormaPagamento?
+  formaPagamento       FormaPagamento?
   /// Atualizado manualmente pelo admin (painel) conforme o pedido avanca na cozinha/entrega/mesa.
-  statusEntrega  StatusEntrega  @default(CONFIRMADO)
-  entregadorId   Int?
-  entregador     Entregador?    @relation(fields: [entregadorId], references: [id], onDelete: SetNull)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  statusEntrega        StatusEntrega   @default(CONFIRMADO)
+  entregadorId         Int?
+  entregador           Entregador?     @relation(fields: [entregadorId], references: [id], onDelete: SetNull)
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+
+  @@unique([tenantId, codigoAcompanhamento])
+  @@index([tenantId])
 }
 
 /// Um item de pedido é OU um produto fixo do cardápio (produtoId preenchido)
 /// OU uma marmita montada (tamanhoMarmitaId preenchido, com proteínas/complementos
 /// nas tabelas de junção abaixo). O controller garante que só um dos dois é usado.
 model ItemPedido {
-  id                     Int                      @id @default(autoincrement())
+  id                     Int                     @id @default(autoincrement())
+  tenantId               String
+  tenant                 Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   pedidoId               Int
-  pedido                 Pedido                   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  pedido                 Pedido                  @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
   produtoId              Int?
-  produto                Produto?                 @relation(fields: [produtoId], references: [id])
-  tamanhoMarmitaId        String?
-  tamanhoMarmita         TamanhoMarmita?          @relation(fields: [tamanhoMarmitaId], references: [id])
+  produto                Produto?                @relation(fields: [produtoId], references: [id])
+  tamanhoMarmitaId       Int?
+  tamanhoMarmita         TamanhoMarmita?         @relation(fields: [tamanhoMarmitaId], references: [id])
   proteinas              ItemPedidoProteina[]
   complementos           ItemPedidoComplemento[]
   /// Adicionais escolhidos — só se aplica a item de produto fixo (produtoId), nunca a marmita montada.
@@ -253,11 +392,13 @@ model ItemPedido {
   /// Preco unitario (do produto OU do tamanho de marmita) no momento do pedido — congelado.
   precoUnitarioCongelado Float
 
+  @@index([tenantId])
   @@index([pedidoId])
 }
 
 /// Um adicional escolhido dentro de um item de pedido, com preço e quantidade próprios
 /// (ex: 2x Bacon). Preço sempre congelado do catálogo no momento do pedido.
+/// Pivot pura (nunca consultada isolada por tenant) — sem tenantId, só via ItemPedido/Adicional.
 model ItemPedidoAdicional {
   id                     Int        @id @default(autoincrement())
   itemPedidoId           Int
@@ -270,6 +411,7 @@ model ItemPedidoAdicional {
   @@index([itemPedidoId])
 }
 
+/// Pivot pura (nunca consultada isolada por tenant) — sem tenantId, só via ItemPedido/Proteina.
 model ItemPedidoProteina {
   id           Int        @id @default(autoincrement())
   itemPedidoId Int
@@ -280,6 +422,7 @@ model ItemPedidoProteina {
   @@index([itemPedidoId])
 }
 
+/// Pivot pura (nunca consultada isolada por tenant) — sem tenantId, só via ItemPedido/Complemento.
 model ItemPedidoComplemento {
   id            Int         @id @default(autoincrement())
   itemPedidoId  Int
@@ -292,40 +435,60 @@ model ItemPedidoComplemento {
 
 /// Catálogo de proteínas do "Monte sua marmita" — gerenciado pelo admin.
 model Proteina {
-  id         Int                  @id @default(autoincrement())
-  nome       String
-  ativo      Boolean              @default(true)
-  esgotado   Boolean              @default(false)
+  id          Int                  @id @default(autoincrement())
+  tenantId    String
+  tenant      Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nome        String
+  ativo       Boolean              @default(true)
+  esgotado    Boolean              @default(false)
   itensUsados ItemPedidoProteina[]
-  createdAt  DateTime             @default(now())
-  updatedAt  DateTime             @updatedAt
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@index([tenantId])
 }
 
 /// Catálogo de complementos do "Monte sua marmita" — gerenciado pelo admin.
 model Complemento {
-  id         Int                     @id @default(autoincrement())
-  nome       String
-  ativo      Boolean                 @default(true)
-  esgotado   Boolean                 @default(false)
+  id          Int                     @id @default(autoincrement())
+  tenantId    String
+  tenant      Tenant                  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nome        String
+  ativo       Boolean                 @default(true)
+  esgotado    Boolean                 @default(false)
   itensUsados ItemPedidoComplemento[]
-  createdAt  DateTime                @default(now())
-  updatedAt  DateTime                @updatedAt
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
+
+  @@index([tenantId])
 }
 
-/// Tamanhos fixos da marmita montada ("pequena" | "grande") — id textual fixo,
-/// preço e quantidade de proteínas exigida editáveis pelo admin.
+/// Tamanhos fixos da marmita montada ("pequena" | "grande"). O id virou serial
+/// (Int) pra poder ter tenantId na chave; `slug` preserva a string natural que
+/// o frontend manda no checkout (index.html não pode ser alterado — ver Fase 1
+/// verificação A) e nunca muda. Preço e quantidade de proteínas exigida editáveis pelo admin.
 model TamanhoMarmita {
-  id          String       @id // 'pequena' | 'grande'
-  nome        String
-  qtdProteinas Int
-  preco       Float
-  itensPedido ItemPedido[]
-  updatedAt   DateTime     @updatedAt
+  id                Int          @id @default(autoincrement())
+  tenantId          String
+  tenant            Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  slug              String // 'pequena' | 'grande'
+  nome              String
+  qtdProteinas      Int
+  preco             Float
+  /// Habilita esse tamanho de marmita no cardápio restrito do canal empresa.
+  disponivelEmpresa Boolean      @default(false)
+  itensPedido       ItemPedido[]
+  updatedAt         DateTime     @updatedAt
+
+  @@unique([tenantId, slug])
+  @@index([tenantId])
 }
 
 /// Banners de promoção da Home. Gerenciados pelo admin — não são mais fixos no código do frontend.
 model Banner {
   id        Int       @id @default(autoincrement())
+  tenantId  String
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   selo      String
   titulo    String
   descricao String
@@ -340,13 +503,17 @@ model Banner {
   ordem     Int       @default(0)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+
+  @@index([tenantId])
 }
 
 /// Mesa do salão. O pedido em aberto de uma mesa é o Pedido (tipo MESA) mais
 /// recente com statusEntrega != ENTREGUE/CANCELADO — sem ponteiro denormalizado.
 model Mesa {
   id          Int        @id @default(autoincrement())
-  numero      Int        @unique
+  tenantId    String
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  numero      Int
   lugares     Int        @default(4)
   status      StatusMesa @default(LIVRE)
   clienteNome String?
@@ -355,32 +522,184 @@ model Mesa {
   pedidos     Pedido[]
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+
+  @@unique([tenantId, numero])
+  @@index([tenantId])
 }
 
 /// Caixa do dia — aberto pelo admin no início do turno e fechado ao final.
 /// totalVendas é calculado no fechamento (soma dos pedidos ENTREGUE no período).
 model Caixa {
   id           Int       @id @default(autoincrement())
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   valorInicial Float     @default(0)
   abertoEm     DateTime  @default(now())
   fechadoEm    DateTime?
   /// Calculado no fechamento: soma dos totais dos pedidos ENTREGUE criados entre abertoEm e fechadoEm.
   totalVendas  Float?
   createdAt    DateTime  @default(now())
+
+  @@index([tenantId])
+}
+
+/// Cliente corporativo (ex: construtora) que compra almoço em lote pros
+/// funcionários. Cadastrado pelo admin — sem autocadastro. Login próprio
+/// (login/senha, não email) e cota diária de pedidos configurável.
+/// Não estava no escopo original de 22 models desta fase (feature adicionada
+/// depois) — ganhou tenantId pelo mesmo motivo dos demais papéis de login:
+/// é dado pertencente a uma loja especifica, nunca compartilhado entre tenants.
+model Empresa {
+  id                 Int                  @id @default(autoincrement())
+  tenantId           String
+  tenant             Tenant               @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nome               String
+  login              String
+  senha              String
+  /// Limite de pedidos (marmitas) que essa empresa pode fazer por dia.
+  cotaDiaria         Int                  @default(20)
+  /// Preço fixo por marmita/pedido desta empresa — quando > 0, sobrepõe o preço
+  /// calculado do catálogo (produto/tamanho) no pedido de empresa. 0 (padrão)
+  /// mantém a precificação normal por item.
+  valorMarmita       Float                @default(0)
+  ativo              Boolean              @default(true)
+  /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
+  /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
+  senhaAlteradaEm    DateTime?
+  pedidos            Pedido[]
+  funcionariosSalvos EmpresaFuncionario[]
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  @@unique([tenantId, login])
+  @@index([tenantId])
+}
+
+/// Nomes de funcionários salvos por uma empresa (cliente corporativo) pra
+/// agilizar o pedido em lote — a empresa clica no nome em vez de digitar de
+/// novo toda vez. Autossalvo quando um nome novo é usado num lote (ver
+/// empresaPedidoController.criarLote).
+model EmpresaFuncionario {
+  id        Int      @id @default(autoincrement())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  empresaId Int
+  empresa   Empresa  @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+  nome      String
+  ativo     Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([empresaId, nome])
+  @@index([tenantId])
+  @@index([empresaId])
 }
 
 /// Motoboy/entregador que recebe pedidos distribuídos pelo admin.
 /// Login próprio (email/senha) — mesmo esquema do Garcom, nunca acessa rotas de admin.
 model Entregador {
-  id        Int      @id @default(autoincrement())
-  nome      String
-  email     String   @unique
-  senha     String
-  ativo     Boolean  @default(true)
+  id              Int       @id @default(autoincrement())
+  tenantId        String
+  tenant          Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  nome            String
+  email           String
+  senha           String
+  ativo           Boolean   @default(true)
   /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
   /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
   senhaAlteradaEm DateTime?
-  pedidos   Pedido[]
-  createdAt DateTime @default(now())
+  pedidos         Pedido[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@unique([tenantId, email])
+  @@index([tenantId])
+}
+
+// ============================================================
+// Fase 6A — Super Admin (dono da plataforma, subdomínio "super")
+// ============================================================
+
+/// Dono da plataforma. Model separado do Admin de propósito — nunca um campo
+/// `role` no Admin, porque um bug de escalação de privilégio dentro de um
+/// tenant não pode virar acesso a todos os clientes. `email` é único global
+/// (não composto com tenantId — super admin não pertence a nenhum tenant).
+model SuperAdmin {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  senha           String
+  nome            String
+  ativo           Boolean   @default(true)
+  senhaAlteradaEm DateTime?
+  createdAt       DateTime  @default(now())
+}
+
+/// Identidade visual de um tenant (cores, logo, fonte). Vive no admin do
+/// tenant, mas a tela só é editável sob impersonation (req.impersonando) —
+/// o dono do restaurante não muda cor sozinho.
+model TenantBranding {
+  id       Int    @id @default(autoincrement())
+  tenantId String @unique
+  tenant   Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  logoUrl    String?
+  faviconUrl String?
+
+  corPrimaria   String @default("#C8102E")
+  corSecundaria String @default("#F5A623")
+  corBotao      String @default("#C8102E")
+  corTextoBotao String @default("#FFFFFF")
+  corFundo      String @default("#FFFFFF")
+  corTexto      String @default("#1A1A1A")
+  corCard       String @default("#FFFFFF")
+
+  fonteTitulo String @default("Inter")
+  fonteTexto  String @default("Inter")
+
   updatedAt DateTime @updatedAt
+}
+
+/// Liga/desliga módulos por tenant (ex: um tenant sem salão não precisa da
+/// feature "mesas"). Consumido por /api/config (Fase 6B esconde UI) — o
+/// bloqueio de verdade nas rotas fica pra quando alguém precisar de fato.
+model TenantFeature {
+  id       Int     @id @default(autoincrement())
+  tenantId String
+  tenant   Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  chave    String // 'empresa' | 'entregador' | 'mesas' | 'cupom' | 'marmita'
+  ativo    Boolean @default(true)
+
+  @@unique([tenantId, chave])
+  @@index([tenantId])
+}
+
+/// Código de uso único (60s) que o super admin gera pra "entrar como" um
+/// tenant. Nunca um token na URL — código de uso único resgatado via POST
+/// evita vazar em log de proxy/histórico do navegador/header Referer.
+/// Continua escopado por tenantId de propósito: um código gerado pro tenant A
+/// não pode ser resgatado no subdomínio do tenant B, mesmo sabendo o valor.
+model ImpersonacaoCodigo {
+  id           String    @id @default(uuid())
+  codigo       String    @unique
+  superAdminId Int
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  expiraEm     DateTime
+  usadoEm      DateTime?
+  criadoEm     DateTime  @default(now())
+
+  @@index([tenantId])
+}
+
+/// Trilha de auditoria de quem operou como qual tenant e quando.
+model LogImpersonacao {
+  id           String    @id @default(uuid())
+  superAdminId Int
+  tenantId     String
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  iniciadoEm   DateTime  @default(now())
+  encerradoEm  DateTime?
+  ip           String?
+
+  @@index([tenantId])
 }

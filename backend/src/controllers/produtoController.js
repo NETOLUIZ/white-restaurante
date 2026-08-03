@@ -1,4 +1,5 @@
-const { prisma } = require('../utils/db');
+const ExcelJS = require('exceljs');
+const { parsePlanilha, gerarPlanilhaModelo } = require('../utils/produtoImport');
 
 /**
  * Lista produtos ativos. Filtros opcionais via query string:
@@ -20,7 +21,7 @@ async function listarPublico(req, res) {
       ];
     }
 
-    const produtos = await prisma.produto.findMany({
+    const produtos = await req.prisma.produto.findMany({
       where,
       include: { adicionais: { where: { ativo: true, esgotado: false }, orderBy: { nome: 'asc' } } },
       orderBy: { nome: 'asc' },
@@ -39,7 +40,7 @@ async function buscarPorId(req, res) {
     if (!Number.isInteger(id)) {
       return res.status(400).json({ erro: 'Id de produto inválido' });
     }
-    const produto = await prisma.produto.findFirst({
+    const produto = await req.prisma.produto.findFirst({
       where: { id, ativo: true },
       include: { categoria: true, adicionais: { where: { ativo: true, esgotado: false }, orderBy: { nome: 'asc' } } },
     });
@@ -56,7 +57,7 @@ async function buscarPorId(req, res) {
 /** Lista TODOS os produtos (inclusive inativos) — painel admin. */
 async function listarAdmin(req, res) {
   try {
-    const produtos = await prisma.produto.findMany({
+    const produtos = await req.prisma.produto.findMany({
       include: { categoria: true, adicionais: { orderBy: { nome: 'asc' } } },
       orderBy: { nome: 'asc' },
     });
@@ -70,28 +71,39 @@ async function listarAdmin(req, res) {
 /** Cria um produto novo — painel admin. */
 async function criar(req, res) {
   try {
-    const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, avaliacao, tag, destaque, ativo, estoque } = req.body;
-    if (!categoriaId || !nome || !descricaoCurta || preco === undefined) {
-      return res.status(400).json({ erro: 'Categoria, nome, descrição curta e preço são obrigatórios' });
+    const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, custo, codigoBarras, avaliacao, tag, destaque, ativo, estoque, vendidoPorPeso } = req.body;
+    let catId = categoriaId ? parseInt(categoriaId, 10) : null;
+    if (!catId) {
+      const primCat = await req.prisma.categoriaProduto.findFirst({ orderBy: { id: 'asc' } });
+      catId = primCat ? primCat.id : 1;
     }
-    const produto = await prisma.produto.create({
+    const produto = await req.prisma.produto.create({
       data: {
-        categoriaId: parseInt(categoriaId, 10),
+        categoriaId: catId,
         subcategoriaId: subcategoriaId ? parseInt(subcategoriaId, 10) : null,
-        nome: String(nome).trim(),
-        descricaoCurta: String(descricaoCurta).trim(),
-        descricaoCompleta: String(descricaoCompleta || descricaoCurta).trim(),
-        preco: Number(preco),
+        nome: nome ? String(nome).trim() : 'Novo Produto',
+        descricaoCurta: descricaoCurta ? String(descricaoCurta).trim() : '',
+        descricaoCompleta: descricaoCompleta ? String(descricaoCompleta).trim() : (descricaoCurta ? String(descricaoCurta).trim() : ''),
+        preco: preco !== undefined && preco !== null && !isNaN(Number(preco)) ? Number(preco) : 0,
+        custo: custo != null && custo !== '' ? Number(custo) : null,
+        // string vazia vira null — senão dois produtos sem código de barras
+        // colidiriam no índice único (tenantId, codigoBarras), que só trata
+        // NULL como "sem valor" de verdade (Postgres permite múltiplos NULL).
+        codigoBarras: codigoBarras ? String(codigoBarras).trim() : null,
         avaliacao: avaliacao != null ? Number(avaliacao) : null,
         tag: tag || null,
         destaque: Boolean(destaque),
         estoque: estoque !== undefined ? parseInt(estoque, 10) || 0 : 0,
         ativo: ativo === undefined ? true : Boolean(ativo),
+        vendidoPorPeso: Boolean(vendidoPorPeso),
       },
       include: { adicionais: true },
     });
     res.status(201).json(produto);
   } catch (err) {
+    if (err.code === 'P2002') {
+      return res.status(409).json({ erro: 'Já existe um produto com esse código de barras' });
+    }
     console.error('Erro ao criar produto:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
   }
@@ -101,7 +113,7 @@ async function criar(req, res) {
 async function atualizar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, avaliacao, tag, destaque, ativo, estoque } = req.body;
+    const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, custo, codigoBarras, avaliacao, tag, destaque, ativo, estoque, disponivelEmpresa, vendidoPorPeso } = req.body;
     const data = {};
     if (categoriaId !== undefined) data.categoriaId = parseInt(categoriaId, 10);
     if (subcategoriaId !== undefined) data.subcategoriaId = subcategoriaId ? parseInt(subcategoriaId, 10) : null;
@@ -109,15 +121,22 @@ async function atualizar(req, res) {
     if (descricaoCurta !== undefined) data.descricaoCurta = String(descricaoCurta).trim();
     if (descricaoCompleta !== undefined) data.descricaoCompleta = String(descricaoCompleta).trim();
     if (preco !== undefined) data.preco = Number(preco);
+    if (custo !== undefined) data.custo = custo === null || custo === '' ? null : Number(custo);
+    if (codigoBarras !== undefined) data.codigoBarras = codigoBarras ? String(codigoBarras).trim() : null;
     if (avaliacao !== undefined) data.avaliacao = avaliacao === null ? null : Number(avaliacao);
     if (tag !== undefined) data.tag = tag || null;
     if (destaque !== undefined) data.destaque = Boolean(destaque);
     if (estoque !== undefined) data.estoque = Math.max(0, parseInt(estoque, 10) || 0);
     if (ativo !== undefined) data.ativo = Boolean(ativo);
+    if (disponivelEmpresa !== undefined) data.disponivelEmpresa = Boolean(disponivelEmpresa);
+    if (vendidoPorPeso !== undefined) data.vendidoPorPeso = Boolean(vendidoPorPeso);
 
-    const produto = await prisma.produto.update({ where: { id }, data, include: { adicionais: true } });
+    const produto = await req.prisma.produto.update({ where: { id }, data, include: { adicionais: true } });
     res.json(produto);
   } catch (err) {
+    if (err.code === 'P2002') {
+      return res.status(409).json({ erro: 'Já existe um produto com esse código de barras' });
+    }
     console.error('Erro ao atualizar produto:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
   }
@@ -128,9 +147,9 @@ async function ajustarEstoque(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
     const delta = parseInt(req.body.delta, 10) || 0;
-    const atual = await prisma.produto.findUnique({ where: { id } });
+    const atual = await req.prisma.produto.findFirst({ where: { id } });
     if (!atual) return res.status(404).json({ erro: 'Produto não encontrado' });
-    const produto = await prisma.produto.update({ where: { id }, data: { estoque: Math.max(0, atual.estoque + delta) }, include: { adicionais: true } });
+    const produto = await req.prisma.produto.update({ where: { id }, data: { estoque: Math.max(0, atual.estoque + delta) }, include: { adicionais: true } });
     res.json(produto);
   } catch (err) {
     console.error('Erro ao ajustar estoque:', err);
@@ -142,7 +161,7 @@ async function ajustarEstoque(req, res) {
 async function deletar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    await prisma.produto.delete({ where: { id } });
+    await req.prisma.produto.delete({ where: { id } });
     res.json({ ok: true });
   } catch (err) {
     if (err.code === 'P2003') {
@@ -156,7 +175,7 @@ async function deletar(req, res) {
 /**
  * Recebe a foto do produto via multipart/form-data (campo "foto", ver multer
  * em routes/admin.js) e salva só o caminho relativo no banco — o arquivo em
- * si fica em /uploads/produtos, nunca como base64 numa coluna.
+ * si fica em /uploads/{tenantId}/produtos, nunca como base64 numa coluna.
  */
 async function enviarFoto(req, res) {
   try {
@@ -164,8 +183,11 @@ async function enviarFoto(req, res) {
     if (!req.file) {
       return res.status(400).json({ erro: 'Nenhum arquivo de imagem enviado' });
     }
-    const caminhoRelativo = `produtos/${req.file.filename}`;
-    const produto = await prisma.produto.update({ where: { id }, data: { foto: caminhoRelativo }, include: { adicionais: true } });
+    // Prefixo com tenantId — o front monta a URL como "/uploads/" + foto direto
+    // (não pode ser alterado), e o arquivo físico agora vive em
+    // uploads/{tenantId}/produtos/ (Fase 5), não mais numa pasta compartilhada.
+    const caminhoRelativo = `${req.tenantId}/produtos/${req.file.filename}`;
+    const produto = await req.prisma.produto.update({ where: { id }, data: { foto: caminhoRelativo }, include: { adicionais: true } });
     res.json({ foto: `/uploads/${caminhoRelativo}`, produto });
   } catch (err) {
     console.error('Erro ao salvar foto do produto:', err);
@@ -177,7 +199,7 @@ async function enviarFoto(req, res) {
 async function removerFoto(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    const produto = await prisma.produto.update({ where: { id }, data: { foto: null }, include: { adicionais: true } });
+    const produto = await req.prisma.produto.update({ where: { id }, data: { foto: null }, include: { adicionais: true } });
     res.json({ produto });
   } catch (err) {
     console.error('Erro ao remover foto do produto:', err);
@@ -185,4 +207,117 @@ async function removerFoto(req, res) {
   }
 }
 
-module.exports = { listarPublico, buscarPorId, listarAdmin, criar, atualizar, deletar, enviarFoto, removerFoto, ajustarEstoque };
+function normalizarNome(nome) {
+  return nome.trim().toLowerCase();
+}
+
+/** Gera e devolve o .xlsx modelo pra importação em lote — painel admin. */
+async function baixarModeloImportacao(req, res) {
+  try {
+    const buffer = await gerarPlanilhaModelo();
+    res.set('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.set('Content-Disposition', 'attachment; filename="modelo-produtos.xlsx"');
+    res.send(buffer);
+  } catch (err) {
+    console.error('Erro ao gerar modelo de importação:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+/**
+ * Importa produtos em lote a partir de uma planilha .xlsx — painel admin.
+ * Tudo-ou-nada: se qualquer linha tiver erro (formato ou duplicata), nada é
+ * gravado — devolve a lista de erros pra corrigir na planilha e reenviar.
+ */
+async function importarProdutos(req, res) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ erro: 'Nenhum arquivo enviado (campo esperado: "arquivo")' });
+    }
+    // .xlsx é um ZIP — os dois primeiros bytes são sempre "PK". Checar extensão
+    // sozinha deixa passar qualquer arquivo só porque renomearam pra .xlsx.
+    const pareceXlsx = req.file.buffer.length > 2 && req.file.buffer[0] === 0x50 && req.file.buffer[1] === 0x4b;
+    if (!pareceXlsx) {
+      return res.status(400).json({ erro: 'Formato inválido — envie um arquivo .xlsx (baixe a planilha modelo se não tiver uma).' });
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(req.file.buffer);
+
+    let linhas;
+    let erros;
+    try {
+      ({ linhas, erros } = parsePlanilha(workbook));
+    } catch (err) {
+      return res.status(err.status || 400).json({ erro: err.message });
+    }
+
+    const [produtosExistentes, categoriasExistentes] = await Promise.all([
+      req.prisma.produto.findMany({ select: { nome: true } }),
+      req.prisma.categoriaProduto.findMany(),
+    ]);
+    const nomesExistentes = new Set(produtosExistentes.map((p) => normalizarNome(p.nome)));
+    const categoriaIdPorNome = new Map(categoriasExistentes.map((c) => [normalizarNome(c.nome), c.id]));
+
+    // Duplicata é quase sempre a mesma planilha importada duas vezes por engano
+    // — rejeitar a linha inteira é mais seguro que criar um produto repetido.
+    const nomesVistosNoArquivo = new Set();
+    const todosOsErros = [...erros];
+    for (const linha of linhas) {
+      const chave = normalizarNome(linha.nome);
+      if (nomesExistentes.has(chave)) {
+        todosOsErros.push({ linha: linha.linha, erro: `Já existe um produto chamado "${linha.nome}".` });
+      } else if (nomesVistosNoArquivo.has(chave)) {
+        todosOsErros.push({ linha: linha.linha, erro: `Nome "${linha.nome}" repetido na planilha.` });
+      }
+      nomesVistosNoArquivo.add(chave);
+    }
+
+    if (todosOsErros.length > 0) {
+      todosOsErros.sort((a, b) => a.linha - b.linha);
+      return res.status(201).json({ importados: 0, categoriasCriadas: 0, erros: todosOsErros });
+    }
+
+    const categoriasParaCriar = new Set();
+    for (const linha of linhas) {
+      if (!categoriaIdPorNome.has(normalizarNome(linha.categoriaNome))) categoriasParaCriar.add(linha.categoriaNome);
+    }
+
+    const resultado = await req.prisma.$transaction(async (tx) => {
+      let categoriasCriadas = 0;
+      for (const nomeCategoria of categoriasParaCriar) {
+        const chave = normalizarNome(nomeCategoria);
+        if (categoriaIdPorNome.has(chave)) continue; // já resolvida por uma linha anterior deste mesmo lote
+        const nova = await tx.categoriaProduto.create({ data: { nome: nomeCategoria } });
+        categoriaIdPorNome.set(chave, nova.id);
+        categoriasCriadas++;
+      }
+
+      for (const linha of linhas) {
+        await tx.produto.create({
+          data: {
+            categoriaId: categoriaIdPorNome.get(normalizarNome(linha.categoriaNome)),
+            nome: linha.nome,
+            descricaoCurta: linha.descricaoCurta,
+            descricaoCompleta: linha.descricaoCurta,
+            preco: linha.preco,
+            estoque: linha.estoque,
+            vendidoPorPeso: linha.vendidoPorPeso,
+          },
+        });
+      }
+
+      return { importados: linhas.length, categoriasCriadas };
+    });
+
+    res.status(201).json({ ...resultado, erros: [] });
+  } catch (err) {
+    console.error('Erro ao importar produtos:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+module.exports = {
+  listarPublico, buscarPorId, listarAdmin, criar, atualizar, deletar, enviarFoto, removerFoto, ajustarEstoque,
+  baixarModeloImportacao, importarProdutos,
+};

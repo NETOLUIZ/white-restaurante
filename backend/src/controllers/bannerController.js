@@ -1,11 +1,10 @@
 const path = require('path');
 const fs = require('fs');
-const { prisma } = require('../utils/db');
 
 /** Lista os banners ativos, ordenados — usado pelo carrossel de promoções da Home. */
 async function listarPublico(req, res) {
   try {
-    const banners = await prisma.banner.findMany({
+    const banners = await req.prisma.banner.findMany({
       where: { ativo: true },
       orderBy: [{ ordem: 'asc' }, { id: 'asc' }],
     });
@@ -19,7 +18,7 @@ async function listarPublico(req, res) {
 /** Lista todos os banners (inclusive inativos) — painel admin. */
 async function listarAdmin(req, res) {
   try {
-    const banners = await prisma.banner.findMany({
+    const banners = await req.prisma.banner.findMany({
       include: { produto: { select: { id: true, nome: true } } },
       orderBy: [{ ordem: 'asc' }, { id: 'asc' }],
     });
@@ -34,20 +33,14 @@ async function listarAdmin(req, res) {
 async function criar(req, res) {
   try {
     const { selo, titulo, descricao, ctaLabel, ctaTipo, produtoId, ordem, ativo } = req.body;
-    if (!selo || !titulo || !descricao || !ctaLabel) {
-      return res.status(400).json({ erro: 'Selo, título, descrição e texto do botão são obrigatórios' });
-    }
-    if (ctaTipo === 'PRODUTO' && !produtoId) {
-      return res.status(400).json({ erro: 'Banner com CTA de produto precisa do produtoId' });
-    }
-    const banner = await prisma.banner.create({
+    const banner = await req.prisma.banner.create({
       data: {
-        selo,
-        titulo,
-        descricao,
-        ctaLabel,
+        selo: selo ? String(selo).trim() : 'Promo',
+        titulo: titulo ? String(titulo).trim() : 'Novo Banner',
+        descricao: descricao ? String(descricao).trim() : '',
+        ctaLabel: ctaLabel ? String(ctaLabel).trim() : 'Ver mais',
         ctaTipo: ctaTipo || 'CARDAPIO',
-        produtoId: ctaTipo === 'PRODUTO' ? parseInt(produtoId, 10) : null,
+        produtoId: ctaTipo === 'PRODUTO' && produtoId ? parseInt(produtoId, 10) : null,
         ordem: Number(ordem) || 0,
         ativo: ativo === undefined ? true : Boolean(ativo),
       },
@@ -74,7 +67,7 @@ async function atualizar(req, res) {
     if (ordem !== undefined) data.ordem = Number(ordem);
     if (ativo !== undefined) data.ativo = Boolean(ativo);
 
-    const banner = await prisma.banner.update({ where: { id }, data });
+    const banner = await req.prisma.banner.update({ where: { id }, data });
     res.json(banner);
   } catch (err) {
     console.error('Erro ao atualizar banner:', err);
@@ -86,7 +79,7 @@ async function atualizar(req, res) {
 async function deletar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    await prisma.banner.delete({ where: { id } });
+    await req.prisma.banner.delete({ where: { id } });
     res.json({ ok: true });
   } catch (err) {
     console.error('Erro ao remover banner:', err);
@@ -97,7 +90,7 @@ async function deletar(req, res) {
 /**
  * Recebe a foto do banner via multipart/form-data (campo "foto", ver multer
  * em routes/admin.js) e salva só o caminho relativo no banco — o arquivo em
- * si fica em /uploads/banners, nunca como base64 numa coluna.
+ * si fica em /uploads/{tenantId}/banners, nunca como base64 numa coluna.
  */
 async function enviarFoto(req, res) {
   try {
@@ -105,8 +98,9 @@ async function enviarFoto(req, res) {
     if (!req.file) {
       return res.status(400).json({ erro: 'Nenhum arquivo de imagem enviado' });
     }
-    const caminhoRelativo = `banners/${req.file.filename}`;
-    const banner = await prisma.banner.update({ where: { id }, data: { foto: caminhoRelativo } });
+    // Prefixo com tenantId — ver mesmo comentário em produtoController.enviarFoto.
+    const caminhoRelativo = `${req.tenantId}/banners/${req.file.filename}`;
+    const banner = await req.prisma.banner.update({ where: { id }, data: { foto: caminhoRelativo } });
     res.json({ foto: `/uploads/${caminhoRelativo}`, banner });
   } catch (err) {
     console.error('Erro ao salvar foto do banner:', err);
@@ -121,7 +115,7 @@ async function enviarFoto(req, res) {
 async function removerFoto(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    const banner = await prisma.banner.findUnique({ where: { id }, select: { foto: true } });
+    const banner = await req.prisma.banner.findFirst({ where: { id }, select: { foto: true } });
     if (!banner) return res.status(404).json({ erro: 'Banner não encontrado' });
 
     // Apaga o arquivo em disco se existir
@@ -132,7 +126,7 @@ async function removerFoto(req, res) {
       });
     }
 
-    const bannerAtualizado = await prisma.banner.update({ where: { id }, data: { foto: null } });
+    const bannerAtualizado = await req.prisma.banner.update({ where: { id }, data: { foto: null } });
     res.json({ banner: bannerAtualizado });
   } catch (err) {
     console.error('Erro ao remover foto do banner:', err);

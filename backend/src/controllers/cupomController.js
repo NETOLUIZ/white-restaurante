@@ -1,5 +1,3 @@
-const { prisma } = require('../utils/db');
-
 /**
  * Valida um cupom pelo código (case-insensitive). O desconto nunca é
  * calculado no client — esta rota só confirma se o cupom existe e está
@@ -13,7 +11,7 @@ async function validar(req, res) {
       return res.status(400).json({ erro: 'Código do cupom não informado' });
     }
 
-    const cupom = await prisma.cupom.findFirst({
+    const cupom = await req.prisma.cupom.findFirst({
       where: { codigo: codigo.trim().toUpperCase(), ativo: true },
     });
 
@@ -36,7 +34,7 @@ async function validar(req, res) {
 /** Lista todos os cupons — painel admin. */
 async function listarAdmin(req, res) {
   try {
-    const cupons = await prisma.cupom.findMany({ orderBy: { codigo: 'asc' } });
+    const cupons = await req.prisma.cupom.findMany({ orderBy: { codigo: 'asc' } });
     res.json(cupons);
   } catch (err) {
     console.error('Erro ao listar cupons:', err);
@@ -54,7 +52,7 @@ async function criar(req, res) {
     if (tipo === 'PERCENTUAL' && !percentual) {
       return res.status(400).json({ erro: 'Cupom percentual precisa do campo percentual' });
     }
-    const cupom = await prisma.cupom.create({
+    const cupom = await req.prisma.cupom.create({
       data: {
         codigo: String(codigo).trim().toUpperCase(),
         tipo,
@@ -82,7 +80,7 @@ async function atualizar(req, res) {
     if (percentual !== undefined) data.percentual = percentual === null ? null : Number(percentual);
     if (ativo !== undefined) data.ativo = Boolean(ativo);
 
-    const cupom = await prisma.cupom.update({ where: { id }, data });
+    const cupom = await req.prisma.cupom.update({ where: { id }, data });
     res.json(cupom);
   } catch (err) {
     console.error('Erro ao atualizar cupom:', err);

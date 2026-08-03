@@ -1,12 +1,11 @@
 const bcrypt = require('bcryptjs');
-const { prisma } = require('../utils/db');
 
 const SELECT_SEM_SENHA = { id: true, nome: true, email: true, ativo: true, createdAt: true, updatedAt: true };
 
 /** Lista todos os entregadores — painel admin. Nunca inclui o hash da senha. */
 async function listarAdmin(req, res) {
   try {
-    const entregadores = await prisma.entregador.findMany({ orderBy: { nome: 'asc' }, select: SELECT_SEM_SENHA });
+    const entregadores = await req.prisma.entregador.findMany({ orderBy: { nome: 'asc' }, select: SELECT_SEM_SENHA });
     res.json(entregadores);
   } catch (err) {
     console.error('Erro ao listar entregadores:', err);
@@ -27,7 +26,7 @@ async function criar(req, res) {
       return res.status(400).json({ erro: 'A senha precisa de ao menos 6 caracteres' });
     }
     const senhaHash = await bcrypt.hash(senha, 12);
-    const entregador = await prisma.entregador.create({
+    const entregador = await req.prisma.entregador.create({
       data: { nome, email, senha: senhaHash },
       select: SELECT_SEM_SENHA,
     });
@@ -45,6 +44,9 @@ async function criar(req, res) {
 async function atualizar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
+    if (req.impersonando && req.body.senha) {
+      return res.status(403).json({ erro: 'Redefinir senha não é permitido durante impersonation' });
+    }
     const dados = {};
     if (req.body.nome !== undefined) dados.nome = String(req.body.nome).trim();
     if (req.body.email !== undefined) dados.email = String(req.body.email).trim().toLowerCase();
@@ -56,7 +58,7 @@ async function atualizar(req, res) {
       dados.senha = await bcrypt.hash(String(req.body.senha), 12);
       dados.senhaAlteradaEm = new Date();
     }
-    const entregador = await prisma.entregador.update({ where: { id }, data: dados, select: SELECT_SEM_SENHA });
+    const entregador = await req.prisma.entregador.update({ where: { id }, data: dados, select: SELECT_SEM_SENHA });
     res.json(entregador);
   } catch (err) {
     if (err.code === 'P2002') {
@@ -73,7 +75,7 @@ async function atualizar(req, res) {
  */
 async function meusPedidos(req, res) {
   try {
-    const pedidos = await prisma.pedido.findMany({
+    const pedidos = await req.prisma.pedido.findMany({
       where: { entregadorId: req.entregador.id, statusEntrega: 'SAIU_ENTREGA' },
       include: {
         itens: { include: { produto: true, tamanhoMarmita: true } },

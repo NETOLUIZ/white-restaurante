@@ -1,9 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="scripts/support.js"></script>
+<script src="scripts/tema.js"></script>
 <!-- Runtime DC/React para renderização dos componentes. -->
 </head>
 <body>
@@ -109,18 +110,22 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
         <span style="flex:1;text-align:left;">Categorias</span>
       </button>
-      <button onClick="{{ goMarmitas }}" style="{{ navMarmitas }}">
+      <sc-if value="{{ isRestauranteTenant }}" hint-placeholder-val="{{ true }}">
+      <button data-feature="marmita" onClick="{{ goMarmitas }}" style="{{ navMarmitas }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-8Z"/><path d="M3 10 5 4h14l2 6"/><path d="M12 4v6"/></svg>
         <span style="flex:1;text-align:left;">Monte sua Marmita</span>
       </button>
+      </sc-if>
       <button onClick="{{ goBanners }}" style="{{ navBanners }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="m21 16-4.5-4.5L7 21"/></svg>
         <span style="flex:1;text-align:left;">Banners &amp; Cards</span>
       </button>
-      <button onClick="{{ goMesas }}" style="{{ navMesas }}">
+      <sc-if value="{{ isRestauranteTenant }}" hint-placeholder-val="{{ true }}">
+      <button data-feature="mesas" onClick="{{ goMesas }}" style="{{ navMesas }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M5 7l1.5 13"/><path d="M19 7l-1.5 13"/><path d="M9 7V4h6v3"/></svg>
         <span style="flex:1;text-align:left;">Mesas</span>
       </button>
+      </sc-if>
       <button onClick="{{ goCaixa }}" style="{{ navCaixa }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg>
         <span style="flex:1;text-align:left;">Caixa</span>
@@ -130,18 +135,26 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg>
         <span style="flex:1;text-align:left;">Vendas &amp; Estoque</span>
       </button>
-      <button onClick="{{ goEntregadores }}" style="{{ navEntregadores }}">
+      <button data-feature="entregador" onClick="{{ goEntregadores }}" style="{{ navEntregadores }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="18" cy="6" r="3" fill="currentColor"/></svg>
         <span style="flex:1;text-align:left;">Entregadores</span>
       </button>
-      <button onClick="{{ goGarcons }}" style="{{ navGarcons }}">
+      <sc-if value="{{ isRestauranteTenant }}" hint-placeholder-val="{{ true }}">
+      <button data-feature="mesas" onClick="{{ goGarcons }}" style="{{ navGarcons }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 2a5 5 0 0 1-5 5 5 5 0 0 1-5-5"/><path d="M7 22a5 5 0 0 1 5-5 5 5 0 0 1 5 5"/></svg>
         <span style="flex:1;text-align:left;">Garçons</span>
       </button>
+      </sc-if>
       <button onClick="{{ goAtendentes }}" style="{{ navAtendentes }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 9h20"/><path d="M7 14h3"/></svg>
         <span style="flex:1;text-align:left;">Atendentes</span>
       </button>
+      <sc-if value="{{ isRestauranteTenant }}" hint-placeholder-val="{{ true }}">
+      <button data-feature="empresa" onClick="{{ goEmpresas }}" style="{{ navEmpresas }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M10 21v-4h4v4"/></svg>
+        <span style="flex:1;text-align:left;">Empresas</span>
+      </button>
+      </sc-if>
       <button onClick="{{ goSenha }}" style="{{ navSenha }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.4"/></svg>
         <span style="flex:1;text-align:left;">Trocar senha</span>
@@ -180,7 +193,7 @@
       <!-- ---------- PEDIDOS ---------- -->
       <sc-if value="{{ isPedidos }}" hint-placeholder-val="{{ true }}">
       <div style="animation:adIn .25s ease-out;">
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;">
+        <div style="{{ kpiGridStyle }}">
           <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
             <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:16px 18px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
               <div style="display:flex;align-items:center;gap:8px;color:#8C8075;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;"><span style="{{ k.dotStyle }}"></span>{{ k.label }}</div>
@@ -196,17 +209,18 @@
         </div>
 
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-          <div style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 150px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
-            <span>Pedido</span><span>Cliente / Itens</span><span>Tipo</span><span>Total</span><span>Status</span><span style="text-align:right;">Ação</span>
+          <div style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 220px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Pedido</span><span>Cliente / Itens</span><span>Tipo</span><span>Total</span><span>Status</span><span style="text-align:right;">Ações</span>
           </div>
           <sc-for list="{{ orderRows }}" as="o" hint-placeholder-count="5">
-            <div onClick="{{ o.onOpen }}" style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 150px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;{{ o.rowBg }}">
+            <div onClick="{{ o.onOpen }}" style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 220px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;{{ o.rowBg }}">
               <div><div style="font-family:'DM Mono',monospace;font-weight:500;font-size:13px;">{{ o.id }}</div><div style="font-size:11px;color:#8C8075;margin-top:2px;">{{ o.hora }}</div></div>
               <div style="min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ o.cliente }}</div><div style="font-size:12px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ o.itensResumo }}</div></div>
               <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#6B2E12;font-weight:600;"><span style="{{ o.tipoIconStyle }}">{{ o.tipoIcon }}</span>{{ o.tipo }}</div>
               <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:#D97706;">{{ o.totalFmt }}</div>
               <div><span style="{{ o.badgeStyle }}">{{ o.statusLabel }}</span></div>
-              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+              <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;">
+                <button onClick="{{ o.onImprimir }}" title="Reimprimir recibo" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:9px;padding:7px 10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir</button>
                 <sc-if value="{{ o.canAdvance }}" hint-placeholder-val="{{ false }}"><button onClick="{{ o.onAdvance }}" style="background:#D97706;color:#fff;border:none;border-radius:10px;padding:9px 13px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">{{ o.advanceLabel }}</button></sc-if>
                 <sc-if value="{{ o.showEntregadorSelect }}" hint-placeholder-val="{{ false }}">
                   <select onChange="{{ o.onAtribuirEntregador }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:9px;padding:7px 10px;font-size:12px;color:#1D1009;cursor:pointer;max-width:148px;">
@@ -234,8 +248,34 @@
               <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
             </sc-for>
           </div>
-          <button onClick="{{ newProduct }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo produto</button>
+          <input ref="{{ setImportInput }}" type="file" accept=".xlsx" onChange="{{ onImportFileSelected }}" style="display:none;"/>
+          <button onClick="{{ baixarModeloProdutos }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Baixar modelo</button>
+          <button onClick="{{ triggerImportUpload }}" disabled="{{ importandoProdutos }}" style="display:flex;align-items:center;gap:8px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>{{ importandoProdutosLabel }}</button>
+          <button onClick="{{ newProduct }}" style="display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo produto</button>
         </div>
+
+        <sc-if value="{{ hasImportResumo }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:12px;background:#E6F4EC;border:1px solid #AEDCC2;border-radius:14px;padding:13px 16px;margin-bottom:16px;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1D7A48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span style="flex:1;font-weight:700;font-size:13.5px;color:#1D7A48;">{{ importResumoTexto }}</span>
+            <button onClick="{{ fecharImportResumo }}" aria-label="Fechar" style="background:none;border:none;color:#1D7A48;cursor:pointer;padding:4px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasImportErros }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#FBEAE8;border:1px solid #F0CFCB;border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#C0392B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span style="flex:1;font-weight:700;font-size:13.5px;color:#7A1209;">Nenhum produto foi importado — corrija a planilha e envie de novo.</span>
+              <button onClick="{{ fecharImportErros }}" aria-label="Fechar" style="background:none;border:none;color:#7A1209;cursor:pointer;padding:4px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+            </div>
+            <div style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;">
+              <sc-for list="{{ importErrosRows }}" as="it" hint-placeholder-count="3">
+                <div style="font-size:13px;color:#7A1209;"><strong>Linha {{ it.linha }}:</strong> {{ it.erro }}</div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-if>
 
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
           <div style="display:grid;grid-template-columns:62px 2.4fr 1fr 110px 130px 96px 70px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
@@ -411,6 +451,28 @@
       <!-- ---------- BANNERS ---------- -->
       <sc-if value="{{ isBanners }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;max-width:880px;">
+        <!-- Card de Splash Screen -->
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;margin-bottom:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+            <div>
+              <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0;color:#1D1009;">Foto / GIF da Tela Splash (Abertura)</h3>
+              <p style="margin:4px 0 0;font-size:13px;color:#8C8075;">Imagem ou GIF animado exibido na tela de abertura (Splash Screen) ao acessar o app.</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <sc-if value="{{ hasSplashPreview }}" hint-placeholder-val="{{ false }}">
+                <div style="width:54px;height:54px;border-radius:14px;overflow:hidden;border:1px solid rgba(29,16,9,.12);flex:none;">
+                  <img src="{{ splashPreviewSrc }}" alt="Splash Preview" style="width:100%;height:100%;object-fit:cover;"/>
+                </div>
+              </sc-if>
+              <input ref="{{ setSplashInput }}" type="file" accept="image/*" onChange="{{ onSplashSelected }}" style="display:none;"/>
+              <button onClick="{{ triggerSplashUpload }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:12px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer;display:flex;align-items:center;gap:7px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Alterar Splash</button>
+              <sc-if value="{{ hasSplashPreview }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ removerSplashFoto }}" style="background:none;border:none;color:#C0392B;font-size:12.5px;font-weight:600;cursor:pointer;padding:4px 2px;">Restaurar padrão</button>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+
         <div style="display:flex;align-items:center;margin-bottom:16px;">
           <p style="margin:0;font-size:13px;color:#8C8075;">Banners e cards de destaque exibidos na Home do app do cliente.</p>
           <button onClick="{{ newBanner }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo banner</button>
@@ -513,8 +575,8 @@
       <sc-if value="{{ isCaixa }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;max-width:760px;">
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
-          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Taxa de entrega</h3>
-          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Valor cobrado por pedido de delivery (não se aplica a mesa/retirada).</p>
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Taxa de entrega padrão</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Usada quando o cliente escolhe "Outro bairro" ou nenhum bairro está cadastrado abaixo (não se aplica a mesa/retirada).</p>
           <div style="display:flex;gap:10px;align-items:flex-end;max-width:280px;">
             <div style="flex:1;">
               <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Valor (R$)</label>
@@ -522,6 +584,48 @@
             </div>
             <button onClick="{{ salvarTaxaEntrega }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
           </div>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
+          <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;">Bairros de Entrega ({{ bairrosCount }})</h3>
+            <p style="margin:4px 0 0;font-size:13px;color:#8C8075;">Cada bairro tem sua própria taxa — o cliente escolhe o bairro no app e a taxa dele substitui a padrão.</p>
+          </div>
+          <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div style="flex:2;min-width:180px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Nome do bairro</label>
+              <input value="{{ bairroAddNome }}" onChange="{{ onBairroAddNome }}" placeholder="Ex: Centro" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;box-sizing:border-box;"/>
+            </div>
+            <div style="flex:1;min-width:120px;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Taxa (R$)</label>
+              <input value="{{ bairroAddTaxa }}" onChange="{{ onBairroAddTaxa }}" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;box-sizing:border-box;"/>
+            </div>
+            <button onClick="{{ adicionarBairro }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 18px;font-weight:700;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Adicionar</button>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 110px 110px 1fr;gap:14px;padding:11px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Taxa</span><span>Status</span><span style="text-align:right;">Ações</span>
+          </div>
+          <sc-for list="{{ bairroRows }}" as="it" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:2fr 110px 110px 1fr;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ it.editNome }}" onChange="{{ it.onEditNomeChange }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 9px;font-size:13.5px;outline:none;box-sizing:border-box;"/></sc-if>
+              <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}"><span style="font-weight:600;font-size:14px;">{{ it.nome }}</span></sc-if>
+              <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}"><input value="{{ it.editTaxa }}" onChange="{{ it.onEditTaxaChange }}" inputmode="decimal" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 9px;font-size:13.5px;outline:none;box-sizing:border-box;"/></sc-if>
+              <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}"><span style="font-family:'DM Mono',monospace;font-size:13px;">{{ it.taxaFmt }}</span></sc-if>
+              <span style="{{ it.statusBadgeStyle }}">{{ it.statusLabel }}</span>
+              <div style="display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;">
+                <sc-if value="{{ it.isEditing }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ it.onSalvarEdit }}" style="background:#2D9E60;color:#fff;border:none;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Salvar</button>
+                  <button onClick="{{ it.onCancelarEdit }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Cancelar</button>
+                </sc-if>
+                <sc-if value="{{ it.isNotEditing }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ it.onToggleAtivo }}" style="{{ it.ativoPillStyle }}">Ativo</button>
+                  <button onClick="{{ it.onEditar }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Editar</button>
+                  <button onClick="{{ it.onExcluir }}" style="background:#FBEAE8;border:1px solid #F0CFCB;color:#C0392B;border-radius:8px;padding:6px 11px;font-size:12px;font-weight:700;cursor:pointer;">Excluir</button>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ bairrosEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:36px;text-align:center;color:#8C8075;font-size:13.5px;">Nenhum bairro cadastrado — todo pedido usa a taxa padrão acima.</div></sc-if>
         </div>
 
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
@@ -537,6 +641,44 @@
               <input type="time" value="{{ galetoHorarioFimInput }}" onChange="{{ onGaletoHorarioFimInput }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;outline:none;"/>
             </div>
             <button onClick="{{ salvarGaletoHorarios }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+          </div>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
+          <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;">Horário de funcionamento</h3>
+            <p style="margin:4px 0 0;font-size:13px;color:#8C8075;">Dia fechado não aceita pedido no app. Cada dia pode ter até 2 turnos (ex: abre de manhã, fecha pro almoço, reabre à tarde).</p>
+          </div>
+          <sc-for list="{{ horarioDiasRows }}" as="it" hint-placeholder-count="7">
+            <div style="padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);">
+              <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                <span style="width:84px;font-weight:600;font-size:13.5px;flex:none;">{{ it.label }}</span>
+                <button onClick="{{ it.onToggleFechado }}" style="{{ it.togglePillStyle }}">{{ it.toggleLabel }}</button>
+                <sc-if value="{{ it.aberto }}" hint-placeholder-val="{{ true }}">
+                  <div style="display:flex;align-items:center;gap:6px;">
+                    <span style="font-size:12px;color:#8C8075;">Das</span>
+                    <input type="time" value="{{ it.turno1Inicio }}" onChange="{{ it.onTurno1InicioChange }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 8px;font-size:13px;outline:none;width:112px;"/>
+                    <span style="font-size:12px;color:#8C8075;">às</span>
+                    <input type="time" value="{{ it.turno1Fim }}" onChange="{{ it.onTurno1FimChange }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 8px;font-size:13px;outline:none;width:112px;"/>
+                  </div>
+                  <sc-if value="{{ it.turno2Ativo }}" hint-placeholder-val="{{ false }}">
+                    <div style="display:flex;align-items:center;gap:6px;">
+                      <span style="font-size:12px;color:#8C8075;">e das</span>
+                      <input type="time" value="{{ it.turno2Inicio }}" onChange="{{ it.onTurno2InicioChange }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 8px;font-size:13px;outline:none;width:112px;"/>
+                      <span style="font-size:12px;color:#8C8075;">às</span>
+                      <input type="time" value="{{ it.turno2Fim }}" onChange="{{ it.onTurno2FimChange }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:8px;padding:6px 8px;font-size:13px;outline:none;width:112px;"/>
+                      <button onClick="{{ it.onToggleTurno2 }}" style="background:none;border:none;color:#C0392B;font-size:12px;font-weight:700;cursor:pointer;padding:4px 2px;">Remover turno</button>
+                    </div>
+                  </sc-if>
+                  <sc-if value="{{ it.turno2Inativo }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ it.onToggleTurno2 }}" style="background:none;border:1px dashed rgba(29,16,9,.2);color:#6B2E12;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">+ Adicionar turno (ex: pausa pro almoço)</button>
+                  </sc-if>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <div style="padding:16px 20px;border-top:1px solid rgba(29,16,9,.06);">
+            <button onClick="{{ salvarHorarioFuncionamento }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:13px;cursor:pointer;">Salvar horário de funcionamento</button>
           </div>
         </div>
 
@@ -723,6 +865,229 @@
       </div>
       </sc-if>
 
+      <!-- ---------- EMPRESAS (clientes corporativos) ---------- -->
+      <sc-if value="{{ isEmpresas }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;max-width:820px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
+          <p style="margin:0;font-size:13px;color:#8C8075;flex:1;">Clientes corporativos (ex: construtoras) com login próprio, cota diária de pedidos e cardápio restrito.</p>
+          <button onClick="{{ novaEmpresa }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);flex:none;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Nova empresa
+          </button>
+        </div>
+
+        <sc-if value="{{ isEmpresaDraft }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;background:#FFFBF3;border:1px solid rgba(29,16,9,.08);border-radius:14px;padding:14px;">
+            <div style="display:flex;gap:8px;">
+              <input value="{{ empresaDraftNome }}" onChange="{{ onEmpresaDraftNome }}" placeholder="Nome da empresa" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <input value="{{ empresaDraftLogin }}" onChange="{{ onEmpresaDraftLogin }}" placeholder="Login" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <input value="{{ empresaDraftCota }}" onChange="{{ onEmpresaDraftCota }}" placeholder="Cota diária" inputmode="numeric" style="width:110px;flex:none;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            </div>
+            <div>
+              <label style="display:block;font-size:12px;font-weight:600;color:#8C8075;margin-bottom:4px;">Valor fixo da marmita (R$) — 0 mantém o preço normal por produto</label>
+              <input value="{{ empresaDraftValorMarmita }}" onChange="{{ onEmpresaDraftValorMarmita }}" placeholder="0,00" inputmode="decimal" style="width:140px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            </div>
+            <div style="position:relative;">
+              <input type="{{ tipoEmpresaDraftSenha }}" value="{{ empresaDraftSenha }}" onChange="{{ onEmpresaDraftSenha }}" placeholder="{{ empresaSenhaPlaceholder }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 42px 10px 13px;font-size:14px;outline:none;"/>
+              <button type="button" onClick="{{ toggleEmpresaDraftSenha }}" aria-label="Mostrar senha" style="{{ olhoBtnStyle }}">
+                <sc-if value="{{ mostrarEmpresaDraftSenha }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 11 8 11 8a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 1 12s4 8 11 8a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg></sc-if>
+                <sc-if value="{{ ocultarEmpresaDraftSenha }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg></sc-if>
+              </button>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button onClick="{{ salvarEmpresaDraft }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+              <button onClick="{{ cancelarEmpresaDraft }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:26px;">
+          <div style="display:grid;grid-template-columns:1.8fr 1.1fr 70px 110px 100px 34px 90px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Login</span><span>Cota/dia</span><span>Marmita</span><span></span><span></span><span style="text-align:right;">Status</span>
+          </div>
+          <sc-for list="{{ empresaRows }}" as="emp" hint-placeholder-count="3">
+            <div style="border-top:1px solid rgba(29,16,9,.06);padding:14px 20px;">
+              <div style="display:grid;grid-template-columns:1.8fr 1.1fr 70px 110px 100px 34px 90px;gap:14px;align-items:center;">
+                <div style="font-weight:700;font-size:14px;">{{ emp.nome }}</div>
+                <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ emp.login }}</span>
+                <span style="font-family:'DM Mono',monospace;font-size:13px;">{{ emp.cotaDiaria }}</span>
+                <span style="font-size:12px;color:#8C8075;">{{ emp.valorMarmitaFmt }}</span>
+                <button onClick="{{ emp.onFazerPedido }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#7A1209;border-radius:8px;padding:7px 10px;font-weight:700;font-size:11.5px;cursor:pointer;white-space:nowrap;">Fazer pedido</button>
+                <button onClick="{{ emp.onEdit }}" aria-label="Editar empresa" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                <div style="display:flex;justify-content:flex-end;"><button onClick="{{ emp.onToggle }}" style="{{ emp.toggleStyle }}"><span style="{{ emp.knobStyle }}"></span></button></div>
+              </div>
+              <sc-if value="{{ emp.hasFuncionariosSalvos }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+                  <sc-for list="{{ emp.funcionariosSalvosChips }}" as="f" hint-placeholder-count="2">
+                    <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(29,16,9,.12);background:#fff;color:#6B2E12;border-radius:999px;padding:4px 6px 4px 11px;font-size:12px;font-weight:600;">{{ f.nome }}<button onClick="{{ f.onRemover }}" aria-label="Remover funcionário salvo" style="background:#F6F1E7;border:none;color:#8C8075;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:1;">×</button></span>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+          </sc-for>
+          <sc-if value="{{ empresasEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhuma empresa cadastrada.</div></sc-if>
+        </div>
+
+        <!-- ---------- FAZER PEDIDO EM NOME DA EMPRESA (admin) ---------- -->
+        <sc-if value="{{ isPedidoEmpresaDraft }}" hint-placeholder-val="{{ false }}">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:26px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0;">Fazer pedido para {{ pedidoEmpresaNomeEmpresa }}</h3>
+            <button onClick="{{ fecharPedidoEmpresa }}" aria-label="Fechar" style="background:none;border:none;color:#8C8075;font-size:20px;cursor:pointer;line-height:1;">×</button>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:14px;padding:10px 14px;border:1px solid rgba(29,16,9,.1);border-radius:12px;margin-bottom:16px;flex-wrap:wrap;background:#F6F1E7;">
+            <div style="min-width:130px;">
+              <div style="font-size:11px;font-weight:700;color:#8C8075;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Total do dia</div>
+              <input value="{{ pedidoEmpresaTotalDiaInput }}" onChange="{{ onPedidoEmpresaTotalDia }}" placeholder="{{ pedidoEmpresaTotalDiaPlaceholder }}" inputmode="numeric" style="width:100%;height:34px;text-align:center;font-weight:700;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:9px;font-size:13.5px;outline:none;box-sizing:border-box;"/>
+            </div>
+            <div style="width:1px;height:36px;background:rgba(29,16,9,.1);flex:none;"></div>
+            <div style="text-align:center;">
+              <div style="font-family:'DM Mono',monospace;font-weight:700;font-size:20px;line-height:1;">{{ pedidoEmpresaTotalNosLotes }}</div>
+              <div style="font-size:11px;font-weight:700;color:#8C8075;text-transform:uppercase;letter-spacing:.04em;margin-top:4px;">Adicionados</div>
+            </div>
+            <div style="width:1px;height:36px;background:rgba(29,16,9,.1);flex:none;"></div>
+            <div style="background:#FFF3DC;color:#A8730B;border-radius:8px;padding:7px 12px;font-weight:700;font-size:12.5px;">{{ pedidoEmpresaFaltaLabel }}</div>
+          </div>
+
+          <div style="display:flex;gap:16px;flex-wrap:wrap;">
+            <div style="flex:1;min-width:280px;">
+              <div style="background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:12px;padding:14px;margin-bottom:14px;">
+                <h4 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Selecione os itens</h4>
+
+                <sc-if value="{{ pedidoEmpresaHasMarmitaOpcao }}" hint-placeholder-val="{{ false }}">
+                  <sc-if value="{{ pedidoEmpresaHasVariosTamanhos }}" hint-placeholder-val="{{ false }}">
+                    <label style="display:block;font-size:12px;font-weight:700;color:#6B2E12;margin-bottom:7px;">Tamanho</label>
+                    <div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap;">
+                      <sc-for list="{{ pedidoEmpresaMarmitaSizeOptions }}" as="sz" hint-placeholder-count="2">
+                        <button onClick="{{ sz.onClick }}" style="{{ sz.style }}">{{ sz.label }}</button>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                  <label style="display:block;font-size:12px;font-weight:700;color:#6B2E12;margin-bottom:7px;">{{ pedidoEmpresaMarmitaProteinasLabel }}</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:14px;">
+                    <sc-for list="{{ pedidoEmpresaMarmitaProteinaOptions }}" as="pr" hint-placeholder-count="4">
+                      <button onClick="{{ pr.onClick }}" style="{{ pr.style }}">{{ pr.label }}</button>
+                    </sc-for>
+                  </div>
+                  <label style="display:block;font-size:12px;font-weight:700;color:#6B2E12;margin-bottom:7px;">Complementos (à vontade)</label>
+                  <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:4px;">
+                    <sc-for list="{{ pedidoEmpresaMarmitaComplementoOptions }}" as="cp" hint-placeholder-count="6">
+                      <button onClick="{{ cp.onClick }}" style="{{ cp.style }}">{{ cp.label }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ pedidoEmpresaHasProdutosFixos }}" hint-placeholder-val="{{ false }}">
+                  <label style="display:block;font-size:12px;font-weight:700;color:#6B2E12;margin:14px 0 7px;">Ou escolha um prato do cardápio</label>
+                  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:7px;">
+                    <sc-for list="{{ pedidoEmpresaProdutos }}" as="p" hint-placeholder-count="4">
+                      <button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.nome }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ pedidoEmpresaCardapioVazio }}" hint-placeholder-val="{{ false }}">
+                  <p style="margin:0;font-size:13px;color:#8C8075;">Nenhum item liberado pro canal empresa.</p>
+                </sc-if>
+              </div>
+
+              <div style="background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:12px;padding:14px;">
+                <h4 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Configurar lote</h4>
+
+                <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+                  <div style="flex:1;min-width:80px;">
+                    <label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Quantidade</label>
+                    <input value="{{ pedidoEmpresaQuantidade }}" onChange="{{ onPedidoEmpresaQuantidade }}" inputmode="numeric" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:9px;padding:9px 12px;font-size:13.5px;outline:none;box-sizing:border-box;"/>
+                  </div>
+                  <div style="flex:2;min-width:180px;">
+                    <label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Endereço de entrega</label>
+                    <input value="{{ pedidoEmpresaEndereco }}" onChange="{{ onPedidoEmpresaEndereco }}" placeholder="Rua, número, bairro" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:9px;padding:9px 12px;font-size:13.5px;outline:none;box-sizing:border-box;"/>
+                  </div>
+                </div>
+                <sc-if value="{{ pedidoEmpresaHasEnderecosSalvos }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+                    <sc-for list="{{ pedidoEmpresaEnderecosSalvosOptions }}" as="e" hint-placeholder-count="2">
+                      <button type="button" onClick="{{ e.onClick }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;color:#6B2E12;border-radius:999px;padding:5px 10px;font-weight:600;font-size:11px;cursor:pointer;">{{ e.texto }}</button>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ pedidoEmpresaMostrarInputNome }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;gap:7px;margin-bottom:9px;">
+                    <input value="{{ pedidoEmpresaNomeAtual }}" onChange="{{ onPedidoEmpresaNome }}" placeholder="Nome do funcionário" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:9px;padding:9px 12px;font-size:13.5px;outline:none;box-sizing:border-box;"/>
+                    <button onClick="{{ adicionarNomeAtualPedidoEmpresa }}" style="background:#2D9E60;color:#fff;border:none;border-radius:9px;padding:0 14px;font-weight:700;font-size:12.5px;cursor:pointer;">Salvar</button>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ pedidoEmpresaMostrarInputNome }}" hint-placeholder-val="{{ true }}">
+                  <button type="button" onClick="{{ toggleInputNomePedidoEmpresa }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#7A1209;border-radius:9px;padding:8px 13px;font-weight:700;font-size:12.5px;cursor:pointer;margin-bottom:9px;">+ Adicionar nome</button>
+                </sc-if>
+
+                <sc-if value="{{ pedidoEmpresaHasFuncionariosSalvos }}" hint-placeholder-val="{{ false }}">
+                  <div style="margin-bottom:9px;">
+                    <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                      <sc-for list="{{ pedidoEmpresaFuncionariosSalvosOptions }}" as="f" hint-placeholder-count="4">
+                        <button type="button" onClick="{{ f.onClick }}" style="border:1px solid #F2C078;background:#FFF3DC;color:#7A1209;border-radius:999px;padding:5px 11px;font-weight:700;font-size:11.5px;cursor:pointer;">{{ f.nome }}</button>
+                      </sc-for>
+                    </div>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ pedidoEmpresaHasNomes }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px;">
+                    <sc-for list="{{ pedidoEmpresaNomesOptions }}" as="n" hint-placeholder-count="2">
+                      <span style="display:inline-flex;align-items:center;gap:5px;background:#E6F4EC;color:#1B7A3D;border-radius:999px;padding:4px 5px 4px 10px;font-size:11.5px;font-weight:700;">{{ n.nome }}<button onClick="{{ n.onRemover }}" aria-label="Remover" style="background:none;border:none;color:#1B7A3D;font-weight:900;cursor:pointer;">×</button></span>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <button onClick="{{ adicionarLotePedidoEmpresa }}" style="width:100%;background:#7A1209;color:#FFF3DC;border:none;border-radius:10px;padding:11px;font-weight:700;font-size:13.5px;cursor:pointer;">+ Adicionar lote</button>
+              </div>
+            </div>
+
+            <div style="width:280px;flex:none;">
+              <div style="background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:12px;padding:14px;">
+                <h4 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Lotes adicionados ({{ pedidoEmpresaLotesCount }})</h4>
+                <sc-if value="{{ pedidoEmpresaLotesVazio }}" hint-placeholder-val="{{ true }}"><p style="margin:0 0 12px;font-size:12.5px;color:#8C8075;">Nenhum lote adicionado.</p></sc-if>
+                <sc-if value="{{ pedidoEmpresaHasLotes }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px;max-height:320px;overflow-y:auto;">
+                    <sc-for list="{{ pedidoEmpresaLotesOptions }}" as="l" hint-placeholder-count="2">
+                      <div style="border:1px solid rgba(29,16,9,.08);border-radius:9px;padding:9px 11px;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;">
+                          <strong style="font-size:12.5px;">Lote {{ l.indice }} — {{ l.quantidade }}x</strong>
+                          <button onClick="{{ l.onRemover }}" aria-label="Remover lote" style="width:22px;height:22px;border-radius:6px;background:#FBEAE8;border:1px solid #F0CFCB;color:#C0392B;cursor:pointer;flex:none;">×</button>
+                        </div>
+                        <div style="font-size:11.5px;color:#555;margin-bottom:3px;">{{ l.itemLabel }}</div>
+                        <sc-if value="{{ l.hasEndereco }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:#8C8075;">📍 {{ l.endereco }}</div></sc-if>
+                        <sc-if value="{{ l.hasNomes }}" hint-placeholder-val="{{ false }}"><div style="font-size:11px;color:#1B7A3D;font-weight:600;margin-top:2px;">{{ l.nomesTexto }}</div></sc-if>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+                <button onClick="{{ enviarPedidoEmpresa }}" disabled="{{ pedidoEmpresaLotesVazio }}" style="width:100%;background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:12px;font-weight:700;font-size:13.5px;cursor:pointer;">{{ pedidoEmpresaEnviarLabel }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        </sc-if>
+
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Cardápio de hoje pras empresas</h3>
+        <p style="margin:0 0 12px;font-size:13px;color:#8C8075;">Só os produtos marcados aqui aparecem pro pedido das empresas — ligue/desligue conforme o prato do dia.</p>
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:2fr 1fr 40px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Produto</span><span>Preço</span><span style="text-align:right;">No cardápio</span>
+          </div>
+          <sc-for list="{{ cardapioEmpresaRows }}" as="ce" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:2fr 1fr 40px;gap:14px;padding:12px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <div style="font-weight:700;font-size:13.5px;">{{ ce.nome }}</div>
+              <span style="font-family:'DM Mono',monospace;font-size:13px;color:#D97706;">{{ ce.priceFmt }}</span>
+              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ ce.onToggle }}" style="{{ ce.toggleStyle }}"><span style="{{ ce.knobStyle }}"></span></button></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ cardapioEmpresaEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum produto ativo cadastrado ainda.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
       <!-- ---------- VENDAS & ESTOQUE ---------- -->
       <sc-if value="{{ isVendas }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;">
@@ -828,7 +1193,8 @@
           </sc-for>
         </div>
       </div>
-      <div style="padding:16px 22px;border-top:1px solid rgba(29,16,9,.07);display:flex;gap:10px;">
+      <div style="padding:16px 22px;border-top:1px solid rgba(29,16,9,.07);display:flex;gap:10px;flex-wrap:wrap;">
+        <button onClick="{{ od.onImprimir }}" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:13px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;display:flex;align-items:center;gap:7px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Reimprimir Recibo</button>
         <sc-if value="{{ od.canCancel }}" hint-placeholder-val="{{ false }}"><button onClick="{{ od.onCancel }}" style="flex:none;background:#FBEAE8;color:#C0392B;border:1px solid #F0CFCB;border-radius:13px;padding:13px 16px;font-weight:700;font-size:14px;cursor:pointer;">Cancelar</button></sc-if>
         <sc-if value="{{ od.canAdvance }}" hint-placeholder-val="{{ true }}"><button onClick="{{ od.onAdvance }}" style="flex:1;background:#D97706;color:#fff;border:none;border-radius:13px;padding:13px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(217,119,6,.28);">{{ od.advanceLabel }}</button></sc-if>
         <sc-if value="{{ od.isDone }}" hint-placeholder-val="{{ false }}"><div style="flex:1;text-align:center;padding:13px;background:#E6F4EC;color:#2D9E60;border-radius:13px;font-weight:700;font-size:14px;">{{ od.doneLabel }}</div></sc-if>
@@ -876,7 +1242,7 @@
         </sc-if>
         <div style="display:flex;gap:14px;margin-top:16px;">
           <div style="flex:1;">
-            <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Preço (R$)</label>
+            <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">{{ draftPrecoLabel }}</label>
             <input value="{{ draftPrice }}" onChange="{{ onDraftPrice }}" inputmode="decimal" placeholder="0,00" style="{{ inputStyle }}"/>
           </div>
           <div style="flex:1;">
@@ -884,7 +1250,23 @@
             <input value="{{ draftStock }}" onChange="{{ onDraftStock }}" inputmode="numeric" placeholder="0" style="{{ inputStyle }}"/>
           </div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;background:#F6F1E7;border-radius:13px;padding:13px 15px;margin-top:18px;">
+        <sc-if value="{{ isMercantil }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;gap:14px;margin-top:14px;">
+            <div style="flex:1;">
+              <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Custo (R$)</label>
+              <input value="{{ draftCusto }}" onChange="{{ onDraftCusto }}" inputmode="decimal" placeholder="0,00" style="{{ inputStyle }}"/>
+            </div>
+            <div style="flex:1;">
+              <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Código de barras</label>
+              <input value="{{ draftCodigoBarras }}" onChange="{{ onDraftCodigoBarras }}" inputmode="numeric" placeholder="7891234567890" style="{{ inputStyle }}"/>
+            </div>
+          </div>
+        </sc-if>
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#F6F1E7;border-radius:13px;padding:13px 15px;margin-top:12px;">
+          <div><div style="font-weight:700;font-size:14px;">Vendido por peso</div><div style="font-size:12px;color:#8C8075;">Preço acima vira R$/kg — quem compra informa o peso</div></div>
+          <button onClick="{{ toggleDraftPorPeso }}" style="{{ draftPorPesoToggleStyle }}"><span style="{{ draftPorPesoKnobStyle }}"></span></button>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;background:#F6F1E7;border-radius:13px;padding:13px 15px;margin-top:10px;">
           <div><div style="font-weight:700;font-size:14px;">Disponível no app</div><div style="font-size:12px;color:#8C8075;">Clientes podem pedir este item</div></div>
           <button onClick="{{ toggleDraftActive }}" style="{{ draftToggleStyle }}"><span style="{{ draftKnobStyle }}"></span></button>
         </div>
@@ -1037,25 +1419,52 @@
   </div>
   </sc-if>
 
+  <!-- ===================== IMPERSONATION (Fase 6B) ===================== -->
+  <sc-if value="{{ impersonando }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:70;border:4px solid #7BD49B;box-sizing:border-box;"></div>
+  <button onClick="{{ encerrarImpersonacao }}" style="position:fixed;bottom:24px;right:24px;z-index:71;background:#23130B;color:#FFF3DC;padding:11px 18px;border:none;border-radius:13px;box-shadow:0 12px 30px rgba(0,0,0,.3);font-weight:700;font-size:13px;cursor:pointer;">Sair da visualização</button>
+  </sc-if>
+
 </div>
 </sc-if>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+// Chaves alinhadas com o backend (utils/horarioFuncionamento.js) — mesma ordem de Date.getDay().
+const DIAS_SEMANA = [
+  { key:'dom', label:'Domingo' }, { key:'seg', label:'Segunda' }, { key:'ter', label:'Terça' },
+  { key:'qua', label:'Quarta' }, { key:'qui', label:'Quinta' }, { key:'sex', label:'Sexta' }, { key:'sab', label:'Sábado' },
+];
 class Component extends DCLogic {
   // Dev usa porta separada (3010); produção roteia /api pro backend via proxy Nginx no mesmo domínio.
   apiBase = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
     ? 'http://localhost:3010/api'
     : '/api';
 
+  headersExtras = (() => {
+    if (location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') return {};
+    const tenantDev = new URLSearchParams(location.search).get('_tenant');
+    return tenantDev ? { 'x-tenant-slug': tenantDev } : {};
+  })();
+
   state = {
     view:'pedidos',
     sidebarOpen:false,
+    impersonando:false,
+    tipoTenant: (() => {
+      const tenantDev = new URLSearchParams(location.search).get('_tenant');
+      if (tenantDev && (tenantDev.includes('mercantil') || tenantDev === 'msalete')) return 'MERCANTIL';
+      return 'RESTAURANTE';
+    })(),
     search:'',
     orderFilter:'todos',
     selectedOrder:null,
     prodCat:'todos',
     productDraft:null,
+    importandoProdutos:false,
+    importErros:null,
+    importResumo:null,
     bannerDraft:null,
+    splashSrc: localStorage.getItem('bf_custom_splash') || null,
     selectedTable:null,
     pwd:{ atual:'', nova:'', conf:'' },
     pwdMsg:'', pwdOk:false,
@@ -1064,6 +1473,8 @@ class Component extends DCLogic {
     caixa:{ aberto:false, valorInicial:'', abertoEm:'', fechamento:null },
     taxaEntregaInput:'',
     galetoHorarioInicioInput:'', galetoHorarioFimInput:'',
+    // Preenchido de verdade em carregarConfiguracao() (ver horarioParaDraft) — aqui só o formato "tudo fechado" pro primeiro paint.
+    horarioFuncionamentoDraft: DIAS_SEMANA.reduce((acc, d) => { acc[d.key] = { fechado:true, turno1:{inicio:'',fim:''}, turno2Ativo:false, turno2:{inicio:'',fim:''} }; return acc; }, {}),
     vendasSelectedDate: (() => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); })(),
 
     // ---- sessão (API real — login/logout via cookie httpOnly, nunca em localStorage) ----
@@ -1082,6 +1493,9 @@ class Component extends DCLogic {
     garcomDraft:null,
     atendentes:[],
     atendenteDraft:null,
+    empresas:[],
+    empresaDraft:null,
+    pedidoEmpresaDraft:null,
     categoriaDraft:null,
 
     // ---- "Monte sua marmita": catálogo próprio de proteínas/complementos + preço por tamanho (via API) ----
@@ -1093,6 +1507,8 @@ class Component extends DCLogic {
     },
     marmitaAddNome:'', marmitaAddTipo:'proteinas', // form único "Adicionar Item ao Cardápio"
     marmitaEdit:null, // { tipo:'proteinas'|'complementos', id, nome } — edição inline de item existente
+    bairros:[], bairroAddNome:'', bairroAddTaxa:'',
+    bairroEdit:null, // { id, nome, taxaEntrega } — edição inline de bairro existente
     tables:[], // carregado da API em carregarMesas() — ver mapMesa()
     novaMesaNumero:'',
 
@@ -1165,34 +1581,41 @@ class Component extends DCLogic {
     this.imprimirHTML(html);
   }
   imprimirReciboPedido(p){
+    if (!p) return;
     const SEP = '<div class="linha">================================</div>';
-    const itensHtml = (p.itensImpressao || []).map((it) =>
+    const rawItens = p.itensImpressao || (p.itens || []).map(it => ({ q: it.q || it.quantidade || 1, nome: it.n || it.nome || 'Item', ad: it.ad || '', obs: it.obs || '' }));
+    const itensHtml = rawItens.map((it) =>
       '<div class="lin"><span>' + this.escapeHtml(it.q) + 'x ' + this.escapeHtml(it.nome) + '</span></div>' +
       (it.ad ? '<div style="padding-left:8px;font-size:11px;">+ ' + this.escapeHtml(it.ad) + '</div>' : '') +
       (it.obs ? '<div style="padding-left:8px;font-size:11px;">obs: ' + this.escapeHtml(it.obs) + '</div>' : '')
     ).join('');
     const e = p.enderecoFull || {};
-    const enderecoHtml = p.tipoRaw === 'ENTREGA'
-      ? '<div>' + this.escapeHtml([e.rua, e.numero].filter(Boolean).join(', ')) + '</div>' +
-        (e.complemento ? '<div>' + this.escapeHtml(e.complemento) + '</div>' : '') +
-        '<div>' + this.escapeHtml(e.bairro) + (e.cidade ? ' — ' + this.escapeHtml(e.cidade) : '') + (e.uf ? '/' + this.escapeHtml(e.uf) : '') + '</div>'
+    const enderecoStr = p.endereco || '';
+    const enderecoHtml = (p.tipoRaw === 'ENTREGA' || p.tipo === 'Entrega')
+      ? (e.rua
+          ? '<div>' + this.escapeHtml([e.rua, e.numero].filter(Boolean).join(', ')) + '</div>' +
+            (e.complemento ? '<div>' + this.escapeHtml(e.complemento) + '</div>' : '') +
+            '<div>' + this.escapeHtml(e.bairro) + (e.cidade ? ' — ' + this.escapeHtml(e.cidade) : '') + (e.uf ? '/' + this.escapeHtml(e.uf) : '') + '</div>'
+          : (enderecoStr ? '<div>' + this.escapeHtml(enderecoStr) + '</div>' : '')
+        )
       : '';
     const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    const tipoLabel = (p.tipo || 'ENTREGA').toUpperCase();
     const html =
       '<div class="c b tit">BEL DO FRANGO</div>' +
-      '<div class="c b">PEDIDO ' + this.escapeHtml(p.id) + ' — ' + this.escapeHtml(p.tipo.toUpperCase()) + '</div>' +
+      '<div class="c b">PEDIDO ' + this.escapeHtml(p.id) + ' — ' + this.escapeHtml(tipoLabel) + '</div>' +
       SEP +
-      '<div><span class="b">Cliente:</span> ' + this.escapeHtml(p.cliente) + '</div>' +
+      '<div><span class="b">Cliente:</span> ' + this.escapeHtml(p.cliente || 'Cliente') + '</div>' +
       (p.telefone ? '<div><span class="b">Tel:</span> ' + this.escapeHtml(p.telefone) + '</div>' : '') +
       enderecoHtml +
       SEP + itensHtml + '<div class="esp"></div>' + SEP +
-      '<div class="lin"><span>Subtotal</span><span>' + this.fmt(p.subtotal) + '</span></div>' +
+      '<div class="lin"><span>Subtotal</span><span>' + this.fmt(p.subtotal || 0) + '</span></div>' +
       (p.taxaEntrega ? '<div class="lin"><span>Taxa entrega</span><span>' + this.fmt(p.taxaEntrega) + '</span></div>' : '') +
-      '<div class="lin b"><span>TOTAL</span><span>' + this.fmt(p.total) + '</span></div>' +
+      '<div class="lin b"><span>TOTAL</span><span>' + this.fmt(p.total || 0) + '</span></div>' +
       '<div class="esp"></div>' +
-      '<div><span class="b">Pagamento:</span> ' + this.escapeHtml(p.pgto) + '</div>' +
+      '<div><span class="b">Pagamento:</span> ' + this.escapeHtml(p.pgto || 'Não informado') + '</div>' +
       '<div class="esp"></div>' +
-      '<div class="c" style="font-size:10px;">' + agora + '</div>';
+      '<div class="c" style="font-size:10px;">REIMPRESSÃO · ' + agora + '</div>';
     this.imprimirHTML(html);
   }
   // Acompanha o maior id de pedido já visto pra imprimir só pedidos de ENTREGA genuinamente
@@ -1217,8 +1640,9 @@ class Component extends DCLogic {
   // mostrando estado velho até um F5 manual. Refaz a busca ao entrar e mantém um poll leve
   // enquanto a aba estiver aberta.
   nav(view){
+    if (view === 'empresas' && this.state.tipoTenant !== 'RESTAURANTE') view = 'pedidos';
     clearInterval(this._mesasPoll);
-    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaEdit:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, atendenteDraft:null, categoriaDraft:null });
+    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaEdit:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, atendenteDraft:null, empresaDraft:null, pedidoEmpresaDraft:null, categoriaDraft:null });
     if (view === 'mesas') {
       this.carregarMesas();
       this._mesasPoll = setInterval(() => this.carregarMesas(), 8000);
@@ -1228,8 +1652,9 @@ class Component extends DCLogic {
   closeSidebar(){ this.setState({ sidebarOpen:false }); }
 
   // ---- API: helpers genéricos (cookie httpOnly enviado automaticamente via credentials:'include') ----
-  async apiCall(path, opts){
-    const res = await fetch(this.apiBase + path, { credentials:'include', ...opts });
+  async apiCall(path, opts = {}){
+    const headers = { ...this.headersExtras, ...(opts.headers || {}) };
+    const res = await fetch(this.apiBase + path, { credentials:'include', ...opts, headers });
     let data = null;
     try { data = await res.json(); } catch (e) { /* resposta sem corpo JSON (ex: 204) */ }
     if (!res.ok) { const erro = new Error((data && data.erro) || ('Erro ' + res.status)); erro.status = res.status; throw erro; }
@@ -1239,15 +1664,61 @@ class Component extends DCLogic {
   apiSend(method, path, body){ return this.apiCall(path, { method, headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) }); }
   apiUpload(path, formData){ return this.apiCall(path, { method:'POST', body: formData }); }
   apiDelete(path){ return this.apiCall(path, { method:'DELETE' }); }
+  /** Baixa um binário (ex: planilha .xlsx) e dispara o download no navegador — apiCall não serve aqui porque sempre tenta res.json(). */
+  async apiDownload(path, filename){
+    const headers = { ...this.headersExtras };
+    const res = await fetch(this.apiBase + path, { credentials:'include', headers });
+    if (!res.ok) {
+      let msg = 'Erro ' + res.status;
+      try { const data = await res.json(); if (data && data.erro) msg = data.erro; } catch (e) { /* resposta sem corpo JSON */ }
+      throw new Error(msg);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
 
   // ---- sessão / login ----
   async checkSession(){
     try {
-      const { admin } = await this.apiGet('/auth/me');
-      this.setState({ admin, authChecked:true });
+      const { admin, impersonando, tenant } = await this.apiGet('/auth/me');
+      const tenantDev = new URLSearchParams(location.search).get('_tenant');
+      const isMercantil = (tenant && tenant.tipo === 'MERCANTIL') || (tenantDev && (tenantDev === 'msalete' || tenantDev.includes('mercantil')));
+      const tipo = isMercantil ? 'MERCANTIL' : ((tenant && tenant.tipo) || 'RESTAURANTE');
+      this.setState({ admin, impersonando: !!impersonando, tipoTenant: tipo, authChecked:true });
       await this.carregarTudo();
       this.iniciarPollPedidos();
+      this.restaurarViewSalva();
     } catch (e) {
+      const isDevLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (isDevLocal) {
+        const tenantDev = new URLSearchParams(location.search).get('_tenant');
+        const loginEmail = (tenantDev === 'msalete' || (tenantDev && tenantDev.includes('mercantil'))) ? 'admin@mercantil.com' : 'admin@beldofrango.com';
+        try {
+          const { admin, tenant } = await this.apiSend('POST', '/auth/login', { email: loginEmail, senha: 'BelDoFrangoAtu@2026' });
+          const isMercantil = (tenant && tenant.tipo === 'MERCANTIL') || (tenantDev && (tenantDev === 'msalete' || tenantDev.includes('mercantil')));
+          const tipo = isMercantil ? 'MERCANTIL' : ((tenant && tenant.tipo) || 'RESTAURANTE');
+          this.setState({ admin, tipoTenant: tipo, authChecked:true });
+          await this.carregarTudo();
+          this.iniciarPollPedidos();
+          this.restaurarViewSalva();
+          return;
+        } catch (e2) {
+          try {
+            const { admin, tenant } = await this.apiSend('POST', '/auth/login', { email:'admin@beldofrango.com', senha:'BelDoFrangoAtu@2026' });
+            const isMercantil = (tenant && tenant.tipo === 'MERCANTIL') || (tenantDev && (tenantDev === 'msalete' || tenantDev.includes('mercantil')));
+            const tipo = isMercantil ? 'MERCANTIL' : ((tenant && tenant.tipo) || 'RESTAURANTE');
+            this.setState({ admin, tipoTenant: tipo, authChecked:true });
+            await this.carregarTudo();
+            this.iniciarPollPedidos();
+            this.restaurarViewSalva();
+            return;
+          } catch (e3) {}
+        }
+      }
       this.setState({ admin:null, authChecked:true });
     }
   }
@@ -1258,10 +1729,11 @@ class Component extends DCLogic {
     if (!email || !senha) { this.setState({ loginErro:'Informe email e senha' }); return; }
     this.setState({ loggingIn:true, loginErro:'' });
     try {
-      const { admin } = await this.apiSend('POST', '/auth/login', { email, senha });
-      this.setState({ admin, loggingIn:false, loginForm:{ email:'', senha:'' } });
+      const { admin, tenant } = await this.apiSend('POST', '/auth/login', { email, senha });
+      this.setState({ admin, tipoTenant: tenant ? tenant.tipo : 'RESTAURANTE', loggingIn:false, loginForm:{ email:'', senha:'' } });
       await this.carregarTudo();
       this.iniciarPollPedidos();
+      this.restaurarViewSalva();
     } catch (e) {
       this.setState({ loggingIn:false, loginErro: e.message || 'Email ou senha incorretos' });
     }
@@ -1269,7 +1741,13 @@ class Component extends DCLogic {
   async logout(){
     try { await this.apiSend('POST', '/auth/logout', {}); } catch (e) { /* mesmo se a chamada falhar, limpa a sessão local */ }
     clearInterval(this._pedidosPoll);
+    sessionStorage.removeItem(this.STORAGE_KEY);
     this.setState({ admin:null });
+  }
+  // Fase 6B — encerra a sessão de impersonation do super admin (borda de aviso "sair").
+  async encerrarImpersonacao(){
+    try { await this.apiSend('POST', '/auth/encerrar-impersonacao', {}); } catch (e) { /* mesmo se falhar, recarrega igual */ }
+    location.reload();
   }
 
   // ---- carregamento inicial (depois de autenticar) ----
@@ -1277,11 +1755,14 @@ class Component extends DCLogic {
     await Promise.all([
       this.carregarCategorias(), this.carregarSubcategorias(), this.carregarProdutos(), this.carregarPedidos(),
       this.carregarBanners(), this.carregarMarmitaConfig(), this.carregarEntregadores(),
-      this.carregarGarcons(), this.carregarAtendentes(), this.carregarCaixa(), this.carregarMesas(), this.carregarConfiguracao()
+      this.carregarGarcons(), this.carregarAtendentes(), this.carregarEmpresas(), this.carregarCaixa(), this.carregarMesas(), this.carregarConfiguracao(),
+      this.carregarBairros()
     ]);
   }
   mapProduto(p){
     return { id:p.id, cat:p.categoriaId, subcat:p.subcategoriaId, name:p.nome, desc:p.descricaoCurta, price:p.preco, stock:p.estoque, active:p.ativo,
+      custo:p.custo, codigoBarras:p.codigoBarras,
+      disponivelEmpresa: !!p.disponivelEmpresa, vendidoPorPeso: !!p.vendidoPorPeso,
       adicionais: (p.adicionais || []).map((a) => ({ id:a.id, nome:a.nome, preco:a.preco, ativo:a.ativo, esgotado:a.esgotado })),
       foto: p.foto ? this.apiBase.replace('/api', '') + '/uploads/' + p.foto : null };
   }
@@ -1322,14 +1803,15 @@ class Component extends DCLogic {
   }
   mapPedido(o){
     const statusMap = { CONFIRMADO:'novo', PREPARANDO:'preparo', SAIU_ENTREGA:'rota', ENTREGUE:'concluido', CANCELADO:'cancelado' };
-    const tipoMap = { ENTREGA:'Entrega', MESA:'Mesa', RETIRADA:'Retirada' };
+    const tipoMap = { ENTREGA:'Entrega', MESA:'Mesa', RETIRADA:'Retirada', EMPRESA:'Empresa' };
     const pgtoMap = { PIX:'Pix', CARTAO:'Cartão', DINHEIRO:'Dinheiro' };
     const end = o.endereco || {};
     const endereco = [end.rua, end.numero, end.bairro].filter(Boolean).join(', ');
     return {
       id:'#BF' + o.id, rawId:o.id, cliente:o.nomeCliente, tipo: tipoMap[o.tipo] || 'Entrega', endereco,
       mesa: o.mesa ? o.mesa.numero : null,
-      pgto: pgtoMap[o.formaPagamento] || 'Na mesa',
+      empresaNome: o.empresa ? o.empresa.nome : null,
+      pgto: pgtoMap[o.formaPagamento] || (o.tipo === 'EMPRESA' ? 'Faturado' : 'Na mesa'),
       hora: new Date(o.createdAt).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
       status: statusMap[o.statusEntrega] || 'novo',
       entregadorId: o.entregadorId || null,
@@ -1366,6 +1848,11 @@ class Component extends DCLogic {
     const lista = await this.apiGet('/admin/atendentes');
     this.setState({ atendentes: lista });
   }
+  async carregarEmpresas(){
+    if (this.state.tipoTenant !== 'RESTAURANTE') return;
+    const lista = await this.apiGet('/admin/empresas');
+    this.setState({ empresas: lista });
+  }
   /** Carrega o status do caixa atual ao inicializar (ou ao voltar para a aba). */
   async carregarCaixa(){
     try {
@@ -1377,11 +1864,61 @@ class Component extends DCLogic {
   }
   async carregarConfiguracao(){
     const config = await this.apiGet('/admin/configuracao');
+    if (config && config.tenant && config.tenant.tipo) {
+      this.setState({ tipoTenant: config.tenant.tipo });
+    }
     this.setState({
       taxaEntregaInput: String(config.taxaEntrega).replace('.', ','),
       galetoHorarioInicioInput: config.galetoHorarioInicio,
       galetoHorarioFimInput: config.galetoHorarioFim,
+      horarioFuncionamentoDraft: this.horarioParaDraft(config.horarioFuncionamento),
     });
+  }
+  /** Converte o formato da API ({dia:[{inicio,fim}]}) pro formato editável da tela (1 objeto fixo por dia, sempre com turno1/turno2). */
+  horarioParaDraft(horarioFuncionamento){
+    return DIAS_SEMANA.reduce((acc, d) => {
+      const turnos = (horarioFuncionamento && horarioFuncionamento[d.key]) || [];
+      acc[d.key] = {
+        fechado: turnos.length === 0,
+        turno1: turnos[0] || { inicio:'', fim:'' },
+        turno2Ativo: turnos.length > 1,
+        turno2: turnos[1] || { inicio:'', fim:'' },
+      };
+      return acc;
+    }, {});
+  }
+  /** Caminho inverso — o que a tela edita vira o {dia:[{inicio,fim}]} que a API espera. Dia fechado ou sem os dois horários do turno = lista vazia (fechado). */
+  draftParaHorarioFuncionamento(draft){
+    return DIAS_SEMANA.reduce((acc, d) => {
+      const dia = draft[d.key];
+      const turnos = [];
+      if (!dia.fechado) {
+        if (dia.turno1.inicio && dia.turno1.fim) turnos.push({ inicio:dia.turno1.inicio, fim:dia.turno1.fim });
+        if (dia.turno2Ativo && dia.turno2.inicio && dia.turno2.fim) turnos.push({ inicio:dia.turno2.inicio, fim:dia.turno2.fim });
+      }
+      acc[d.key] = turnos;
+      return acc;
+    }, {});
+  }
+  onHorarioDiaToggle(diaKey){
+    this.setState(s => ({ horarioFuncionamentoDraft: { ...s.horarioFuncionamentoDraft,
+      [diaKey]: { ...s.horarioFuncionamentoDraft[diaKey], fechado: !s.horarioFuncionamentoDraft[diaKey].fechado } } }));
+  }
+  onHorarioTurnoCampo(diaKey, turno, campo, valor){
+    this.setState(s => ({ horarioFuncionamentoDraft: { ...s.horarioFuncionamentoDraft,
+      [diaKey]: { ...s.horarioFuncionamentoDraft[diaKey], [turno]: { ...s.horarioFuncionamentoDraft[diaKey][turno], [campo]: valor } } } }));
+  }
+  onHorarioTurno2Toggle(diaKey){
+    this.setState(s => ({ horarioFuncionamentoDraft: { ...s.horarioFuncionamentoDraft,
+      [diaKey]: { ...s.horarioFuncionamentoDraft[diaKey], turno2Ativo: !s.horarioFuncionamentoDraft[diaKey].turno2Ativo } } }));
+  }
+  async salvarHorarioFuncionamento(){
+    try {
+      const horarioFuncionamento = this.draftParaHorarioFuncionamento(this.state.horarioFuncionamentoDraft);
+      const config = await this.apiSend('PUT', '/admin/configuracao', { horarioFuncionamento });
+      this.setState({ horarioFuncionamentoDraft: this.horarioParaDraft(config.horarioFuncionamento) });
+      this.showToast('Horário de funcionamento atualizado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar horário de funcionamento'); }
   }
   onTaxaEntregaInput(e){ this.setState({ taxaEntregaInput: e.target.value }); }
   async salvarTaxaEntrega(){
@@ -1406,6 +1943,78 @@ class Component extends DCLogic {
       this.setState({ galetoHorarioInicioInput: config.galetoHorarioInicio, galetoHorarioFimInput: config.galetoHorarioFim });
       this.showToast('Horários de retirada atualizados');
     } catch (e) { this.showToast(e.message || 'Erro ao salvar horários'); }
+  }
+  // ---- Bairros de entrega: CRUD (mesmo padrão de proteínas/complementos, via API) ----
+  async carregarBairros(){
+    const bairros = await this.apiGet('/admin/bairros');
+    this.setState({ bairros });
+  }
+  onBairroAddNome(e){ this.setState({ bairroAddNome: e.target.value }); }
+  onBairroAddTaxa(e){ this.setState({ bairroAddTaxa: e.target.value }); }
+  async adicionarBairro(){
+    const nome = this.state.bairroAddNome.trim();
+    if (!nome) { this.showToast('Informe o nome do bairro'); return; }
+    const taxaEntrega = parseFloat(String(this.state.bairroAddTaxa).replace(/\./g, '').replace(',', '.'));
+    if (!Number.isFinite(taxaEntrega) || taxaEntrega < 0) { this.showToast('Informe a taxa de entrega do bairro'); return; }
+    try {
+      const bairro = await this.apiSend('POST', '/admin/bairros', { nome, taxaEntrega });
+      this.setState(s => ({ bairros: [...s.bairros, bairro], bairroAddNome:'', bairroAddTaxa:'' }));
+      this.showToast('Bairro adicionado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar'); }
+  }
+  editarBairro(it){ this.setState({ bairroEdit:{ id:it.id, nome:it.nome, taxaEntrega:String(it.taxaEntrega).replace('.', ',') } }); }
+  onBairroEditNome(e){ this.setState(s => ({ bairroEdit: s.bairroEdit ? { ...s.bairroEdit, nome:e.target.value } : s.bairroEdit })); }
+  onBairroEditTaxa(e){ this.setState(s => ({ bairroEdit: s.bairroEdit ? { ...s.bairroEdit, taxaEntrega:e.target.value } : s.bairroEdit })); }
+  cancelarBairroEdit(){ this.setState({ bairroEdit:null }); }
+  async salvarBairroEdit(){
+    const d = this.state.bairroEdit; if (!d) return;
+    const nome = d.nome.trim();
+    const taxaEntrega = parseFloat(String(d.taxaEntrega).replace(/\./g, '').replace(',', '.'));
+    if (!nome) { this.showToast('Informe o nome'); return; }
+    if (!Number.isFinite(taxaEntrega) || taxaEntrega < 0) { this.showToast('Taxa inválida'); return; }
+    try {
+      const updated = await this.apiSend('PUT', '/admin/bairros/' + d.id, { nome, taxaEntrega });
+      this.setState(s => ({ bairros: s.bairros.map(x => x.id === d.id ? updated : x), bairroEdit:null }));
+      this.showToast('Bairro atualizado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar'); }
+  }
+  async toggleBairroAtivo(id){
+    const item = this.state.bairros.find(x => x.id === id); if (!item) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/bairros/' + id, { ativo: !item.ativo });
+      this.setState(s => ({ bairros: s.bairros.map(x => x.id === id ? updated : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar'); }
+  }
+  async excluirBairro(id){
+    try {
+      await this.apiDelete('/admin/bairros/' + id);
+      this.setState(s => ({ bairros: s.bairros.filter(x => x.id !== id) }));
+      this.showToast('Removido');
+    } catch (e) { this.showToast(e.message || 'Erro ao remover'); }
+  }
+  setSplashInput(el) { this._splashInput = el; }
+  triggerSplashUpload() { if (this._splashInput) this._splashInput.click(); }
+  onSplashSelected(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const dataUrl = evt.target.result;
+      try {
+        localStorage.setItem('bf_custom_splash', dataUrl);
+        this.setState({ splashSrc: dataUrl });
+        this.showToast('Foto da Splash atualizada!');
+      } catch (err) {
+        this.showToast('Erro ao salvar imagem da Splash');
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
+  removerSplashFoto() {
+    localStorage.removeItem('bf_custom_splash');
+    this.setState({ splashSrc: null });
+    this.showToast('Splash restaurada para o padrão!');
   }
   novoEntregador(){ this.setState({ entregadorDraft: { id:null, nome:'', email:'', senha:'' } }); }
   editEntregador(e){ this.setState({ entregadorDraft: { id:e.id, nome:e.nome, email:e.email, senha:'' } }); }
@@ -1503,6 +2112,185 @@ class Component extends DCLogic {
       this.setState(s => ({ atendentes: s.atendentes.map(x => x.id === id ? updated : x) }));
     } catch (err) { this.showToast('Erro ao atualizar atendente'); }
   }
+  novaEmpresa(){ this.setState({ empresaDraft: { id:null, nome:'', login:'', senha:'', cotaDiaria:'20', valorMarmita:'0' } }); }
+  editEmpresa(emp){ this.setState({ empresaDraft: { id:emp.id, nome:emp.nome, login:emp.login, senha:'', cotaDiaria:String(emp.cotaDiaria), valorMarmita:String(emp.valorMarmita || 0) } }); }
+  cancelarEmpresaDraft(){ this.setState({ empresaDraft: null }); }
+  onEmpresaDraftNome(e){ this.setState(s => ({ empresaDraft: { ...s.empresaDraft, nome: e.target.value } })); }
+  onEmpresaDraftLogin(e){ this.setState(s => ({ empresaDraft: { ...s.empresaDraft, login: e.target.value } })); }
+  onEmpresaDraftSenha(e){ this.setState(s => ({ empresaDraft: { ...s.empresaDraft, senha: e.target.value } })); }
+  onEmpresaDraftCota(e){ this.setState(s => ({ empresaDraft: { ...s.empresaDraft, cotaDiaria: e.target.value } })); }
+  onEmpresaDraftValorMarmita(e){ this.setState(s => ({ empresaDraft: { ...s.empresaDraft, valorMarmita: e.target.value } })); }
+  async salvarEmpresaDraft(){
+    const d = this.state.empresaDraft;
+    const nome = (d?.nome || '').trim();
+    const login = (d?.login || '').trim();
+    if (!nome || !login){ this.showToast('Informe nome e login'); return; }
+    if (!d.id && !d.senha){ this.showToast('Defina uma senha para a nova empresa'); return; }
+    try {
+      const payload = {
+        nome, login, cotaDiaria: parseInt(d.cotaDiaria, 10) || 20,
+        valorMarmita: Number(String(d.valorMarmita).replace(',', '.')) || 0
+      };
+      if (d.senha) payload.senha = d.senha;
+      const salvo = d.id
+        ? await this.apiSend('PUT', '/admin/empresas/' + d.id, payload)
+        : await this.apiSend('POST', '/admin/empresas', payload);
+      this.setState(s => ({
+        empresas: d.id ? s.empresas.map(x => x.id === d.id ? salvo : x) : [...s.empresas, salvo],
+        empresaDraft: null
+      }));
+      this.showToast(d.id ? 'Empresa atualizada' : 'Empresa cadastrada');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar empresa'); }
+  }
+  async removerFuncionarioSalvo(empresaId, funcId){
+    try {
+      await this.apiDelete('/admin/empresas/' + empresaId + '/funcionarios/' + funcId);
+      this.setState(s => ({
+        empresas: s.empresas.map(e => e.id === empresaId
+          ? { ...e, funcionariosSalvos: (e.funcionariosSalvos || []).filter(f => f.id !== funcId) }
+          : e)
+      }));
+    } catch (e) { this.showToast(e.message || 'Erro ao remover funcionário salvo'); }
+  }
+
+  // ---- fazer pedido em nome da empresa (mesmo modelo de lotes do portal empresa.html) ----
+  abrirPedidoEmpresa(emp){
+    const sizeIds = Object.keys(this.state.marmitaSizes).filter(id => this.state.marmitaSizes[id].disponivelEmpresa);
+    this.setState({
+      pedidoEmpresaDraft: {
+        empresaId: emp.id, empresaNome: emp.nome, empresaCotaDiaria: emp.cotaDiaria,
+        marmitaSizeId: sizeIds.length === 1 ? sizeIds[0] : null, marmitaSelProteinas:[], marmitaSelComplementos:[], produtoSelecionadoId:null,
+        quantidadeLote:'1', endereco:'', enderecosSalvos:[], nomeAtual:'', mostrarInputNome:false, nomes:[],
+        lotes:[], totalDiaInput:'', enviando:false
+      }
+    });
+  }
+  fecharPedidoEmpresa(){ this.setState({ pedidoEmpresaDraft:null }); }
+  onPedidoEmpresaTotalDia(e){ this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, totalDiaInput: e.target.value } })); }
+  onPedidoEmpresaEndereco(e){ this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, endereco: e.target.value } })); }
+  usarEnderecoSalvoPedidoEmpresa(endereco){ this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, endereco } })); }
+  onPedidoEmpresaQuantidade(e){ this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, quantidadeLote: e.target.value } })); }
+  onPedidoEmpresaNome(e){ this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, nomeAtual: e.target.value } })); }
+  toggleInputNomePedidoEmpresa(){ this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, mostrarInputNome: !s.pedidoEmpresaDraft.mostrarInputNome } })); }
+  adicionarNomePedidoEmpresa(nomeBruto, mostrarErro){
+    const d = this.state.pedidoEmpresaDraft;
+    const nome = String(nomeBruto || '').trim().replace(/\s+/g, ' ');
+    const qtd = Math.max(1, parseInt(d.quantidadeLote, 10) || 1);
+    if (!nome) return false;
+    if (d.nomes.some(n => n.toLowerCase() === nome.toLowerCase())) { if (mostrarErro) this.showToast('Nome já está neste lote'); return false; }
+    if (d.nomes.length >= qtd) { if (mostrarErro) this.showToast('Quantidade de nomes já atingiu o limite do lote'); return false; }
+    this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, nomes: [...s.pedidoEmpresaDraft.nomes, nome] } }));
+    return true;
+  }
+  adicionarNomeAtualPedidoEmpresa(){ if (this.adicionarNomePedidoEmpresa(this.state.pedidoEmpresaDraft.nomeAtual, true)) this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, nomeAtual:'' } })); }
+  usarFuncionarioSalvoPedidoEmpresa(nome){ if (this.adicionarNomePedidoEmpresa(nome, true)) this.showToast('Nome adicionado ao lote'); }
+  removerNomePedidoEmpresa(i){ this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, nomes: s.pedidoEmpresaDraft.nomes.filter((_, idx) => idx !== i) } })); }
+  selecionarMarmitaPedidoEmpresaSize(id){ this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, marmitaSizeId:id, marmitaSelProteinas:[], marmitaSelComplementos:[], produtoSelecionadoId:null } })); }
+  toggleMarmitaPedidoEmpresaProteina(id){
+    this.setState(s => {
+      const tamanho = s.marmitaSizes[s.pedidoEmpresaDraft.marmitaSizeId];
+      let sel = s.pedidoEmpresaDraft.marmitaSelProteinas.slice();
+      if (sel.includes(id)) sel = sel.filter(x => x !== id);
+      else if (tamanho && sel.length < tamanho.proteinas) sel = [...sel, id];
+      return { pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, marmitaSelProteinas: sel, produtoSelecionadoId:null } };
+    });
+  }
+  toggleMarmitaPedidoEmpresaComplemento(id){
+    this.setState(s => {
+      let sel = s.pedidoEmpresaDraft.marmitaSelComplementos.slice();
+      sel = sel.includes(id) ? sel.filter(x => x !== id) : [...sel, id];
+      return { pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, marmitaSelComplementos: sel, produtoSelecionadoId:null } };
+    });
+  }
+  selecionarProdutoPedidoEmpresa(produto){
+    this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, produtoSelecionadoId: produto.id, marmitaSelProteinas:[], marmitaSelComplementos:[] } }));
+  }
+  adicionarLotePedidoEmpresa(){
+    const s = this.state; const d = s.pedidoEmpresaDraft;
+    const qtd = parseInt(d.quantidadeLote, 10);
+    const endereco = (d.endereco || '').trim();
+    if (!d.marmitaSizeId && !d.produtoSelecionadoId){ this.showToast('Selecione um item'); return; }
+    if (!endereco){ this.showToast('Informe o endereço de entrega'); return; }
+    if (!Number.isInteger(qtd) || qtd < 1){ this.showToast('Quantidade inválida'); return; }
+    const totalDiaDigitado = d.totalDiaInput.trim() !== '' ? Math.max(0, parseInt(d.totalDiaInput, 10) || 0) : null;
+    const totalAtual = d.lotes.reduce((sum, l) => sum + l.quantidade, 0);
+    if (totalDiaDigitado !== null && totalAtual + qtd > totalDiaDigitado){
+      this.showToast('Excede o total do dia em ' + (totalAtual + qtd - totalDiaDigitado));
+      return;
+    }
+
+    let novoLote;
+    if (d.marmitaSizeId) {
+      const tamanho = s.marmitaSizes[d.marmitaSizeId];
+      if (!tamanho) return;
+      if (d.marmitaSelProteinas.length !== tamanho.proteinas){
+        this.showToast('Escolha ' + tamanho.proteinas + (tamanho.proteinas === 1 ? ' proteína' : ' proteínas') + ' pra essa marmita');
+        return;
+      }
+      const nomesProteinas = d.marmitaSelProteinas.map(id => (s.proteinas.find(p => p.id === id) || {}).nome).filter(Boolean);
+      const nomesComplementos = d.marmitaSelComplementos.map(id => (s.complementos.find(c => c.id === id) || {}).nome).filter(Boolean);
+      novoLote = {
+        // Envia o slug ('pequena'/'grande'), não o id numérico — mesmo
+        // contrato do checkout normal (montarItemValidado resolve por slug).
+        tamanhoMarmitaId: tamanho.slug,
+        proteinaIds: d.marmitaSelProteinas.slice(),
+        complementoIds: d.marmitaSelComplementos.slice(),
+        itemLabel: 'Monte sua Marmita — ' + tamanho.nome + (nomesProteinas.length || nomesComplementos.length ? ' (' + [...nomesProteinas, ...nomesComplementos].join(', ') + ')' : ''),
+      };
+    } else {
+      const produto = s.products.find(p => p.id === d.produtoSelecionadoId);
+      if (!produto) return;
+      novoLote = { produtoId: produto.id, itemLabel: produto.name };
+    }
+    novoLote.quantidade = qtd;
+    novoLote.endereco = endereco;
+    novoLote.nomes = d.nomes.slice();
+
+    this.setState(st => ({
+      pedidoEmpresaDraft: {
+        ...st.pedidoEmpresaDraft,
+        lotes: [...st.pedidoEmpresaDraft.lotes, novoLote],
+        enderecosSalvos: st.pedidoEmpresaDraft.enderecosSalvos.some(e => e.toLowerCase() === endereco.toLowerCase()) ? st.pedidoEmpresaDraft.enderecosSalvos : [...st.pedidoEmpresaDraft.enderecosSalvos, endereco],
+        marmitaSelProteinas:[], marmitaSelComplementos:[], produtoSelecionadoId:null,
+        quantidadeLote:'1', nomes:[], mostrarInputNome:false,
+      }
+    }));
+  }
+  removerLotePedidoEmpresa(i){
+    this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, lotes: s.pedidoEmpresaDraft.lotes.filter((_, idx) => idx !== i) } }));
+  }
+  async enviarPedidoEmpresa(){
+    const d = this.state.pedidoEmpresaDraft;
+    if (!d.lotes.length) return;
+    const totalDiaDigitado = d.totalDiaInput.trim() !== '' ? Math.max(0, parseInt(d.totalDiaInput, 10) || 0) : null;
+    const totalNosLotes = d.lotes.reduce((sum, l) => sum + l.quantidade, 0);
+    if (totalDiaDigitado !== null && totalNosLotes !== totalDiaDigitado){
+      this.showToast(totalNosLotes < totalDiaDigitado
+        ? ('Faltam ' + (totalDiaDigitado - totalNosLotes) + ' pedidos pra fechar o total do dia')
+        : 'Total do dia menor que os lotes já cadastrados');
+      return;
+    }
+    this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, enviando:true } }));
+    try {
+      const lotes = d.lotes.map((l) => l.tamanhoMarmitaId
+        ? { tamanhoMarmitaId: l.tamanhoMarmitaId, proteinaIds: l.proteinaIds, complementoIds: l.complementoIds, quantidade: l.quantidade, endereco: l.endereco, nomes: l.nomes }
+        : { produtoId: l.produtoId, quantidade: l.quantidade, endereco: l.endereco, nomes: l.nomes });
+      const resultado = await this.apiSend('POST', '/admin/empresas/' + d.empresaId + '/pedidos', { lotes });
+      this.showToast(resultado.criados + (resultado.criados === 1 ? ' pedido lançado pra ' : ' pedidos lançados pra ') + d.empresaNome);
+      this.setState({ pedidoEmpresaDraft:null });
+      await this.carregarPedidos();
+    } catch (e) {
+      this.setState(s => ({ pedidoEmpresaDraft: { ...s.pedidoEmpresaDraft, enviando:false } }));
+      this.showToast(e.message || 'Erro ao lançar pedido');
+    }
+  }
+  async toggleEmpresaAtivo(id){
+    const emp = this.state.empresas.find(x => x.id === id); if (!emp) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/empresas/' + id, { ativo: !emp.ativo });
+      this.setState(s => ({ empresas: s.empresas.map(x => x.id === id ? updated : x) }));
+    } catch (err) { this.showToast('Erro ao atualizar empresa'); }
+  }
   novaCategoria(){ this.setState({ categoriaDraft: { id:null, nome:'', ordem:'' } }); }
   editCategoria(c){ this.setState({ categoriaDraft: { id:c.id, nome:c.nome, ordem:String(c.ordem) } }); }
   cancelarCategoriaDraft(){ this.setState({ categoriaDraft: null }); }
@@ -1547,8 +2335,16 @@ class Component extends DCLogic {
       this.apiGet('/admin/proteinas'), this.apiGet('/admin/complementos'), this.apiGet('/marmita-tamanhos')
     ]);
     const marmitaSizes = {};
-    tamanhos.forEach((t) => { marmitaSizes[t.id] = { nome:t.nome, proteinas:t.qtdProteinas, price:t.preco }; });
+    tamanhos.forEach((t) => { marmitaSizes[t.id] = { nome:t.nome, slug:t.slug, proteinas:t.qtdProteinas, price:t.preco, disponivelEmpresa: !!t.disponivelEmpresa }; });
     this.setState({ proteinas, complementos, marmitaSizes });
+  }
+  /** Liga/desliga um tamanho de marmita no cardápio restrito ("prato do dia") do canal empresa. */
+  async toggleMarmitaSizeEmpresa(sizeId){
+    const atual = this.state.marmitaSizes[sizeId]; if (!atual) return;
+    try {
+      await this.apiSend('PUT', '/admin/marmita-tamanhos/' + sizeId, { disponivelEmpresa: !atual.disponivelEmpresa });
+      this.setState(s => ({ marmitaSizes: { ...s.marmitaSizes, [sizeId]: { ...s.marmitaSizes[sizeId], disponivelEmpresa: !atual.disponivelEmpresa } } }));
+    } catch (e) { this.showToast('Erro ao atualizar cardápio da empresa'); }
   }
 
   payBreakdown(){
@@ -1593,6 +2389,11 @@ class Component extends DCLogic {
   // Ao montar, só confere se já existe uma sessão válida (cookie httpOnly) — nenhum dado de produto/pedido
   // fica em localStorage; tudo vem da API depois que checkSession() confirma o login.
   componentDidMount(){
+    // Precisa ser setado ANTES de qualquer outro setState — senão o setState
+    // que guarda o "admin" dentro de checkSession() já dispara um
+    // componentDidUpdate "fantasma" (view ainda no padrão, _lastView nunca
+    // inicializado) que apaga o sessionStorage antes do restaurarViewSalva() ler.
+    this._lastView = this.state.view;
     this.checkSession();
   }
 
@@ -1835,17 +2636,62 @@ class Component extends DCLogic {
       this.setState(s => ({ products: s.products.map((x) => x.id === id ? this.mapProduto(updated) : x) }));
     } catch (e) { this.showToast('Erro ao atualizar produto'); }
   }
+  /** Liga/desliga um produto no cardápio restrito ("prato do dia") do canal empresa. */
+  async toggleProdutoEmpresa(id){
+    const p = this.state.products.find((x) => x.id === id); if (!p) return;
+    try {
+      const updated = await this.apiSend('PUT', '/admin/produtos/' + id, { disponivelEmpresa: !p.disponivelEmpresa });
+      this.setState(s => ({ products: s.products.map((x) => x.id === id ? this.mapProduto(updated) : x) }));
+    } catch (e) { this.showToast('Erro ao atualizar cardápio da empresa'); }
+  }
+  // ---- importação de produtos em lote (planilha .xlsx) ----
+  async baixarModeloProdutos(){
+    try { await this.apiDownload('/admin/produtos/import/modelo', 'modelo-produtos.xlsx'); }
+    catch (e) { this.showToast(e.message || 'Erro ao baixar planilha modelo'); }
+  }
+  setImportInput(el){ this._importInput = el; }
+  triggerImportUpload(){ if (this._importInput) this._importInput.click(); }
+  async onImportFileSelected(e){
+    const file = e.target.files && e.target.files[0];
+    e.target.value = ''; // permite selecionar o MESMO arquivo de novo depois de corrigir e reenviar
+    if (!file) return;
+    this.setState({ importandoProdutos:true, importErros:null, importResumo:null });
+    try {
+      const fd = new FormData(); fd.append('arquivo', file);
+      const resultado = await this.apiUpload('/admin/produtos/import', fd);
+      if (resultado.erros && resultado.erros.length > 0) {
+        this.setState({ importandoProdutos:false, importErros:resultado.erros });
+      } else {
+        this.setState({ importandoProdutos:false, importResumo:resultado });
+        this.showToast(`${resultado.importados} produto(s) importado(s)` + (resultado.categoriasCriadas ? `, ${resultado.categoriasCriadas} categoria(s) nova(s)` : ''));
+        await Promise.all([this.carregarProdutos(), this.carregarCategorias()]);
+      }
+    } catch (err) {
+      this.setState({ importandoProdutos:false });
+      this.showToast(err.message || 'Erro ao importar planilha');
+    }
+  }
+  fecharImportErros(){ this.setState({ importErros:null }); }
+  fecharImportResumo(){ this.setState({ importResumo:null }); }
+
   newProduct(){
     const catId = this.state.categorias[0] ? this.state.categorias[0].id : null;
-    this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', active:true, foto:null, fotoFile:null, adicionais:[] }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null });
+    this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', custo:'', codigoBarras:'', active:true, porPeso:false, foto:null, fotoFile:null, adicionais:[] }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null });
   }
-  editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), active:p.active, foto:p.foto||null, fotoFile:null, adicionais:(p.adicionais||[]).slice() }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null }); }
+  editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), custo: p.custo!=null ? String(p.custo).replace('.',',') : '', codigoBarras: p.codigoBarras||'', active:p.active, porPeso: !!p.vendidoPorPeso, foto:p.foto||null, fotoFile:null, adicionais:(p.adicionais||[]).slice() }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null }); }
+  toggleDraftPorPeso(){ this.setState(s => ({ productDraft: { ...s.productDraft, porPeso: !s.productDraft.porPeso } })); }
+  onDraftCusto(e){ this.setState(s => ({ productDraft: { ...s.productDraft, custo:e.target.value } })); }
+  onDraftCodigoBarras(e){ this.setState(s => ({ productDraft: { ...s.productDraft, codigoBarras:e.target.value } })); }
   async saveProduct(){
     const d = this.state.productDraft; if (!d) return;
-    if (!d.name.trim()){ this.showToast('Informe o nome do produto'); return; }
-    const price = parseFloat(String(d.price).replace(/\./g,'').replace(',','.')) || 0;
-    const stock = parseInt(String(d.stock).replace(/\D/g,''), 10) || 0;
-    const payload = { categoriaId:d.cat, subcategoriaId:d.subcat||null, nome:d.name.trim(), descricaoCurta:d.desc.trim(), descricaoCompleta:d.desc.trim(), preco:price, estoque:stock, ativo:d.active };
+    const price = parseFloat(String(d.price||'').replace(/\./g,'').replace(',','.')) || 0;
+    const stock = parseInt(String(d.stock||'').replace(/\D/g,''), 10) || 0;
+    const cat = d.cat || (this.state.categorias[0] ? this.state.categorias[0].id : null);
+    const payload = { categoriaId:cat, subcategoriaId:d.subcat||null, nome:(d.name||'').trim() || 'Novo Produto', descricaoCurta:(d.desc||'').trim(), descricaoCompleta:(d.desc||'').trim(), preco:price, estoque:stock, ativo:d.active, vendidoPorPeso:d.porPeso };
+    if (this.state.tipoTenant === 'MERCANTIL') {
+      payload.custo = d.custo ? parseFloat(String(d.custo).replace(/\./g,'').replace(',','.')) || 0 : null;
+      payload.codigoBarras = d.codigoBarras ? d.codigoBarras.trim() : null;
+    }
     try {
       let saved = d.id ? await this.apiSend('PUT', '/admin/produtos/' + d.id, payload) : await this.apiSend('POST', '/admin/produtos', payload);
       if (d.fotoFile) {
@@ -1888,8 +2734,7 @@ class Component extends DCLogic {
   }
   async saveBanner(){
     const d = this.state.bannerDraft; if (!d) return;
-    if (!d.titulo.trim()){ this.showToast('Informe o título do banner'); return; }
-    const payload = { selo:d.badge, titulo:d.titulo, descricao:d.subtitulo, ctaLabel:d.ctaLabel || 'Pedir agora', ctaTipo:d.ctaTipo || 'CARDAPIO', produtoId:d.produtoId || null, ordem:d.ordem || 0, ativo:d.active };
+    const payload = { selo:(d.badge||'').trim() || 'Promo', titulo:(d.titulo||'').trim() || 'Novo Banner', descricao:(d.subtitulo||'').trim(), ctaLabel:(d.ctaLabel||'').trim() || 'Pedir agora', ctaTipo:d.ctaTipo || 'CARDAPIO', produtoId:d.produtoId || null, ordem:d.ordem || 0, ativo:d.active };
     try {
       let saved = d.id ? await this.apiSend('PUT', '/admin/banners/' + d.id, payload) : await this.apiSend('POST', '/admin/banners', payload);
       // Se há um novo arquivo de foto selecionado, envia via multipart após salvar o banner
@@ -1987,7 +2832,104 @@ class Component extends DCLogic {
   knobStyle(){ return { width:'20px', height:'20px', borderRadius:'50%', background:'#fff', boxShadow:'0 1px 3px rgba(0,0,0,.2)', display:'block' }; }
 
   componentWillUnmount(){ clearTimeout(this._toast); clearInterval(this._mesasPoll); clearInterval(this._pedidosPoll); }
-  componentDidUpdate(){ if (this.state.view !== this._lastView){ if (this._scroll) this._scroll.scrollTop = 0; this._lastView = this.state.view; } }
+  // Views conhecidas (mesma lista do objeto `titles` em renderVals) — nunca restaura um
+  // valor desconhecido/corrompido do sessionStorage.
+  VIEWS_VALIDAS = new Set(['pedidos','produtos','categorias','marmitas','banners','mesas','caixa','entregadores','garcons','atendentes','empresas','vendas','senha']);
+  STORAGE_KEY = 'bf_tela_admin';
+  restaurarViewSalva(){
+    try {
+      const salvo = JSON.parse(sessionStorage.getItem(this.STORAGE_KEY) || 'null');
+      if (salvo && this.VIEWS_VALIDAS.has(salvo.view) && salvo.view !== this.state.view) this.nav(salvo.view);
+    } catch (e) { /* sessionStorage corrompido ou indisponível — fica na view padrão */ }
+  }
+  componentDidUpdate(){
+    if (this.state.view !== this._lastView){
+      if (this._scroll) this._scroll.scrollTop = 0;
+      this._lastView = this.state.view;
+      sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify({ view: this.state.view }));
+    }
+  }
+
+  pedidoEmpresaVals(){
+    const s = this.state;
+    const d = s.pedidoEmpresaDraft;
+    const pillStyle = (on) => ({
+      border:'1px solid', cursor:'pointer', borderRadius:'10px', padding:'8px 13px', fontWeight:700, fontSize:'13px',
+      background: on ? '#6B2E12' : '#fff', color: on ? '#FFF3DC' : '#6B2E12', borderColor: on ? '#6B2E12' : 'rgba(29,16,9,.12)',
+    });
+    if (!d) {
+      return { isPedidoEmpresaDraft:false };
+    }
+    const sizeIds = Object.keys(s.marmitaSizes).filter(id => s.marmitaSizes[id].disponivelEmpresa);
+    const tamanhoAtual = s.marmitaSizes[d.marmitaSizeId];
+    const totalDiaDigitado = d.totalDiaInput.trim() !== '' ? Math.max(0, parseInt(d.totalDiaInput, 10) || 0) : null;
+    const totalNosLotes = d.lotes.reduce((sum, l) => sum + l.quantidade, 0);
+    const totalDoDia = totalDiaDigitado === null ? totalNosLotes : Math.max(totalDiaDigitado, totalNosLotes);
+    const falta = Math.max(totalDoDia - totalNosLotes, 0);
+    return {
+      isPedidoEmpresaDraft:true,
+      pedidoEmpresaNomeEmpresa: d.empresaNome,
+      fecharPedidoEmpresa:() => this.fecharPedidoEmpresa(),
+
+      pedidoEmpresaTotalDiaInput: d.totalDiaInput, onPedidoEmpresaTotalDia:(e) => this.onPedidoEmpresaTotalDia(e),
+      pedidoEmpresaTotalDiaPlaceholder: d.empresaCotaDiaria ? ('Padrão ' + d.empresaCotaDiaria) : 'Automático',
+      pedidoEmpresaTotalNosLotes: totalNosLotes,
+      pedidoEmpresaFaltaLabel: totalDiaDigitado === null ? ('Total auto: ' + totalDoDia) : ('Falta ' + falta),
+
+      pedidoEmpresaHasMarmitaOpcao: sizeIds.length > 0,
+      pedidoEmpresaHasVariosTamanhos: sizeIds.length > 1,
+      pedidoEmpresaMarmitaSizeOptions: sizeIds.map(id => ({
+        label: s.marmitaSizes[id].nome + ' (' + this.fmt(parseFloat(String(s.marmitaSizes[id].price).replace(',', '.')) || 0) + ')',
+        onClick:() => this.selecionarMarmitaPedidoEmpresaSize(id),
+        style: pillStyle(d.marmitaSizeId === id),
+      })),
+      pedidoEmpresaMarmitaProteinasLabel: tamanhoAtual
+        ? ('Proteínas (' + d.marmitaSelProteinas.length + '/' + tamanhoAtual.proteinas + ')')
+        : 'Proteínas',
+      pedidoEmpresaMarmitaProteinaOptions: s.proteinas.filter(p => p.ativo && !p.esgotado).map(p => ({
+        label: p.nome, onClick:() => this.toggleMarmitaPedidoEmpresaProteina(p.id), style: pillStyle(d.marmitaSelProteinas.includes(p.id)),
+      })),
+      pedidoEmpresaMarmitaComplementoOptions: s.complementos.filter(c => c.ativo && !c.esgotado).map(c => ({
+        label: c.nome, onClick:() => this.toggleMarmitaPedidoEmpresaComplemento(c.id), style: pillStyle(d.marmitaSelComplementos.includes(c.id)),
+      })),
+      pedidoEmpresaHasProdutosFixos: s.products.filter(p => p.active && p.disponivelEmpresa).length > 0,
+      pedidoEmpresaProdutos: s.products.filter(p => p.active && p.disponivelEmpresa).map(p => ({
+        nome: p.name,
+        onClick:() => this.selecionarProdutoPedidoEmpresa(p),
+        style: pillStyle(d.produtoSelecionadoId === p.id),
+      })),
+      pedidoEmpresaCardapioVazio: sizeIds.length === 0 && s.products.filter(p => p.active && p.disponivelEmpresa).length === 0,
+
+      pedidoEmpresaQuantidade: d.quantidadeLote, onPedidoEmpresaQuantidade:(e) => this.onPedidoEmpresaQuantidade(e),
+      pedidoEmpresaEndereco: d.endereco, onPedidoEmpresaEndereco:(e) => this.onPedidoEmpresaEndereco(e),
+      pedidoEmpresaHasEnderecosSalvos: d.enderecosSalvos.length > 0,
+      pedidoEmpresaEnderecosSalvosOptions: d.enderecosSalvos.map((e) => ({ texto: e, onClick:() => this.usarEnderecoSalvoPedidoEmpresa(e) })),
+
+      pedidoEmpresaMostrarInputNome: d.mostrarInputNome, toggleInputNomePedidoEmpresa:() => this.toggleInputNomePedidoEmpresa(),
+      pedidoEmpresaNomeAtual: d.nomeAtual, onPedidoEmpresaNome:(e) => this.onPedidoEmpresaNome(e),
+      adicionarNomeAtualPedidoEmpresa:() => this.adicionarNomeAtualPedidoEmpresa(),
+      pedidoEmpresaHasFuncionariosSalvos: (s.empresas.find(e => e.id === d.empresaId)?.funcionariosSalvos || []).length > 0,
+      pedidoEmpresaFuncionariosSalvosOptions: (s.empresas.find(e => e.id === d.empresaId)?.funcionariosSalvos || []).map(f => ({
+        nome: f.nome, onClick:() => this.usarFuncionarioSalvoPedidoEmpresa(f.nome),
+      })),
+      pedidoEmpresaHasNomes: d.nomes.length > 0,
+      pedidoEmpresaNomesOptions: d.nomes.map((n, i) => ({ nome: n, onRemover:() => this.removerNomePedidoEmpresa(i) })),
+
+      adicionarLotePedidoEmpresa:() => this.adicionarLotePedidoEmpresa(),
+
+      pedidoEmpresaLotesCount: d.lotes.length,
+      pedidoEmpresaHasLotes: d.lotes.length > 0, pedidoEmpresaLotesVazio: d.lotes.length === 0,
+      pedidoEmpresaLotesOptions: d.lotes.map((l, i) => ({
+        indice: i + 1, quantidade: l.quantidade, itemLabel: l.itemLabel,
+        hasEndereco: !!l.endereco, endereco: l.endereco || '',
+        hasNomes: l.nomes.length > 0, nomesTexto: l.nomes.join(', '),
+        onRemover:() => this.removerLotePedidoEmpresa(i),
+      })),
+
+      enviarPedidoEmpresa:() => this.enviarPedidoEmpresa(),
+      pedidoEmpresaEnviarLabel: d.enviando ? 'Enviando...' : 'Enviar pedido pra cozinha',
+    };
+  }
 
   caixaVals(){
     const c = this.state.caixa;
@@ -2016,8 +2958,37 @@ class Component extends DCLogic {
         { label:'Em aberto (mesas)', value:this.fmt(pay['Na mesa']||0), color:'#A8730B' }
       ],
       hasFechamento: !!f,
-      fechamentoHora: f ? f.hora : '', fechamentoRecebido: f ? this.fmt(f.recebido) : '', fechamentoEmCaixa: f ? this.fmt(f.emCaixa) : ''
+      fechamentoHora: f ? f.hora : '', fechamentoRecebido: f ? this.fmt(f.recebido) : '', fechamentoEmCaixa: f ? this.fmt(f.emCaixa) : '',
+      horarioDiasRows: this.horarioDiasRows(),
+      salvarHorarioFuncionamento:() => this.salvarHorarioFuncionamento(),
     };
+  }
+  /** Uma linha por dia da semana pro editor de horário de funcionamento (ver draft em horarioParaDraft/draftParaHorarioFuncionamento). */
+  horarioDiasRows(){
+    const draft = this.state.horarioFuncionamentoDraft;
+    return DIAS_SEMANA.map((d) => {
+      const dia = draft[d.key];
+      return {
+        label: d.label,
+        fechado: dia.fechado,
+        toggleLabel: dia.fechado ? 'Fechado' : 'Aberto',
+        togglePillStyle: {
+          border: dia.fechado ? '1px solid rgba(29,16,9,.14)' : 'none',
+          background: dia.fechado ? '#fff' : '#2D9E60', color: dia.fechado ? '#6B2E12' : '#fff',
+          borderRadius:'8px', padding:'6px 12px', fontSize:'12px', fontWeight:700, cursor:'pointer', whiteSpace:'nowrap', minWidth:'76px',
+        },
+        onToggleFechado:() => this.onHorarioDiaToggle(d.key),
+        aberto: !dia.fechado,
+        turno1Inicio: dia.turno1.inicio, turno1Fim: dia.turno1.fim,
+        onTurno1InicioChange:(e) => this.onHorarioTurnoCampo(d.key, 'turno1', 'inicio', e.target.value),
+        onTurno1FimChange:(e) => this.onHorarioTurnoCampo(d.key, 'turno1', 'fim', e.target.value),
+        turno2Ativo: dia.turno2Ativo, turno2Inativo: !dia.turno2Ativo,
+        onToggleTurno2:() => this.onHorarioTurno2Toggle(d.key),
+        turno2Inicio: dia.turno2.inicio, turno2Fim: dia.turno2.fim,
+        onTurno2InicioChange:(e) => this.onHorarioTurnoCampo(d.key, 'turno2', 'inicio', e.target.value),
+        onTurno2FimChange:(e) => this.onHorarioTurnoCampo(d.key, 'turno2', 'fim', e.target.value),
+      };
+    });
   }
 
   vendasVals(){
@@ -2096,6 +3067,7 @@ class Component extends DCLogic {
       entregadores:['Entregadores','Cadastre e gerencie os entregadores do delivery'],
       garcons:['Garçons','Cadastre e gerencie os garçons do salão'],
       atendentes:['Atendentes','Cadastre e gerencie os atendentes do balcão'],
+      empresas:['Empresas','Clientes corporativos, cota diária e cardápio de hoje'],
       vendas:['Vendas & Estoque','Quanto foi vendido e o que resta em estoque'],
       senha:['Trocar senha','Atualize suas credenciais de acesso']
     };
@@ -2108,12 +3080,32 @@ class Component extends DCLogic {
     const faturamento = active.reduce((a, o) => a + this.orderTotals(o).total, 0);
     const emAberto = s.orders.filter(o => o.status !== 'concluido' && o.status !== 'cancelado').length;
     const ticket = active.length ? faturamento / active.length : 0;
-    const kpis = [
+    const kpiDotStyle = (color) => ({ width:'9px', height:'9px', borderRadius:'3px', background:color, display:'inline-block' });
+    const kpisRestaurante = [
       { label:'Pedidos hoje', value:String(s.orders.length), color:'#D97706' },
       { label:'Em aberto', value:String(emAberto), color:'#2563EB' },
       { label:'Faturamento', value:this.fmt(faturamento), color:'#2D9E60' },
       { label:'Ticket médio', value:this.fmt(ticket), color:'#6B2E12' }
-    ].map(k => ({ ...k, dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:k.color, display:'inline-block' } }));
+    ];
+    // ---- KPIs do mercantil — "hoje" filtrado de verdade pela data (s.orders não
+    // é pré-filtrado por dia, ver GET /admin/pedidos), diferente do "Pedidos hoje"
+    // acima (nome histórico do restaurante, mantido como está).
+    const inicioHoje = new Date(); inicioHoje.setHours(0, 0, 0, 0);
+    const pedidosHojeMercantil = s.orders.filter(o => new Date(o.criadoEm) >= inicioHoje);
+    const activeHojeMercantil = pedidosHojeMercantil.filter(o => o.status !== 'cancelado');
+    const faturamentoHojeMercantil = activeHojeMercantil.reduce((a, o) => a + this.orderTotals(o).total, 0);
+    const produtosVendidosMercantil = activeHojeMercantil.reduce((a, o) => a + o.itens.reduce((s2, it) => s2 + it.q, 0), 0);
+    const ESTOQUE_BAIXO_LIMITE = 5;
+    const estoqueBaixoCount = s.products.filter(p => p.stock <= ESTOQUE_BAIXO_LIMITE).length;
+    const kpisMercantil = [
+      { label:'Vendas hoje', value:String(activeHojeMercantil.length), color:'#D97706' },
+      { label:'Produtos vendidos', value:String(produtosVendidosMercantil), color:'#2563EB' },
+      { label:'Estoque baixo', value:String(estoqueBaixoCount), color: estoqueBaixoCount > 0 ? '#C0392B' : '#8C8075' },
+      { label:'Caixa', value: s.caixa.aberto ? 'Aberto' : 'Fechado', color: s.caixa.aberto ? '#2D9E60' : '#8C8075' },
+      { label:'Faturamento', value:this.fmt(faturamentoHojeMercantil), color:'#2D9E60' },
+    ];
+    const kpis = (s.tipoTenant === 'MERCANTIL' ? kpisMercantil : kpisRestaurante).map(k => ({ ...k, dotStyle:kpiDotStyle(k.color) }));
+    const kpiGridStyle = { display:'grid', gridTemplateColumns:`repeat(${kpis.length},1fr)`, gap:'16px', marginBottom:'22px' };
 
     // ---- order tabs ----
     const filterDefs = [
@@ -2141,10 +3133,10 @@ class Component extends DCLogic {
       const b = this.badge(o.status, o.tipo);
       const canAdvance = o.status !== 'concluido' && o.status !== 'cancelado';
       const resumo = o.itens.map(i => i.q + '× ' + i.n).join(', ');
-      const tipoColor = o.tipo === 'Entrega' ? '#2563EB' : o.tipo === 'Mesa' ? '#D97706' : '#2D9E60';
+      const tipoColor = o.tipo === 'Entrega' ? '#2563EB' : o.tipo === 'Mesa' ? '#D97706' : o.tipo === 'Empresa' ? '#6B2E12' : '#2D9E60';
       return {
         id:o.id, hora:o.hora, cliente:o.cliente, itensResumo:resumo, tipo:o.tipo,
-        tipoIcon: o.tipo === 'Entrega' ? '◆' : o.tipo === 'Mesa' ? '■' : '▲',
+        tipoIcon: o.tipo === 'Entrega' ? '◆' : o.tipo === 'Mesa' ? '■' : o.tipo === 'Empresa' ? '●' : '▲',
         tipoIconStyle:{ color:tipoColor, fontSize:'10px' },
         totalFmt:this.fmt(T.total), badgeStyle:b.style, statusLabel:b.label,
         canAdvance, advanceLabel:this.advanceLabel(o.status, o.tipo),
@@ -2157,6 +3149,7 @@ class Component extends DCLogic {
           value: String(e.id), label: e.nome, selected: String(o.entregadorId) === String(e.id)
         })),
         onOpen:() => this.setState({ selectedOrder:o.id }),
+        onImprimir:(e) => { if (e&&e.stopPropagation) e.stopPropagation(); this.imprimirReciboPedido(o); },
         onAdvance:(e) => { if (e&&e.stopPropagation) e.stopPropagation(); this.advanceOrder(o.id); },
         onAtribuirEntregador:(ev) => this.atribuirEntregador(o.rawId, ev.target.value ? parseInt(ev.target.value, 10) : null)
       };
@@ -2171,6 +3164,7 @@ class Component extends DCLogic {
       const stepDefs = selO.tipo === 'Entrega'
         ? ['Recebido','Em preparo','Saiu p/ entrega','Entregue']
         : selO.tipo === 'Mesa' ? ['Recebido','Em preparo','Servindo','Finalizado']
+        : selO.tipo === 'Empresa' ? ['Recebido','Em preparo','Pronto','Entregue à empresa']
         : ['Recebido','Em preparo','Pronto','Retirado'];
       const curIdx = selO.status === 'cancelado' ? -1 : this.pipeline.indexOf(selO.status);
       const steps = stepDefs.map((lab, i) => {
@@ -2182,7 +3176,7 @@ class Component extends DCLogic {
       });
       od = {
         id:selO.id, hora:selO.hora, tipo:selO.tipo, cliente:selO.cliente, initial:(selO.cliente||'?').replace(/^(Mesa|Retirada).*/,'$1')[0] || selO.cliente[0],
-        localInfo: selO.tipo === 'Mesa' ? ('Mesa '+selO.mesa+' · salão') : selO.tipo === 'Retirada' ? 'Retirada no balcão' : selO.endereco,
+        localInfo: selO.tipo === 'Mesa' ? ('Mesa '+selO.mesa+' · salão') : selO.tipo === 'Retirada' ? 'Retirada no balcão' : selO.tipo === 'Empresa' ? ('Empresa: '+(selO.empresaNome || '—')) : selO.endereco,
         badgeStyle:b.style, statusLabel:b.label,
         itens: selO.itens.map(it => ({ n:it.n, q:it.q, lineFmt:this.fmt(it.p*it.q), ad:it.ad, hasAd: !!it.ad })),
         subFmt:this.fmt(T.sub), feeFmt: T.fee === 0 ? 'Grátis' : this.fmt(T.fee), totalFmt:this.fmt(T.total), pgto:selO.pgto,
@@ -2192,6 +3186,7 @@ class Component extends DCLogic {
         advanceLabel:this.advanceLabel(selO.status, selO.tipo),
         isDone: selO.status === 'concluido' || selO.status === 'cancelado',
         doneLabel: selO.status === 'cancelado' ? 'Pedido cancelado' : 'Pedido concluído',
+        onImprimir:() => this.imprimirReciboPedido(selO),
         onAdvance:() => this.advanceOrder(selO.id),
         onCancel:() => this.cancelOrder(selO.id)
       };
@@ -2223,7 +3218,7 @@ class Component extends DCLogic {
     if (s.view === 'produtos' && pq) prods = prods.filter(p => (p.name + ' ' + p.desc).toLowerCase().includes(pq));
     const productRows = prods.map(p => {
       const low = p.stock <= 5;
-      return { name:p.name, desc:p.desc, catLabel:this.catLabel(p.cat), priceFmt:this.fmt(p.price), stock:String(p.stock),
+      return { name:p.name, desc:p.desc, catLabel:this.catLabel(p.cat), priceFmt:this.fmt(p.price) + (p.vendidoPorPeso ? '/kg' : ''), stock:String(p.stock),
         hasFoto: !!p.foto, semFoto: !p.foto, fotoSrc: p.foto || '',
         stockStyle:{ fontFamily:"'DM Mono',monospace", fontWeight:500, minWidth:'34px', textAlign:'center', fontSize:'14px', color: p.stock === 0 ? '#C0392B' : low ? '#A8730B' : '#1D1009' },
         toggleStyle:this.toggleStyle(p.active), knobStyle:this.knobStyle(),
@@ -2267,6 +3262,36 @@ class Component extends DCLogic {
     const proteinaRows = s.proteinas.map(marmitaRow('proteinas'));
     const complementoRows = s.complementos.map(marmitaRow('complementos'));
     const proteinasEmpty = s.proteinas.length === 0, complementosEmpty = s.complementos.length === 0;
+
+    // ---- bairros de entrega: tabela Nome/Taxa/Status/Ações (mesmo padrão de proteínas/complementos) ----
+    const bEdit = s.bairroEdit;
+    const bairroRows = s.bairros.map((it) => {
+      const isEditing = !!(bEdit && bEdit.id === it.id);
+      return {
+        nome:it.nome, isEditing, isNotEditing: !isEditing,
+        editNome: isEditing ? bEdit.nome : it.nome,
+        onEditNomeChange:(e) => this.onBairroEditNome(e),
+        taxaFmt: this.fmt(it.taxaEntrega),
+        editTaxa: isEditing ? bEdit.taxaEntrega : String(it.taxaEntrega).replace('.', ','),
+        onEditTaxaChange:(e) => this.onBairroEditTaxa(e),
+        statusLabel: it.ativo ? 'Ativo' : 'Inativo',
+        statusBadgeStyle: it.ativo
+          ? { display:'inline-block', padding:'3px 9px', borderRadius:'8px', fontSize:'11px', fontWeight:700, color:'#2D9E60', background:'#E6F4EC', border:'1px solid #AEDCC2' }
+          : { display:'inline-block', padding:'3px 9px', borderRadius:'8px', fontSize:'11px', fontWeight:700, color:'#8C8075', background:'#F6F1E7', border:'1px solid rgba(29,16,9,.1)' },
+        ativoPillStyle: {
+          border: it.ativo ? 'none' : '1px solid rgba(29,16,9,.14)',
+          background: it.ativo ? '#2D9E60' : '#fff', color: it.ativo ? '#fff' : '#6B2E12',
+          borderRadius:'8px', padding:'6px 10px', fontSize:'12px', fontWeight:700, cursor:'pointer', whiteSpace:'nowrap'
+        },
+        onToggleAtivo:() => this.toggleBairroAtivo(it.id),
+        onEditar:() => this.editarBairro(it),
+        onSalvarEdit:() => this.salvarBairroEdit(),
+        onCancelarEdit:() => this.cancelarBairroEdit(),
+        onExcluir:() => this.excluirBairro(it.id),
+      };
+    });
+    const bairrosEmpty = s.bairros.length === 0;
+
     const marmitaSizeInputs = ['pequena','grande'].map(id => {
       const sz = s.marmitaSizes[id] || { nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas:1, price:0 };
       return { id, nome:sz.nome, proteinasLabel: sz.proteinas + (sz.proteinas===1?' proteína':' proteínas') + ' + complementos à vontade',
@@ -2405,6 +3430,7 @@ class Component extends DCLogic {
       isLogado: s.authChecked && !!s.admin,
       sidebarOpen: s.sidebarOpen, sidebarClass: 'admin-sidebar' + (s.sidebarOpen ? ' open' : ''),
       openSidebar:() => this.openSidebar(), closeSidebar:() => this.closeSidebar(),
+      impersonando: !!s.impersonando, encerrarImpersonacao:() => this.encerrarImpersonacao(),
       loginEmail:s.loginForm.email, onLoginEmail:(e) => this.onLoginEmail(e),
       loginSenha:s.loginForm.senha, onLoginSenha:(e) => this.onLoginSenha(e),
       hasLoginErro: !!s.loginErro, loginErro:s.loginErro,
@@ -2421,10 +3447,10 @@ class Component extends DCLogic {
       goPedidos:() => this.nav('pedidos'), goProdutos:() => this.nav('produtos'), goCategorias:() => this.nav('categorias'), goMarmitas:() => this.nav('marmitas'),
       goBanners:() => this.nav('banners'), goMesas:() => this.nav('mesas'), goSenha:() => this.nav('senha'),
       goCaixa:() => this.nav('caixa'), goVendas:() => this.nav('vendas'), goEntregadores:() => this.nav('entregadores'),
-      goGarcons:() => this.nav('garcons'), goAtendentes:() => this.nav('atendentes'),
+      goGarcons:() => this.nav('garcons'), goAtendentes:() => this.nav('atendentes'), goEmpresas:() => this.nav('empresas'),
       navPedidos:navStyle(s.view==='pedidos'), navProdutos:navStyle(s.view==='produtos'), navCategorias:navStyle(s.view==='categorias'), navMarmitas:navStyle(s.view==='marmitas'), navBanners:navStyle(s.view==='banners'), navMesas:navStyle(s.view==='mesas'), navSenha:navStyle(s.view==='senha'),
       navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'),
-      navGarcons:navStyle(s.view==='garcons'), navAtendentes:navStyle(s.view==='atendentes'),
+      navGarcons:navStyle(s.view==='garcons'), navAtendentes:navStyle(s.view==='atendentes'), navEmpresas:navStyle(s.view==='empresas'),
       hasNovos: novosCount > 0, novosCount:String(novosCount),
 
       pageTitle, pageSubtitle,
@@ -2434,7 +3460,7 @@ class Component extends DCLogic {
       todayDate: this.formatarDataHoje(), openLabel:'Aberto agora',
 
       isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha',
-      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes',
+      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes', isEmpresas: s.view==='empresas',
 
       novoEntregador:() => this.novoEntregador(),
       isEntregadorDraft: !!s.entregadorDraft,
@@ -2507,14 +3533,86 @@ class Component extends DCLogic {
         onToggle:() => this.toggleAtendenteAtivo(a.id),
         onEdit:() => this.editAtendente(a)
       })),
+
+      novaEmpresa:() => this.novaEmpresa(),
+      isEmpresaDraft: !!s.empresaDraft,
+      empresaDraftNome: s.empresaDraft?.nome || '',
+      empresaDraftLogin: s.empresaDraft?.login || '',
+      empresaDraftSenha: s.empresaDraft?.senha || '',
+      empresaDraftCota: s.empresaDraft?.cotaDiaria || '',
+      empresaDraftValorMarmita: s.empresaDraft?.valorMarmita ?? '0',
+      empresaSenhaPlaceholder: s.empresaDraft?.id ? 'Nova senha (deixe em branco pra manter)' : 'Senha (mín. 6 caracteres)',
+      tipoEmpresaDraftSenha: s.mostrarSenha.empresaDraft ? 'text' : 'password',
+      mostrarEmpresaDraftSenha: !!s.mostrarSenha.empresaDraft, ocultarEmpresaDraftSenha: !s.mostrarSenha.empresaDraft,
+      toggleEmpresaDraftSenha:() => this.toggleMostrarSenha('empresaDraft'),
+      onEmpresaDraftNome:(e) => this.onEmpresaDraftNome(e),
+      onEmpresaDraftLogin:(e) => this.onEmpresaDraftLogin(e),
+      onEmpresaDraftSenha:(e) => this.onEmpresaDraftSenha(e),
+      onEmpresaDraftCota:(e) => this.onEmpresaDraftCota(e),
+      onEmpresaDraftValorMarmita:(e) => this.onEmpresaDraftValorMarmita(e),
+      salvarEmpresaDraft:() => this.salvarEmpresaDraft(),
+      cancelarEmpresaDraft:() => this.cancelarEmpresaDraft(),
+      empresasEmpty: s.empresas.length === 0,
+      empresaRows: s.empresas.map(emp => ({
+        nome: emp.nome,
+        login: emp.login,
+        cotaDiaria: String(emp.cotaDiaria),
+        valorMarmitaFmt: emp.valorMarmita > 0 ? this.fmt(emp.valorMarmita) + ' fixo' : 'por produto',
+        toggleStyle: this.toggleStyle(emp.ativo),
+        knobStyle: this.knobStyle(),
+        onToggle:() => this.toggleEmpresaAtivo(emp.id),
+        onEdit:() => this.editEmpresa(emp),
+        onFazerPedido:() => this.abrirPedidoEmpresa(emp),
+        hasFuncionariosSalvos: (emp.funcionariosSalvos || []).length > 0,
+        funcionariosSalvosChips: (emp.funcionariosSalvos || []).map(f => ({
+          nome: f.nome,
+          onRemover:() => this.removerFuncionarioSalvo(emp.id, f.id)
+        }))
+      })),
+      cardapioEmpresaEmpty: s.products.filter(p => p.active).length === 0 && Object.keys(s.marmitaSizes).length === 0,
+      cardapioEmpresaRows: [
+        ...Object.keys(s.marmitaSizes).map(id => {
+          const sz = s.marmitaSizes[id];
+          return {
+            nome: 'Monte sua Marmita — ' + sz.nome,
+            priceFmt: this.fmt(parseFloat(String(sz.price).replace(',', '.')) || 0),
+            toggleStyle: this.toggleStyle(sz.disponivelEmpresa),
+            knobStyle: this.knobStyle(),
+            onToggle:() => this.toggleMarmitaSizeEmpresa(id)
+          };
+        }),
+        ...s.products.filter(p => p.active).map(p => ({
+          nome: p.name,
+          priceFmt: this.fmt(p.price),
+          toggleStyle: this.toggleStyle(p.disponivelEmpresa),
+          knobStyle: this.knobStyle(),
+          onToggle:() => this.toggleProdutoEmpresa(p.id)
+        })),
+      ],
+
+      ...this.pedidoEmpresaVals(),
       ...this.caixaVals(), ...this.vendasVals(),
 
-      kpis, orderTabs, orderRows, ordersEmpty: orderRows.length === 0,
+      kpis, kpiGridStyle, orderTabs, orderRows, ordersEmpty: orderRows.length === 0,
 
       orderOpen: !!selO, closeOrder:() => this.setState({ selectedOrder:null }), od,
 
       catTabs, productRows, productsEmpty: productRows.length === 0,
       newProduct:() => this.newProduct(),
+      baixarModeloProdutos:() => this.baixarModeloProdutos(),
+      setImportInput:(el) => this.setImportInput(el),
+      triggerImportUpload:() => this.triggerImportUpload(),
+      onImportFileSelected:(e) => this.onImportFileSelected(e),
+      importandoProdutos: s.importandoProdutos,
+      importandoProdutosLabel: s.importandoProdutos ? 'Importando...' : 'Importar produtos',
+      hasImportErros: !!(s.importErros && s.importErros.length > 0),
+      importErrosRows: (s.importErros || []).map((it) => ({ linha:String(it.linha), erro:it.erro })),
+      fecharImportErros:() => this.fecharImportErros(),
+      hasImportResumo: !!s.importResumo,
+      importResumoTexto: s.importResumo
+        ? `${s.importResumo.importados} produto(s) importado(s)` + (s.importResumo.categoriasCriadas ? ` · ${s.importResumo.categoriasCriadas} categoria(s) nova(s)` : '')
+        : '',
+      fecharImportResumo:() => this.fecharImportResumo(),
 
       novaCategoria:() => this.novaCategoria(),
       isCategoriaDraft: !!s.categoriaDraft,
@@ -2536,6 +3634,11 @@ class Component extends DCLogic {
       adicionarItemCardapio:() => this.adicionarItemCardapio(),
       salvarMarmitaSizes:() => this.salvarMarmitaSizes(),
 
+      bairroRows, bairrosEmpty, bairrosCount: s.bairros.length,
+      bairroAddNome: s.bairroAddNome, onBairroAddNome:(e) => this.onBairroAddNome(e),
+      bairroAddTaxa: s.bairroAddTaxa, onBairroAddTaxa:(e) => this.onBairroAddTaxa(e),
+      adicionarBairro:() => this.adicionarBairro(),
+
       productOpen: !!d, closeProduct:() => this.setState({ productDraft:null }),
       productDrawerTitle: d && d.id ? 'Editar produto' : 'Novo produto',
       draftIsEdit: !!(d && d.id), draftIsNew,
@@ -2544,6 +3647,11 @@ class Component extends DCLogic {
       novoAdicionalPreco: s.novoAdicionalPreco, onNovoAdicionalPreco:(e) => this.onNovoAdicionalPreco(e),
       adicionarAdicionalAoProduto:() => this.adicionarAdicionalAoProduto(),
       draftName: d ? d.name : '', draftDesc: d ? d.desc : '', draftPrice: d ? d.price : '', draftStock: d ? d.stock : '',
+      draftPrecoLabel: (d && d.porPeso) ? 'Preço por kg (R$)' : 'Preço (R$)',
+      isMercantil: s.tipoTenant === 'MERCANTIL',
+      isRestauranteTenant: s.tipoTenant === 'RESTAURANTE',
+      draftCusto: d ? d.custo : '', onDraftCusto:(e) => this.onDraftCusto(e),
+      draftCodigoBarras: d ? d.codigoBarras : '', onDraftCodigoBarras:(e) => this.onDraftCodigoBarras(e),
       draftHasFoto: !!(d && d.foto), draftSemFoto: !(d && d.foto), draftFotoSrc: (d && d.foto) || '',
       setFotoInput:(el) => this.setFotoInput(el), triggerFotoUpload:() => this.triggerFotoUpload(),
       onFotoSelected:(e) => this.onFotoSelected(e), removerFoto:() => this.removerFoto(),
@@ -2554,9 +3662,17 @@ class Component extends DCLogic {
       draftCatOptions, draftSubcatOptions, hasDraftSubcatOptions: draftSubcatOptions.length > 0,
       draftToggleStyle:this.toggleStyle(d ? d.active : true), draftKnobStyle:this.knobStyle(),
       toggleDraftActive:() => this.setState(st => ({ productDraft:{ ...st.productDraft, active:!st.productDraft.active } })),
+      draftPorPesoToggleStyle:this.toggleStyle(!!(d && d.porPeso)), draftPorPesoKnobStyle:this.knobStyle(),
+      toggleDraftPorPeso:() => this.toggleDraftPorPeso(),
       saveProduct:() => this.saveProduct(), deleteProduct:() => this.deleteProduct(),
 
       bannerRows, newBanner:() => this.newBanner(),
+      hasSplashPreview: !!s.splashSrc,
+      splashPreviewSrc: s.splashSrc || 'assets/output.gif',
+      setSplashInput: (el) => this.setSplashInput(el),
+      triggerSplashUpload: () => this.triggerSplashUpload(),
+      onSplashSelected: (e) => this.onSplashSelected(e),
+      removerSplashFoto: () => this.removerSplashFoto(),
       bannerOpen: !!bd, closeBanner:() => this.setState({ bannerDraft:null }),
       bannerDrawerTitle: bd && bd.id ? 'Editar banner' : 'Novo banner',
       bDraftBadge: bd ? bd.badge : '', bDraftTitulo: bd ? bd.titulo : '', bDraftSub: bd ? bd.subtitulo : '',

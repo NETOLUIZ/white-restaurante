@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Garçom — Bel do Frango</title>
 <script src="scripts/support.js"></script>
+<script src="scripts/tema.js"></script>
 </head>
 <body>
 <x-dc>
@@ -256,13 +257,57 @@ class Component extends DCLogic {
   apiGet(path){ return this.apiCall(path, { method:'GET' }); }
   apiSend(method, path, body){ return this.apiCall(path, { method, headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(body) }); }
 
+  // Telas que fazem sentido reabrir depois de um F5 — login/loading nunca entram aqui.
+  TELAS_RESTAURAVEIS = new Set(['mesas', 'abrirMesa', 'cardapio', 'senha']);
+  STORAGE_KEY = 'bf_tela_garcom';
+  lerTelaSalva(){
+    try { return JSON.parse(sessionStorage.getItem(this.STORAGE_KEY) || 'null'); }
+    catch (e) { return null; }
+  }
+  restaurarTelaSalva(){
+    const salvo = this.lerTelaSalva();
+    if (!salvo || !this.TELAS_RESTAURAVEIS.has(salvo.screen)) return;
+    if (salvo.screen === 'senha') { this.goSenha(); return; }
+    if (salvo.screen === 'abrirMesa' || salvo.screen === 'cardapio') {
+      const mesa = (this.state.mesas || []).find(m => m.id === salvo.selectedMesaId);
+      // Mesa não existe mais (fechada/mudou nesse meio tempo) — fica em "mesas", já é o padrão.
+      if (mesa) this.setState({ screen: salvo.screen, selectedMesaId: mesa.id, abrirMesaNome:'', draft:{} });
+    }
+  }
+
   async componentDidMount(){
+    // Precisa ser setado ANTES de qualquer outro setState — senão o setState
+    // que guarda o "garcom" logo abaixo já dispara um componentDidUpdate
+    // "fantasma" que apaga o sessionStorage antes do restaurarTelaSalva() ler.
+    this._lastScreen = this.state.screen;
+    this._lastMesaId = this.state.selectedMesaId;
+    // Enquanto true, componentDidUpdate só atualiza o rastreio (_lastScreen/_lastMesaId),
+    // nunca grava no sessionStorage — sem isso, o "screen:'mesas'" provisório logo
+    // abaixo (setado antes de saber se há algo pra restaurar, já que a checagem de
+    // mesa só é possível depois do carregarTudo()) apagaria a tela salva antes do
+    // restaurarTelaSalva() ter a chance de ler.
+    this._restaurando = true;
     try {
       const { garcom } = await this.apiGet('/garcom/me');
       this.setState({ garcom, screen:'mesas' });
       await this.carregarTudo();
+      this.restaurarTelaSalva();
     } catch (e) {
       this.setState({ screen:'login' });
+    } finally {
+      this._restaurando = false;
+    }
+  }
+  componentDidUpdate(){
+    if (this.state.screen !== this._lastScreen || this.state.selectedMesaId !== this._lastMesaId) {
+      this._lastScreen = this.state.screen;
+      this._lastMesaId = this.state.selectedMesaId;
+      if (this._restaurando) return;
+      if (this.TELAS_RESTAURAVEIS.has(this.state.screen)) {
+        sessionStorage.setItem(this.STORAGE_KEY, JSON.stringify({ screen: this.state.screen, selectedMesaId: this.state.selectedMesaId }));
+      } else {
+        sessionStorage.removeItem(this.STORAGE_KEY);
+      }
     }
   }
 
@@ -301,6 +346,7 @@ class Component extends DCLogic {
   }
   async logout(){
     try { await this.apiSend('POST', '/garcom/logout', {}); } catch (e) { /* mesmo se falhar, limpa a sessão local */ }
+    sessionStorage.removeItem(this.STORAGE_KEY);
     this.setState({ garcom:null, screen:'login' });
   }
 
