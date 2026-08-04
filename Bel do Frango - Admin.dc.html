@@ -1688,6 +1688,20 @@ class Component extends DCLogic {
 
   // ---- sessão / login ----
   async checkSession(){
+    // Código de uso único emitido pelo link "Gerar acesso" do Super Admin
+    // (POST /api/super/tenants/:id/impersonar) — troca por um cookie de
+    // sessão de impersonation ANTES do /auth/me abaixo, senão a página só
+    // carrega a tela de login normal e o código nunca é resgatado. Sempre
+    // limpa da URL depois (usado ou não): é de uso único, então um F5
+    // reenviando o mesmo código só ia falhar (já consumido), e deixá-lo
+    // visível na barra de endereço/histórico é exposição desnecessária.
+    const codigoImpersonacao = new URLSearchParams(location.search).get('codigo');
+    if (codigoImpersonacao) {
+      try {
+        await this.apiSend('POST', '/auth/impersonar', { codigo: codigoImpersonacao });
+      } catch (e) { /* código inválido/expirado — segue pro fluxo normal, que vai pedir login */ }
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
     try {
       const { admin, impersonando, tenant } = await this.apiGet('/auth/me');
       const tenantDev = new URLSearchParams(location.search).get('_tenant');
