@@ -183,7 +183,11 @@ class Component extends DCLogic {
 
   enderecoParaMaps(e){
     if (!e) return '#';
-    const q = [e.rua, e.numero, e.bairro, e.cidade].filter(Boolean).join(', ');
+    // CEP entra por último — geocode de texto livre (rua/número numa via como "Rua 122"
+    // de loteamento periférico) pode não achar exato e arredondar pro mais próximo; CEP
+    // brasileiro costuma ser preciso o bastante pra o Maps corrigir sozinho quando o nome
+    // da rua não bate com nada indexado.
+    const q = [e.rua, e.numero, e.bairro, e.cidade, e.cep].filter(Boolean).join(', ');
     return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(q);
   }
 
