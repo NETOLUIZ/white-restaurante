@@ -239,7 +239,7 @@
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
             <div style="width:64px;height:64px;border-radius:14px;overflow:hidden;background:#F6F1E7;border:1px solid rgba(29,16,9,.08);flex:none;display:flex;align-items:center;justify-content:center;">
-              <sc-if value="{{ hasLogoPreview }}" hint-placeholder-val="{{ false }}"><img src="{{ logoPreviewSrc }}" alt="Logo" style="width:100%;height:100%;object-fit:contain;"/></sc-if>
+              <sc-if value="{{ hasLogoPreview }}" hint-placeholder-val="{{ false }}"><img sc-camel-src="{{ logoPreviewSrc }}" alt="Logo" style="width:100%;height:100%;object-fit:contain;"/></sc-if>
               <sc-if value="{{ semLogoPreview }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px;color:#8C8075;">sem logo</span></sc-if>
             </div>
             <div style="flex:1;">
