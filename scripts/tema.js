@@ -257,7 +257,7 @@
   // só troca as CSS vars na hora, pro iframe de preview refletir o form.
   var ORIGENS_PREVIEW_PERMITIDAS = isDevLocal
     ? null // em dev aceita qualquer origem localhost (porta do super.html varia)
-    : [location.origin.replace(/^https:\/\//, 'https://super.')];
+    : [location.origin.replace(/^https:\/\/[^.]+\./, 'https://super.')];
 
   function origemPermitida(origem) {
     if (isDevLocal) return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origem);
