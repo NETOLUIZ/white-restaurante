@@ -1073,7 +1073,9 @@ class Component extends DCLogic {
   // sem geocode nosso, pra nunca divergir do que o entregador vê pro mesmo pedido.
   enderecoParaMaps(e){
     if (!e) return '#';
-    const q = [e.rua, e.numero, e.bairro, e.cidade].filter(Boolean).join(', ');
+    // CEP por último — mesmo raciocínio do entregador.html: ajuda o Maps a corrigir
+    // sozinho quando o nome da rua (ex: "Rua 122" de loteamento) não bate com nada indexado.
+    const q = [e.rua, e.numero, e.bairro, e.cidade, e.cep].filter(Boolean).join(', ');
     return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(q);
   }
 
