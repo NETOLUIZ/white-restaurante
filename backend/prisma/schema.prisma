@@ -349,6 +349,7 @@ model Pedido {
   /// Obrigatorio para ENTREGA; nulo para MESA/RETIRADA.
   telefone             String?
   endereco             Json?
+  valorTrocoPara       Float?
   itens                ItemPedido[]
   cupomId              Int?
   cupom                Cupom?          @relation(fields: [cupomId], references: [id], onDelete: SetNull)
@@ -608,6 +609,7 @@ model Entregador {
   /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
   /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
   senhaAlteradaEm DateTime?
+  saldoZeradoEm   DateTime?
   pedidos         Pedido[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
