@@ -169,6 +169,12 @@
           el.textContent = nome;
         }
       });
+      // Título da aba (<title>) é string composta ("Entregas — Bel do Frango",
+      // "Garçom — Bel do Frango" etc.) — nunca bate no match exato acima, por
+      // isso fica de fora do loop e troca por substring aqui.
+      if (document.title.indexOf('Bel do Frango') !== -1) {
+        document.title = document.title.replace('Bel do Frango', nome);
+      }
     }
     if (logoUrl) {
       // Em dev a checagem de posse de /uploads/:tenantId resolve o tenant por
