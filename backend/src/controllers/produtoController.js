@@ -93,7 +93,14 @@ async function criar(req, res) {
       // Mesmo raciocínio pro fallback "sem categoria escolhida": antes caía
       // num id global fixo (1), que podia pertencer a outro tenant. Sem
       // nenhuma categoria própria, é melhor recusar do que adivinhar.
-      const primCat = await req.prisma.categoriaProduto.findFirst({ orderBy: { id: 'asc' } });
+      // "Marmitas" fica de fora do fallback: não é uma categoria de produto
+      // de verdade, é a âncora que a Home/Cardápio usam pra abrir o
+      // construtor de marmita (ver index.html, marmitaCatId) — um produto
+      // caindo nela por padrão fica invisível, nunca aparece numa grade.
+      const primCat = await req.prisma.categoriaProduto.findFirst({
+        where: { nome: { not: 'Marmitas' } },
+        orderBy: { id: 'asc' },
+      });
       if (!primCat) {
         return res.status(400).json({ erro: 'Crie uma categoria antes de adicionar produtos' });
       }
