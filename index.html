@@ -1045,8 +1045,12 @@ class Component extends DCLogic {
     const [proteinas, complementos, tamanhos] = await Promise.all([
       this.apiGet('/proteinas'), this.apiGet('/complementos'), this.apiGet('/marmita-tamanhos')
     ]);
+    // Chave é o slug ('pequena'/'grande'), não o id numérico do banco — é isso
+    // que marmitaSizeCards/abrirMarmita/marmitaSize usam pra indexar (ver
+    // hardcode ['pequena','grande'] logo abaixo). Com t.id aqui, a busca por
+    // slug nunca batia e todo tamanho caía no fallback de fábrica (R$0).
     const marmitaSizes = {};
-    tamanhos.forEach((t) => { marmitaSizes[t.id] = { nome:t.nome, proteinas:t.qtdProteinas, price:t.preco }; });
+    tamanhos.forEach((t) => { marmitaSizes[t.slug] = { nome:t.nome, proteinas:t.qtdProteinas, price:t.preco }; });
     this.setState({ marmitaConfig: { proteinas, complementos, marmitaSizes } });
   }
   async carregarConfiguracao(){
