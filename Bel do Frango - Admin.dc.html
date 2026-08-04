@@ -3000,7 +3000,7 @@ class Component extends DCLogic {
       caixaBreakdown:[
         { label:'Dinheiro', value:this.fmt(pay.Dinheiro||0), color:'#2D9E60' },
         { label:'Pix', value:this.fmt(pay.Pix||0), color:'#2563EB' },
-        { label:'Cartão', value:this.fmt(pay['Cartão']||0), color:'#D97706' },
+        { label:'Cartão', value:this.fmt(pay['Cartão']||0), color:'#CC8400' },
         { label:'Em aberto (mesas)', value:this.fmt(pay['Na mesa']||0), color:'#A8730B' }
       ],
       hasFechamento: !!f,
@@ -3088,7 +3088,7 @@ class Component extends DCLogic {
       vendasOnNextWeek:() => this.setState(s2 => ({ vendasSelectedDate: this.addDiasIso(s2.vendasSelectedDate, 7) })),
       vendasOnHoje:() => this.setState({ vendasSelectedDate: todayIso }),
       vendasKpis:[
-        { label:'Itens vendidos', value:String(totalItens), color:'#D97706', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#D97706', display:'inline-block' } },
+        { label:'Itens vendidos', value:String(totalItens), color:'#CC8400', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#CC8400', display:'inline-block' } },
         { label:'Faturamento', value:this.fmt(totalReceita), color:'#2D9E60', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#2D9E60', display:'inline-block' } },
         { label:'Produtos', value:String(s.products.length), color:'#6B2E12', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#6B2E12', display:'inline-block' } },
         { label:'Estoque baixo', value:String(lowCount), color:'#C0392B', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#C0392B', display:'inline-block' } }
@@ -3128,7 +3128,7 @@ class Component extends DCLogic {
     const ticket = active.length ? faturamento / active.length : 0;
     const kpiDotStyle = (color) => ({ width:'9px', height:'9px', borderRadius:'3px', background:color, display:'inline-block' });
     const kpisRestaurante = [
-      { label:'Pedidos hoje', value:String(s.orders.length), color:'#D97706' },
+      { label:'Pedidos hoje', value:String(s.orders.length), color:'#CC8400' },
       { label:'Em aberto', value:String(emAberto), color:'#2563EB' },
       { label:'Faturamento', value:this.fmt(faturamento), color:'#2D9E60' },
       { label:'Ticket médio', value:this.fmt(ticket), color:'#6B2E12' }
@@ -3144,7 +3144,7 @@ class Component extends DCLogic {
     const ESTOQUE_BAIXO_LIMITE = 5;
     const estoqueBaixoCount = s.products.filter(p => p.stock <= ESTOQUE_BAIXO_LIMITE).length;
     const kpisMercantil = [
-      { label:'Vendas hoje', value:String(activeHojeMercantil.length), color:'#D97706' },
+      { label:'Vendas hoje', value:String(activeHojeMercantil.length), color:'#CC8400' },
       { label:'Produtos vendidos', value:String(produtosVendidosMercantil), color:'#2563EB' },
       { label:'Estoque baixo', value:String(estoqueBaixoCount), color: estoqueBaixoCount > 0 ? '#C0392B' : '#8C8075' },
       { label:'Caixa', value: s.caixa.aberto ? 'Aberto' : 'Fechado', color: s.caixa.aberto ? '#2D9E60' : '#8C8075' },
@@ -3179,7 +3179,7 @@ class Component extends DCLogic {
       const b = this.badge(o.status, o.tipo);
       const canAdvance = o.status !== 'concluido' && o.status !== 'cancelado';
       const resumo = o.itens.map(i => i.q + '× ' + i.n).join(', ');
-      const tipoColor = o.tipo === 'Entrega' ? '#2563EB' : o.tipo === 'Mesa' ? '#D97706' : o.tipo === 'Empresa' ? '#6B2E12' : '#2D9E60';
+      const tipoColor = o.tipo === 'Entrega' ? '#2563EB' : o.tipo === 'Mesa' ? '#CC8400' : o.tipo === 'Empresa' ? '#6B2E12' : '#2D9E60';
       return {
         id:o.id, hora:o.hora, cliente:o.cliente, itensResumo:resumo, tipo:o.tipo,
         tipoIcon: o.tipo === 'Entrega' ? '◆' : o.tipo === 'Mesa' ? '■' : o.tipo === 'Empresa' ? '●' : '▲',
@@ -3400,7 +3400,7 @@ class Component extends DCLogic {
     const bd = s.bannerDraft;
 
     // ---- mesas ----
-    const mesaMeta = { livre:{ label:'Livre', color:'#2D9E60' }, ocupada:{ label:'Ocupada', color:'#D97706' }, reservada:{ label:'Reservada', color:'#2563EB' }, conta:{ label:'Aguardando conta', color:'#A8730B' } };
+    const mesaMeta = { livre:{ label:'Livre', color:'#2D9E60' }, ocupada:{ label:'Ocupada', color:'#CC8400' }, reservada:{ label:'Reservada', color:'#2563EB' }, conta:{ label:'Aguardando conta', color:'#A8730B' } };
     const mesaLegend = ['livre','ocupada','reservada','conta'].map(k => ({ label:mesaMeta[k].label, color:mesaMeta[k].color, count:String(s.tables.filter(t => t.status === k).length) }));
     const mesaCards = s.tables.map(t => {
       const m = mesaMeta[t.status];
@@ -3430,10 +3430,10 @@ class Component extends DCLogic {
       const actions = [];
       const btn = (label, bg, fg, fn, bd) => ({ label, onClick:fn, style:{ width:'100%', border: bd?('1px solid '+bd):'none', cursor:'pointer', borderRadius:'13px', padding:'13px', fontWeight:700, fontSize:'15px', background:bg, color:fg } });
       if (selT.status === 'livre'){
-        actions.push(btn('Abrir mesa (ocupar)', '#D97706', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
+        actions.push(btn('Abrir mesa (ocupar)', '#CC8400', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
         actions.push(btn('Marcar reserva', '#fff', '#2563EB', () => this.setTableStatus(selT.id, 'reservada'), '#BBCDF6'));
       } else if (selT.status === 'reservada'){
-        actions.push(btn('Confirmar chegada', '#D97706', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
+        actions.push(btn('Confirmar chegada', '#CC8400', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
         actions.push(btn('Cancelar reserva', '#fff', '#C0392B', () => this.setTableStatus(selT.id, 'livre'), '#F0CFCB'));
       } else if (selT.status === 'ocupada'){
         actions.push(btn('Fechar conta', '#A8730B', '#fff', () => this.setTableStatus(selT.id, 'conta')));
@@ -3442,7 +3442,7 @@ class Component extends DCLogic {
         // Em vez de um único botão genérico, a conta só fecha ao escolher a forma de pagamento usada pelo cliente.
         actions.push(btn('Dinheiro', '#2D9E60', '#fff', () => this.confirmarPagamento(selT.id, 'Dinheiro')));
         actions.push(btn('Pix', '#2563EB', '#fff', () => this.confirmarPagamento(selT.id, 'Pix')));
-        actions.push(btn('Cartão', '#D97706', '#fff', () => this.confirmarPagamento(selT.id, 'Cartão')));
+        actions.push(btn('Cartão', '#CC8400', '#fff', () => this.confirmarPagamento(selT.id, 'Cartão')));
       }
       md = { num:String(selT.num), seats:String(selT.seats),
         nome: selT.cliente || '', onNome:(e) => this.setTableName(selT.id, e.target.value),

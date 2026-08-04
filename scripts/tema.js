@@ -42,6 +42,15 @@
     { rgb: 'rgb(255, 246, 214)', prop: 'backgroundColor', campo: 'corFundo' },
     { rgb: 'rgb(29, 16, 9)', prop: 'color', campo: 'corTexto' },
     { rgb: 'rgb(255, 255, 255)', prop: 'backgroundColor', campo: 'corCard' },
+    // Acento do painel Admin (aba ativa do menu, botões primários, valores em
+    // destaque) — rgb(217,119,6) = #D97706. Só os usos de "cor de ação",
+    // nunca os de "cor categórica" (status de mesa, forma de pagamento, tipo
+    // de pedido, dots de KPI) — esses foram trocados no HTML pra uma cor
+    // reservada (#CC8400) que não bate aqui de propósito, senão a troca de
+    // marca ia misturar as duas coisas (ver Bel do Frango - Admin.dc.html).
+    { rgb: 'rgb(217, 119, 6)', prop: 'backgroundColor', campo: 'corBotao' },
+    { rgb: 'rgb(217, 119, 6)', prop: 'color', campo: 'corBotao' },
+    { rgb: 'rgb(217, 119, 6)', prop: 'borderColor', campo: 'corBotao' },
   ];
 
   // Mesma regra de apiBase usada em todos os outros arquivos (index.html,
@@ -108,6 +117,10 @@
   // até o DC runtime terminar de montar a árvore real. Já trocado não dá
   // match de novo (ou já é o valor novo), então repetir não tem efeito colateral.
 
+  function kebab(prop) {
+    return prop.replace(/[A-Z]/g, function (c) { return '-' + c.toLowerCase(); });
+  }
+
   function aplicarCoresDom(branding) {
     var elementos = document.querySelectorAll('body *');
     elementos.forEach(function (el) {
@@ -115,8 +128,7 @@
       REGRAS_COR.forEach(function (regra) {
         var valor = branding[regra.campo];
         if (!valor || cs[regra.prop] !== regra.rgb) return;
-        var propCss = regra.prop === 'backgroundColor' ? 'background-color' : 'color';
-        el.style.setProperty(propCss, valor, 'important');
+        el.style.setProperty(kebab(regra.prop), valor, 'important');
       });
     });
   }
