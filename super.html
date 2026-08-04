@@ -818,8 +818,13 @@ class Component extends DCLogic {
       ip: l.ip || '—',
     }));
 
+    const LABELS_CONTRASTE = {
+      botao: 'botão', texto: 'texto', botaoSecundario: 'botão secundário',
+      cardTitulo: 'título do card', cardTextoSecundario: 'texto secundário do card',
+      header: 'cabeçalho', navInferiorAtivo: 'nav inferior (ativo)', navInferiorNormal: 'nav inferior (normal)',
+    };
     const contrasteAvisoLabel = s.contraste && s.contraste.aviso && s.contraste.aviso.length
-      ? s.contraste.aviso.map(a => a === 'botao' ? 'botão' : 'texto').join(', ')
+      ? s.contraste.aviso.map(a => LABELS_CONTRASTE[a] || a).join(', ')
       : '';
 
     return {
