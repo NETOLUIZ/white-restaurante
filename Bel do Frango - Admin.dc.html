@@ -2695,7 +2695,9 @@ class Component extends DCLogic {
   fecharImportResumo(){ this.setState({ importResumo:null }); }
 
   newProduct(){
-    const catId = this.state.categorias[0] ? this.state.categorias[0].id : null;
+    // "Marmitas" fora do fallback — mesmo motivo do fallback em saveProduct().
+    const catsFallback = this.state.categorias.filter((c) => c.nome !== 'Marmitas');
+    const catId = catsFallback[0] ? catsFallback[0].id : null;
     this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', custo:'', codigoBarras:'', active:true, porPeso:false, foto:null, fotoFile:null, fotoUrlOFF:null, adicionais:[] }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null });
   }
   editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), custo: p.custo!=null ? String(p.custo).replace('.',',') : '', codigoBarras: p.codigoBarras||'', active:p.active, porPeso: !!p.vendidoPorPeso, foto:p.foto||null, fotoFile:null, fotoUrlOFF:null, adicionais:(p.adicionais||[]).slice() }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null }); }
@@ -2739,7 +2741,11 @@ class Component extends DCLogic {
     const d = this.state.productDraft; if (!d) return;
     const price = parseFloat(String(d.price||'').replace(/\./g,'').replace(',','.')) || 0;
     const stock = parseInt(String(d.stock||'').replace(/\D/g,''), 10) || 0;
-    const cat = d.cat || (this.state.categorias[0] ? this.state.categorias[0].id : null);
+    // "Marmitas" nunca é fallback: é a categoria-âncora que abre o construtor
+    // de marmita (ver index.html, marmitaCatId) — um produto caindo nela por
+    // padrão nunca aparece em grade nenhuma, fica invisível pro cliente.
+    const catsFallback = this.state.categorias.filter((c) => c.nome !== 'Marmitas');
+    const cat = d.cat || (catsFallback[0] ? catsFallback[0].id : null);
     const payload = { categoriaId:cat, subcategoriaId:d.subcat||null, nome:(d.name||'').trim() || 'Novo Produto', descricaoCurta:(d.desc||'').trim(), descricaoCompleta:(d.desc||'').trim(), preco:price, estoque:stock, ativo:d.active, vendidoPorPeso:d.porPeso };
     if (this.state.tipoTenant === 'MERCANTIL') {
       payload.custo = d.custo ? parseFloat(String(d.custo).replace(/\./g,'').replace(',','.')) || 0 : null;
