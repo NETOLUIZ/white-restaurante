@@ -1076,7 +1076,13 @@ class Component extends DCLogic {
     }
     if (this._trackingMap || typeof L === 'undefined') return;
     const restLL = this.RESTAURANT_LATLNG;
-    const destLL = this.state.cadastroLatLng || [restLL[0] + 0.012, restLL[1] + 0.016];
+    // Sem cadastroLatLng (Nominatim não achou o endereço — comum em rua numerada de
+    // loteamento, ex: "Rua 122"), cair num offset fixo perto do restaurante mostrava um
+    // pino de destino a uma "distância" inventada, sem relação com o endereço real (visto
+    // no card do entregador, que só depende do texto e não desse geocode). Sem posição de
+    // verdade, o pino de destino fica em cima do próprio restaurante — mapa sem rota fake
+    // em vez de rota pra um lugar errado.
+    const destLL = this.state.cadastroLatLng || restLL;
     const map = L.map(el, { zoomControl:false, attributionControl:true, scrollWheelZoom:false });
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap', maxZoom:18 }).addTo(map);
     const restIcon = L.divIcon({ html:'<div style="width:34px;height:34px;border-radius:50%;background:#fff;border:3px solid #7A1209;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 10px rgba(0,0,0,.2);">🍗</div>', className:'', iconSize:[34,34], iconAnchor:[17,17] });
