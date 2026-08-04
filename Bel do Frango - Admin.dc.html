@@ -139,6 +139,10 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="18" cy="6" r="3" fill="currentColor"/></svg>
         <span style="flex:1;text-align:left;">Entregadores</span>
       </button>
+      <button data-feature="entregador" onClick="{{ goCaixaEntregadores }}" style="{{ navCaixaEntregadores }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg>
+        <span style="flex:1;text-align:left;">Caixa dos Entregadores</span>
+      </button>
       <sc-if value="{{ isRestauranteTenant }}" hint-placeholder-val="{{ true }}">
       <button data-feature="mesas" onClick="{{ goGarcons }}" style="{{ navGarcons }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 2a5 5 0 0 1-5 5 5 5 0 0 1-5-5"/><path d="M7 22a5 5 0 0 1 5-5 5 5 0 0 1 5 5"/></svg>
@@ -768,6 +772,25 @@
             </div>
           </sc-for>
           <sc-if value="{{ entregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- CAIXA DOS ENTREGADORES ---------- -->
+      <sc-if value="{{ isCaixaEntregadores }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:2fr 1fr 120px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Saldo</span><span></span>
+          </div>
+          <sc-for list="{{ caixaEntregadorRows }}" as="ce" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:2fr 1fr 120px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <div style="font-weight:700;font-size:14px;">{{ ce.nome }}</div>
+              <div style="font-family:'DM Mono',monospace;font-weight:700;font-size:15px;color:#D97706;">{{ ce.saldoFmt }}</div>
+              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ ce.onZerar }}" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:9px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;">Zerar</button></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ caixaEntregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
         </div>
       </div>
       </sc-if>
@@ -1493,6 +1516,7 @@ class Component extends DCLogic {
     subcategorias:[],
     banners:[],
     entregadores:[],
+    caixaEntregadores:[],
     entregadorDraft:null,
     garcons:[],
     garcomDraft:null,
@@ -1858,6 +1882,18 @@ class Component extends DCLogic {
   async carregarEntregadores(){
     const lista = await this.apiGet('/admin/entregadores');
     this.setState({ entregadores: lista });
+  }
+  async carregarCaixaEntregadores(){
+    const lista = await this.apiGet('/admin/entregadores/saldos');
+    this.setState({ caixaEntregadores: lista });
+  }
+  async zerarSaldoEntregador(id){
+    if (!confirm('Zerar o saldo desse entregador? Essa ação não pode ser desfeita.')) return;
+    try {
+      await this.apiSend('POST', '/admin/entregadores/' + id + '/zerar-saldo', {});
+      await this.carregarCaixaEntregadores();
+      this.showToast('Saldo zerado');
+    } catch (e) { this.showToast(e.message || 'Erro ao zerar saldo'); }
   }
   async carregarGarcons(){
     const lista = await this.apiGet('/admin/garcons');
@@ -3131,6 +3167,7 @@ class Component extends DCLogic {
       mesas:['Mesas','Controle o salão e o consumo das mesas'],
       caixa:['Caixa','Abra e feche o caixa do dia'],
       entregadores:['Entregadores','Cadastre e gerencie os entregadores do delivery'],
+      caixaentregadores:['Caixa dos Entregadores','Quanto cada entregador tem em mãos pra devolver'],
       garcons:['Garçons','Cadastre e gerencie os garçons do salão'],
       atendentes:['Atendentes','Cadastre e gerencie os atendentes do balcão'],
       empresas:['Empresas','Clientes corporativos, cota diária e cardápio de hoje'],
@@ -3512,10 +3549,10 @@ class Component extends DCLogic {
       adminInicial: adminNome ? adminNome[0].toUpperCase() : 'A',
       goPedidos:() => this.nav('pedidos'), goProdutos:() => this.nav('produtos'), goCategorias:() => this.nav('categorias'), goMarmitas:() => this.nav('marmitas'),
       goBanners:() => this.nav('banners'), goMesas:() => this.nav('mesas'), goSenha:() => this.nav('senha'),
-      goCaixa:() => this.nav('caixa'), goVendas:() => this.nav('vendas'), goEntregadores:() => this.nav('entregadores'),
+      goCaixa:() => this.nav('caixa'), goVendas:() => this.nav('vendas'), goEntregadores:() => this.nav('entregadores'), goCaixaEntregadores:() => { this.nav('caixaentregadores'); this.carregarCaixaEntregadores(); },
       goGarcons:() => this.nav('garcons'), goAtendentes:() => this.nav('atendentes'), goEmpresas:() => this.nav('empresas'),
       navPedidos:navStyle(s.view==='pedidos'), navProdutos:navStyle(s.view==='produtos'), navCategorias:navStyle(s.view==='categorias'), navMarmitas:navStyle(s.view==='marmitas'), navBanners:navStyle(s.view==='banners'), navMesas:navStyle(s.view==='mesas'), navSenha:navStyle(s.view==='senha'),
-      navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'),
+      navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'), navCaixaEntregadores:navStyle(s.view==='caixaentregadores'),
       navGarcons:navStyle(s.view==='garcons'), navAtendentes:navStyle(s.view==='atendentes'), navEmpresas:navStyle(s.view==='empresas'),
       hasNovos: novosCount > 0, novosCount:String(novosCount),
 
@@ -3526,7 +3563,7 @@ class Component extends DCLogic {
       todayDate: this.formatarDataHoje(), openLabel:'Aberto agora',
 
       isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha',
-      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes', isEmpresas: s.view==='empresas',
+      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isCaixaEntregadores: s.view==='caixaentregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes', isEmpresas: s.view==='empresas',
 
       novoEntregador:() => this.novoEntregador(),
       isEntregadorDraft: !!s.entregadorDraft,
@@ -3550,6 +3587,12 @@ class Component extends DCLogic {
         knobStyle: this.knobStyle(),
         onToggle:() => this.toggleEntregadorAtivo(e.id),
         onEdit:() => this.editEntregador(e)
+      })),
+      caixaEntregadoresEmpty: s.caixaEntregadores.length === 0,
+      caixaEntregadorRows: s.caixaEntregadores.map(ce => ({
+        nome: ce.nome,
+        saldoFmt: this.fmt(ce.saldo),
+        onZerar:() => this.zerarSaldoEntregador(ce.id)
       })),
 
       novoGarcom:() => this.novoGarcom(),

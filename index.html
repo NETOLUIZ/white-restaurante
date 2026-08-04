@@ -906,7 +906,7 @@ class Component extends DCLogic {
     couponOk: false,
     pedidoTipo: 'entrega', // 'entrega' | 'retirada' — escolhido no checkout
     payment: 'pix',
-    valorRecebido: '', // só usado quando payment === 'money', pro cálculo do troco (nunca enviado à API)
+    valorRecebido: '', // só usado quando payment === 'money', pro cálculo do troco (enviado como valorTrocoPara em pedidos de entrega)
     placing: false,
     pedidoAtual: null, // { codigo, id, total } do ultimo pedido criado de verdade na API
     orderStep: 0,
@@ -1330,6 +1330,10 @@ class Component extends DCLogic {
       itens,
       formaPagamento: s.payment === 'pix' ? 'PIX' : s.payment === 'money' ? 'DINHEIRO' : 'CARTAO',
     };
+    if (s.payment === 'money' && s.pedidoTipo !== 'retirada') {
+      const valorRecebidoNum = parseFloat(String(s.valorRecebido).replace(',', '.'));
+      if (valorRecebidoNum > 0) payload.valorTrocoPara = valorRecebidoNum;
+    }
     if (s.couponApplied && s.coupon) payload.cupomCodigo = s.coupon.trim().toUpperCase();
     if (s.pedidoTipo !== 'retirada' && s.bairroSelecionado && !s.bairroSelecionado.outro) payload.bairroId = s.bairroSelecionado.id;
 
