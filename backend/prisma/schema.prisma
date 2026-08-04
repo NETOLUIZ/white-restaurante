@@ -362,6 +362,9 @@ model Pedido {
   formaPagamento       FormaPagamento?
   /// Atualizado manualmente pelo admin (painel) conforme o pedido avanca na cozinha/entrega/mesa.
   statusEntrega        StatusEntrega   @default(CONFIRMADO)
+  /// Marcado uma única vez, no momento em que statusEntrega vira ENTREGUE — usado
+  /// pra calcular o saldo em dinheiro do entregador (não usar createdAt/updatedAt pra isso).
+  entregueEm           DateTime?
   entregadorId         Int?
   entregador           Entregador?     @relation(fields: [entregadorId], references: [id], onDelete: SetNull)
   createdAt            DateTime        @default(now())
@@ -369,6 +372,7 @@ model Pedido {
 
   @@unique([tenantId, codigoAcompanhamento])
   @@index([tenantId])
+  @@index([entregadorId, statusEntrega, formaPagamento, entregueEm])
 }
 
 /// Um item de pedido é OU um produto fixo do cardápio (produtoId preenchido)

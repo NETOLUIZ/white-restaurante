@@ -414,7 +414,12 @@ async function atualizarStatus(req, res) {
     if (!STATUS_VALIDOS.includes(statusEntrega)) {
       return res.status(400).json({ erro: 'Status inválido' });
     }
-    const pedido = await req.prisma.pedido.update({ where: { id }, data: { statusEntrega } });
+    const pedidoAtual = await req.prisma.pedido.findFirst({ where: { id }, select: { statusEntrega: true } });
+    const data = { statusEntrega };
+    if (statusEntrega === 'ENTREGUE' && pedidoAtual?.statusEntrega !== 'ENTREGUE') {
+      data.entregueEm = new Date();
+    }
+    const pedido = await req.prisma.pedido.update({ where: { id }, data });
     res.json(pedido);
   } catch (err) {
     console.error('Erro ao atualizar status do pedido:', err);

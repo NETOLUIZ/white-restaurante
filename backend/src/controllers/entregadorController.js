@@ -89,6 +89,7 @@ async function meusPedidos(req, res) {
         nomeCliente: p.nomeCliente,
         telefone: p.telefone,
         endereco: p.endereco,
+        valorTrocoPara: p.valorTrocoPara,
         itens: p.itens.map((it) => ({
           nome: it.produto ? it.produto.nome : it.tamanhoMarmita?.nome,
           quantidade: it.quantidade,
@@ -103,4 +104,32 @@ async function meusPedidos(req, res) {
   }
 }
 
-module.exports = { listarAdmin, criar, atualizar, meusPedidos };
+/**
+ * Soma dos pedidos pagos em Dinheiro e já ENTREGUES pelo entregador autenticado,
+ * desde o último "zerar saldo" do admin (ou desde sempre, se nunca zerou). Não é
+ * uma coluna — sempre calculado na hora, pra nunca dessincronizar do estado real
+ * dos pedidos.
+ */
+async function meuSaldo(req, res) {
+  try {
+    const entregador = await req.prisma.entregador.findFirst({
+      where: { id: req.entregador.id },
+      select: { saldoZeradoEm: true, createdAt: true },
+    });
+    const resultado = await req.prisma.pedido.aggregate({
+      where: {
+        entregadorId: req.entregador.id,
+        formaPagamento: 'DINHEIRO',
+        statusEntrega: 'ENTREGUE',
+        entregueEm: { gt: entregador.saldoZeradoEm || entregador.createdAt },
+      },
+      _sum: { total: true },
+    });
+    res.json({ saldo: resultado._sum.total || 0 });
+  } catch (err) {
+    console.error('Erro ao calcular saldo do entregador:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+module.exports = { listarAdmin, criar, atualizar, meusPedidos, meuSaldo };

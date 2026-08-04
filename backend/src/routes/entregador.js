@@ -20,5 +20,6 @@ router.use(autenticarEntregador);
 router.get('/me', entregadorAuthController.me);
 router.put('/senha', entregadorAuthController.alterarSenha);
 router.get('/pedidos', entregadorController.meusPedidos);
+router.get('/saldo', entregadorController.meuSaldo);
 
 module.exports = router;
