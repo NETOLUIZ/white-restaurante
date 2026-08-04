@@ -153,6 +153,18 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
         return res.status(400).json({ erro: `Campo de endereço "${campo}" excede o tamanho máximo` });
       }
     }
+    let valorTrocoPara = null;
+    if (req.body.valorTrocoPara !== undefined && req.body.valorTrocoPara !== null && req.body.valorTrocoPara !== '') {
+      if (tipo !== 'ENTREGA' || formaPagamento !== 'DINHEIRO') {
+        return res.status(400).json({ erro: 'Troco só se aplica a pedidos de entrega pagos em Dinheiro' });
+      }
+      const v = Number(req.body.valorTrocoPara);
+      if (!Number.isFinite(v) || v <= 0) {
+        return res.status(400).json({ erro: 'Valor de troco inválido' });
+      }
+      valorTrocoPara = v;
+    }
+
     if (itens.length > 50) {
       return res.status(400).json({ erro: 'Pedido excede o número máximo de itens' });
     }
@@ -221,6 +233,10 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
     }
     const total = Math.max(0, Number((subtotal - desconto + taxaEntrega).toFixed(2)));
 
+    if (valorTrocoPara !== null && valorTrocoPara < total) {
+      return res.status(400).json({ erro: 'Valor de troco não pode ser menor que o total do pedido' });
+    }
+
     // Pedido de balcão sem telefone não tem Cliente vinculado (não dá pra upsert sem a chave única).
     // telefone sozinho não é mais @unique (virou @@unique([tenantId, telefone]) na
     // Fase 1) — a extension só injeta tenantId solto no where, o que não satisfaz
@@ -250,6 +266,7 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
         taxaEntrega,
         total,
         formaPagamento,
+        valorTrocoPara,
         itens: { create: itensComTenant },
       },
       include: { itens: true },
