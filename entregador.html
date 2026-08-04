@@ -290,7 +290,9 @@ class Component extends DCLogic {
       enderecoFmt: this.enderecoFmt(p.endereco),
       itens: (p.itens || []).map(it => ({ label: it.quantidade + '× ' + (it.nome || '—') })),
       totalFmt: this.fmt(p.total),
-      pgtoLabel: p.formaPagamento === 'PIX' ? 'Pix ✓' : 'Cartão ✓',
+      // Antes só distinguia PIX de "qualquer outra coisa" — DINHEIRO caía como "Cartão ✓",
+      // fazendo o entregador achar que já tava pago e não levar troco/cobrar em dinheiro.
+      pgtoLabel: p.formaPagamento === 'PIX' ? 'Pix ✓' : p.formaPagamento === 'DINHEIRO' ? 'Dinheiro' : 'Cartão ✓',
       mapsUrl: this.enderecoParaMaps(p.endereco),
     }));
     return {
