@@ -251,4 +251,22 @@
     aplicarCssBase(config);
     iniciarPollDom(config);
   });
+
+  // Live preview (painel super admin) — só aceita mensagens da origem exata
+  // do painel, nunca de qualquer postMessage genérico. Não persiste nada:
+  // só troca as CSS vars na hora, pro iframe de preview refletir o form.
+  var ORIGENS_PREVIEW_PERMITIDAS = isDevLocal
+    ? null // em dev aceita qualquer origem localhost (porta do super.html varia)
+    : [location.origin.replace(/^https:\/\//, 'https://super.')];
+
+  function origemPermitida(origem) {
+    if (isDevLocal) return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origem);
+    return ORIGENS_PREVIEW_PERMITIDAS.indexOf(origem) !== -1;
+  }
+
+  window.addEventListener('message', function (event) {
+    if (!origemPermitida(event.origin)) return;
+    if (!event.data || event.data.type !== 'bf-preview-update' || !event.data.branding) return;
+    aplicarCssVarsDireto(event.data.branding);
+  });
 })();
