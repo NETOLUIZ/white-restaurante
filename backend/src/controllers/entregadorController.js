@@ -132,4 +132,44 @@ async function meuSaldo(req, res) {
   }
 }
 
-module.exports = { listarAdmin, criar, atualizar, meusPedidos, meuSaldo };
+/** Lista todos os entregadores do tenant com o saldo atual de cada um — painel admin. */
+async function listarSaldos(req, res) {
+  try {
+    const entregadores = await req.prisma.entregador.findMany({
+      orderBy: { nome: 'asc' },
+      select: { id: true, nome: true, ativo: true, saldoZeradoEm: true, createdAt: true },
+    });
+    const saldos = await Promise.all(
+      entregadores.map(async (e) => {
+        const resultado = await req.prisma.pedido.aggregate({
+          where: {
+            entregadorId: e.id,
+            formaPagamento: 'DINHEIRO',
+            statusEntrega: 'ENTREGUE',
+            entregueEm: { gt: e.saldoZeradoEm || e.createdAt },
+          },
+          _sum: { total: true },
+        });
+        return { id: e.id, nome: e.nome, ativo: e.ativo, saldo: resultado._sum.total || 0 };
+      }),
+    );
+    res.json(saldos);
+  } catch (err) {
+    console.error('Erro ao listar saldos dos entregadores:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+/** Zera o saldo de um entregador — painel admin. Não apaga nada, só marca a partir de quando contar de novo. */
+async function zerarSaldo(req, res) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    await req.prisma.entregador.update({ where: { id }, data: { saldoZeradoEm: new Date() } });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao zerar saldo do entregador:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+module.exports = { listarAdmin, criar, atualizar, meusPedidos, meuSaldo, listarSaldos, zerarSaldo };
