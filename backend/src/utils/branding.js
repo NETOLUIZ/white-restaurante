@@ -7,8 +7,19 @@ const FONTES_PERMITIDAS = new Set([
   'Inter', 'Roboto', 'Open Sans', 'Lato', 'Source Sans 3', 'Nunito Sans', 'Atkinson Hyperlegible', 'Verdana',
 ]);
 
-const CAMPOS_COR = ['corPrimaria', 'corSecundaria', 'corBotao', 'corTextoBotao', 'corFundo', 'corTexto', 'corCard'];
+const CAMPOS_COR = [
+  'corPrimaria', 'corSecundaria', 'corFundo', 'corFundoSecundaria', 'corTexto',
+  'corDestaque', 'corSucesso', 'corAlerta', 'corErro',
+  'botaoPrimarioFundo', 'botaoPrimarioTexto', 'botaoPrimarioBorda',
+  'botaoSecundarioFundo', 'botaoSecundarioTexto', 'botaoSecundarioBorda',
+  'botaoDesabilitadoFundo', 'botaoDesabilitadoTexto',
+  'corCard', 'cardCorBorda', 'cardCorTitulo', 'cardCorTextoSecundario', 'cardCorHover',
+  'headerFundo', 'headerCorSaudacao', 'headerCorIconeUsuario', 'headerCorLocalizacao', 'headerCorNotificacao',
+  'navInferiorFundo', 'navInferiorIconeNormal', 'navInferiorIconeAtivo', 'navInferiorTextoNormal', 'navInferiorTextoAtivo',
+];
 const CAMPOS_FONTE = ['fonteTitulo', 'fonteTexto'];
+const CAMPO_RAIO = 'cardRaioBorda';
+const RAIO_REGEX = /^\d+(\.\d+)?(px|rem)$/;
 
 class ErroValidacaoBranding extends Error {}
 
@@ -36,6 +47,12 @@ function montarDadosBranding(body) {
       }
       data[campo] = body[campo];
     }
+  }
+  if (body[CAMPO_RAIO] !== undefined) {
+    if (!RAIO_REGEX.test(body[CAMPO_RAIO])) {
+      throw new ErroValidacaoBranding(`${CAMPO_RAIO} precisa ser um comprimento CSS válido (ex: 8px ou 0.5rem)`);
+    }
+    data[CAMPO_RAIO] = body[CAMPO_RAIO];
   }
   return data;
 }
