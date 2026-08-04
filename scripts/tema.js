@@ -77,7 +77,7 @@
     return linhas.length ? ':root{' + linhas.join('') + '}' : '';
   }
 
-  /** Usado pelo listener de preview (Task 5) e por aplicarCssBase — aplica as
+  /** Usado pelo listener de preview (Task 5) — aplica as
    * vars direto no documentElement, sem esperar um novo <style>. */
   function aplicarCssVarsDireto(branding) {
     var root = document.documentElement.style;
