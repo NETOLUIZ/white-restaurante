@@ -177,7 +177,7 @@ ALTER TABLE "TenantBranding" ADD COLUMN "botaoSecundarioBorda" TEXT NOT NULL DEF
 ALTER TABLE "TenantBranding" ADD COLUMN "botaoDesabilitadoFundo" TEXT NOT NULL DEFAULT '#E5E5E5';
 ALTER TABLE "TenantBranding" ADD COLUMN "botaoDesabilitadoTexto" TEXT NOT NULL DEFAULT '#9CA3AF';
 
-ALTER TABLE "TenantBranding" ADD COLUMN "cardCorBorda" TEXT NOT NULL DEFAULT '#E5DACB';
+ALTER TABLE "TenantBranding" ADD COLUMN "cardCorBorda" TEXT NOT NULL DEFAULT '#F1F1F0';
 ALTER TABLE "TenantBranding" ADD COLUMN "cardCorTitulo" TEXT NOT NULL DEFAULT '#B5161C';
 ALTER TABLE "TenantBranding" ADD COLUMN "cardCorTextoSecundario" TEXT NOT NULL DEFAULT '#7A6C5D';
 ALTER TABLE "TenantBranding" ADD COLUMN "cardCorHover" TEXT NOT NULL DEFAULT '#F5F5F5';
