@@ -730,11 +730,37 @@ class Component extends DCLogic {
   onCorCampo(campo, e) { this.setState(s => ({ branding: { ...s.branding, [campo]: e.target.value } })); }
   onCorPrimaria(e) { this.onCorCampo('corPrimaria', e); }
   onCorSecundaria(e) { this.onCorCampo('corSecundaria', e); }
-  onCorBotao(e) { this.onCorCampo('corBotao', e); }
-  onCorTextoBotao(e) { this.onCorCampo('corTextoBotao', e); }
   onCorFundo(e) { this.onCorCampo('corFundo', e); }
   onCorTexto(e) { this.onCorCampo('corTexto', e); }
   onCorCard(e) { this.onCorCampo('corCard', e); }
+  onCorFundoSecundaria(e) { this.onCorCampo('corFundoSecundaria', e); }
+  onCorDestaque(e) { this.onCorCampo('corDestaque', e); }
+  onCorSucesso(e) { this.onCorCampo('corSucesso', e); }
+  onCorAlerta(e) { this.onCorCampo('corAlerta', e); }
+  onCorErro(e) { this.onCorCampo('corErro', e); }
+  onBotaoPrimarioFundo(e) { this.onCorCampo('botaoPrimarioFundo', e); }
+  onBotaoPrimarioTexto(e) { this.onCorCampo('botaoPrimarioTexto', e); }
+  onBotaoPrimarioBorda(e) { this.onCorCampo('botaoPrimarioBorda', e); }
+  onBotaoSecundarioFundo(e) { this.onCorCampo('botaoSecundarioFundo', e); }
+  onBotaoSecundarioTexto(e) { this.onCorCampo('botaoSecundarioTexto', e); }
+  onBotaoSecundarioBorda(e) { this.onCorCampo('botaoSecundarioBorda', e); }
+  onBotaoDesabilitadoFundo(e) { this.onCorCampo('botaoDesabilitadoFundo', e); }
+  onBotaoDesabilitadoTexto(e) { this.onCorCampo('botaoDesabilitadoTexto', e); }
+  onCardCorBorda(e) { this.onCorCampo('cardCorBorda', e); }
+  onCardCorTitulo(e) { this.onCorCampo('cardCorTitulo', e); }
+  onCardCorTextoSecundario(e) { this.onCorCampo('cardCorTextoSecundario', e); }
+  onCardCorHover(e) { this.onCorCampo('cardCorHover', e); }
+  onCardRaioBorda(e) { this.setState(s => ({ branding: { ...s.branding, cardRaioBorda: e.target.value } })); }
+  onHeaderFundo(e) { this.onCorCampo('headerFundo', e); }
+  onHeaderCorSaudacao(e) { this.onCorCampo('headerCorSaudacao', e); }
+  onHeaderCorIconeUsuario(e) { this.onCorCampo('headerCorIconeUsuario', e); }
+  onHeaderCorLocalizacao(e) { this.onCorCampo('headerCorLocalizacao', e); }
+  onHeaderCorNotificacao(e) { this.onCorCampo('headerCorNotificacao', e); }
+  onNavInferiorFundo(e) { this.onCorCampo('navInferiorFundo', e); }
+  onNavInferiorIconeNormal(e) { this.onCorCampo('navInferiorIconeNormal', e); }
+  onNavInferiorIconeAtivo(e) { this.onCorCampo('navInferiorIconeAtivo', e); }
+  onNavInferiorTextoNormal(e) { this.onCorCampo('navInferiorTextoNormal', e); }
+  onNavInferiorTextoAtivo(e) { this.onCorCampo('navInferiorTextoAtivo', e); }
   onFonteTitulo(e) { this.setState(s => ({ branding: { ...s.branding, fonteTitulo: e.target.value } })); }
   onFonteTexto(e) { this.setState(s => ({ branding: { ...s.branding, fonteTexto: e.target.value } })); }
 
@@ -744,8 +770,18 @@ class Component extends DCLogic {
     this.setState({ brandingSalvando: true, brandingMsg: '' });
     try {
       const { branding, contraste } = await this.apiSend('PATCH', '/super/tenants/' + id + '/branding', {
-        corPrimaria: b.corPrimaria, corSecundaria: b.corSecundaria, corBotao: b.corBotao, corTextoBotao: b.corTextoBotao,
-        corFundo: b.corFundo, corTexto: b.corTexto, corCard: b.corCard, fonteTitulo: b.fonteTitulo, fonteTexto: b.fonteTexto,
+        corPrimaria: b.corPrimaria, corSecundaria: b.corSecundaria, corFundo: b.corFundo, corFundoSecundaria: b.corFundoSecundaria,
+        corTexto: b.corTexto, corDestaque: b.corDestaque, corSucesso: b.corSucesso, corAlerta: b.corAlerta, corErro: b.corErro,
+        botaoPrimarioFundo: b.botaoPrimarioFundo, botaoPrimarioTexto: b.botaoPrimarioTexto, botaoPrimarioBorda: b.botaoPrimarioBorda,
+        botaoSecundarioFundo: b.botaoSecundarioFundo, botaoSecundarioTexto: b.botaoSecundarioTexto, botaoSecundarioBorda: b.botaoSecundarioBorda,
+        botaoDesabilitadoFundo: b.botaoDesabilitadoFundo, botaoDesabilitadoTexto: b.botaoDesabilitadoTexto,
+        corCard: b.corCard, cardCorBorda: b.cardCorBorda, cardCorTitulo: b.cardCorTitulo, cardCorTextoSecundario: b.cardCorTextoSecundario,
+        cardCorHover: b.cardCorHover, cardRaioBorda: b.cardRaioBorda,
+        headerFundo: b.headerFundo, headerCorSaudacao: b.headerCorSaudacao, headerCorIconeUsuario: b.headerCorIconeUsuario,
+        headerCorLocalizacao: b.headerCorLocalizacao, headerCorNotificacao: b.headerCorNotificacao,
+        navInferiorFundo: b.navInferiorFundo, navInferiorIconeNormal: b.navInferiorIconeNormal, navInferiorIconeAtivo: b.navInferiorIconeAtivo,
+        navInferiorTextoNormal: b.navInferiorTextoNormal, navInferiorTextoAtivo: b.navInferiorTextoAtivo,
+        fonteTitulo: b.fonteTitulo, fonteTexto: b.fonteTexto,
       });
       this.setState({ brandingSalvando: false, branding, contraste, brandingMsg: 'Marca salva!', brandingMsgOk: true });
     } catch (e) {
