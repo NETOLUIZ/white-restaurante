@@ -1739,11 +1739,12 @@ class Component extends DCLogic {
     // ambos undefined) caia aqui por acidente (undefined === undefined) — só entra na
     // aba de montar marmita quando a categoria "Marmitas" realmente existe.
     const isMarmitasTab = marmitaCatId != null && s.selectedCat === marmitaCatId && !q && marmitaAtiva;
-    const marmitaSizeDefault = (id) => ({ nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas:1, price:0 });
+    const marmitaSizeDefault = (id) => ({ nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas: id === 'grande' ? 2 : 1, price: id === 'grande' ? 32.9 : 24.9 });
     const marmitaSizeCards = ['pequena','grande'].map(id => {
       const sz = mc.marmitaSizes[id] || marmitaSizeDefault(id);
+      const qtdP = sz.proteinas || (id === 'grande' ? 2 : 1);
       return { id, nome:sz.nome,
-        subtitulo: (sz.proteinas === 1 ? '1 proteína' : sz.proteinas + ' proteínas') + ' + complementos à vontade',
+        subtitulo: (qtdP === 1 ? '1 proteína (mistura)' : qtdP + ' proteínas (misturas)') + ' + complementos à vontade',
         priceFmt:this.fmt(sz.price), onOpen:() => this.abrirMarmita(id) };
     });
     const marmitaSize = mc.marmitaSizes[s.marmitaSizeId] || mc.marmitaSizes.pequena || marmitaSizeDefault(s.marmitaSizeId || 'pequena');

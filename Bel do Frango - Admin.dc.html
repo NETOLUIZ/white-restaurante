@@ -2390,7 +2390,11 @@ class Component extends DCLogic {
       this.apiGet('/admin/proteinas'), this.apiGet('/admin/complementos'), this.apiGet('/marmita-tamanhos')
     ]);
     const marmitaSizes = {};
-    tamanhos.forEach((t) => { marmitaSizes[t.id] = { nome:t.nome, slug:t.slug, proteinas:t.qtdProteinas, price:t.preco, disponivelEmpresa: !!t.disponivelEmpresa }; });
+    tamanhos.forEach((t) => {
+      const item = { id:t.id, nome:t.nome, slug:t.slug, proteinas:t.qtdProteinas, price:t.preco, disponivelEmpresa: !!t.disponivelEmpresa };
+      marmitaSizes[t.id] = item;
+      if (t.slug) marmitaSizes[t.slug] = item;
+    });
     this.setState({ proteinas, complementos, marmitaSizes });
   }
   /** Liga/desliga um tamanho de marmita no cardápio restrito ("prato do dia") do canal empresa. */
@@ -2606,14 +2610,19 @@ class Component extends DCLogic {
   }
   onMarmitaSizePreco(sizeId){
     return (e) => {
-      const marmitaSizes = { ...this.state.marmitaSizes, [sizeId]: { ...this.state.marmitaSizes[sizeId], price:e.target.value } };
+      const val = e.target.value;
+      const atual = this.state.marmitaSizes[sizeId] || {};
+      const marmitaSizes = { ...this.state.marmitaSizes, [sizeId]: { ...atual, price:val } };
+      if (atual.id && atual.id !== sizeId) marmitaSizes[atual.id] = { ...atual, price:val };
+      if (atual.slug && atual.slug !== sizeId) marmitaSizes[atual.slug] = { ...atual, price:val };
       this.setState({ marmitaSizes });
     };
   }
   async salvarMarmitaSizes(){
     const sizes = this.state.marmitaSizes;
     try {
-      await Promise.all(Object.keys(sizes).map((id) =>
+      const uniqueIds = Array.from(new Set(Object.values(sizes).map(s => s.id).filter(Boolean)));
+      await Promise.all(uniqueIds.map((id) =>
         this.apiSend('PUT', '/admin/marmita-tamanhos/' + id, { preco: parseFloat(String(sizes[id].price).replace(',','.')) || 0 })
       ));
       await this.carregarMarmitaConfig();
@@ -3396,9 +3405,11 @@ class Component extends DCLogic {
     const bairrosEmpty = s.bairros.length === 0;
 
     const marmitaSizeInputs = ['pequena','grande'].map(id => {
-      const sz = s.marmitaSizes[id] || { nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas:1, price:0 };
-      return { id, nome:sz.nome, proteinasLabel: sz.proteinas + (sz.proteinas===1?' proteína':' proteínas') + ' + complementos à vontade',
-        price:String(sz.price), onPrice:this.onMarmitaSizePreco(id) };
+      const sz = s.marmitaSizes[id] || { id, nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas: id === 'grande' ? 2 : 1, price:0 };
+      const pCount = sz.proteinas || (id === 'grande' ? 2 : 1);
+      const pText = pCount === 1 ? '1 proteína (mistura)' : pCount + ' proteínas (misturas)';
+      return { id: sz.id || id, nome:sz.nome, proteinasLabel: pText + ' + complementos à vontade',
+        price:String(sz.price ?? 0), onPrice:this.onMarmitaSizePreco(sz.id || id) };
     });
 
     // ---- adicionais: catálogo global de extras pagos (tabela Nome/Preço/Status/Ações) ----
