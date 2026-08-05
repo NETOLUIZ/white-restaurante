@@ -794,25 +794,25 @@
 
 <!-- ===================== BOTTOM NAV (mobile main tabs) ===================== -->
 <sc-if value="{{ showBottom }}" hint-placeholder-val="{{ false }}">
-<div id="bf-bottom-nav" style="display:flex;background:#fff;border-top:1px solid rgba(29,16,9,.07);padding:8px 6px calc(8px + env(safe-area-inset-bottom));flex:none;box-shadow:0 -4px 18px rgba(29,16,9,.05);">
+<div id="bf-bottom-nav" style="display:flex;background:var(--nav-inferior-fundo, #fff);border-top:1px solid rgba(29,16,9,.07);padding:8px 6px calc(8px + env(safe-area-inset-bottom));flex:none;box-shadow:0 -4px 18px rgba(29,16,9,.05);">
   <button onClick="{{ goHome }}" style="{{ navHomeStyle }}">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
-    <span style="font-size:11px;font-weight:600;">Início</span>
+    <span style="font-size:11px;font-weight:600;color:{{ navHomeTextStyle.color }};">Início</span>
   </button>
   <button onClick="{{ goMenu }}" style="{{ navMenuStyle }}">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H2z"/><path d="M22 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H22z"/></svg>
-    <span style="font-size:11px;font-weight:600;">{{ labelCardapio }}</span>
+    <span style="font-size:11px;font-weight:600;color:{{ navMenuTextStyle.color }};">{{ labelCardapio }}</span>
   </button>
   <button id="bf-cart-target" onClick="{{ goCart }}" style="{{ navCartStyle }}">
     <span style="position:relative;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-9px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#D62828;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;">{{ cartCount }}</span></sc-if>
     </span>
-    <span style="font-size:11px;font-weight:600;">Carrinho</span>
+    <span style="font-size:11px;font-weight:600;color:{{ navCartTextStyle.color }};">Carrinho</span>
   </button>
   <button onClick="{{ goConta }}" style="{{ navContaStyle }}">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
-    <span style="font-size:11px;font-weight:600;">Conta</span>
+    <span style="font-size:11px;font-weight:600;color:{{ navContaTextStyle.color }};">Conta</span>
   </button>
 </div>
 </sc-if>
@@ -1824,7 +1824,8 @@ class Component extends DCLogic {
 
     const navBtn = (on) => ({ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:'4px',
       background:'none', border:'none', cursor:'pointer', padding:'6px 0',
-      color: on ? '#D62828' : '#A89A88' });
+      color: on ? 'var(--nav-inferior-icone-ativo, #D62828)' : 'var(--nav-inferior-icone-normal, #A89A88)' });
+    const navTextStyle = (on) => ({ color: on ? 'var(--nav-inferior-texto-ativo, #D62828)' : 'var(--nav-inferior-texto-normal, #A89A88)' });
     const topBtn = (on) => ({ border:'none', cursor:'pointer', borderRadius:'11px', padding:'9px 15px', fontWeight:700, fontSize:'14px',
       background: on ? 'rgba(122,18,9,.14)' : 'transparent', color: on ? '#7A1209' : 'rgba(122,18,9,.62)' });
 
@@ -2025,6 +2026,7 @@ class Component extends DCLogic {
       entregadorNome: s.entregadorNome, entregadorInicial: s.entregadorNome ? s.entregadorNome[0].toUpperCase() : 'E',
 
       navHomeStyle:navBtn(isHome), navMenuStyle:navBtn(isMenu), navCartStyle:navBtn(isCart), navContaStyle:navBtn(isConta),
+      navHomeTextStyle:navTextStyle(isHome), navMenuTextStyle:navTextStyle(isMenu), navCartTextStyle:navTextStyle(isCart), navContaTextStyle:navTextStyle(isConta),
       topHomeStyle:topBtn(isHome), topMenuStyle:topBtn(isMenu), topContaStyle:topBtn(isConta),
 
       contaRows
