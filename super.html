@@ -421,7 +421,7 @@ class Component extends DCLogic {
     novoTenantForm: null,
     salvandoNovoTenant: false, novoTenantErro: '',
 
-    tenantDetalheId: null, tenantAtual: null, abaDetalhe: 'geral',
+    tenantDetalheId: null, tenantAtual: null, abaDetalhe: 'geral', subAbaMarca: 'identidade',
     excluirTenantConfirmacao: '', excluindoTenant: false, excluirTenantErro: '',
     nomeEditavel: '', salvandoNome: false,
 
@@ -632,6 +632,7 @@ class Component extends DCLogic {
     this.setState({ abaDetalhe: 'marca' });
     this.carregarBranding();
   }
+  goSubAbaMarca(sub) { this.setState({ subAbaMarca: sub }); }
   goAbaFeatures() {
     this.setState({ abaDetalhe: 'features' });
     this.carregarFeatures();
@@ -876,6 +877,12 @@ class Component extends DCLogic {
       voltarTenants: () => this.voltarTenants(),
       goAbaGeral: () => this.goAbaGeral(), goAbaMarca: () => this.goAbaMarca(), goAbaFeatures: () => this.goAbaFeatures(), goAbaImpersonar: () => this.goAbaImpersonar(),
       abaGeral: abaStyle(s.abaDetalhe === 'geral'), abaMarca: abaStyle(s.abaDetalhe === 'marca'), abaFeatures: abaStyle(s.abaDetalhe === 'features'), abaImpersonar: abaStyle(s.abaDetalhe === 'impersonar'),
+      goSubAbaMarca: (sub) => this.goSubAbaMarca(sub),
+      isSubAbaIdentidade: s.subAbaMarca === 'identidade', isSubAbaCoresBase: s.subAbaMarca === 'coresBase',
+      isSubAbaBotoes: s.subAbaMarca === 'botoes', isSubAbaCards: s.subAbaMarca === 'cards', isSubAbaNavegacao: s.subAbaMarca === 'navegacao',
+      subAbaIdentidadeStyle: abaStyle(s.subAbaMarca === 'identidade'), subAbaCoresBaseStyle: abaStyle(s.subAbaMarca === 'coresBase'),
+      subAbaBotoesStyle: abaStyle(s.subAbaMarca === 'botoes'), subAbaCardsStyle: abaStyle(s.subAbaMarca === 'cards'),
+      subAbaNavegacaoStyle: abaStyle(s.subAbaMarca === 'navegacao'),
       isAbaGeral: s.abaDetalhe === 'geral', isAbaMarca: s.abaDetalhe === 'marca', isAbaFeatures: s.abaDetalhe === 'features', isAbaImpersonar: s.abaDetalhe === 'impersonar',
 
       tenantSlug: s.tenantAtual ? s.tenantAtual.slug : '',
