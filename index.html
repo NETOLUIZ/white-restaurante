@@ -94,15 +94,15 @@
     </button>
     <sc-if value="{{ hamburgerOpen }}" hint-placeholder-val="{{ false }}">
     <div style="position:absolute;top:calc(100% + 10px);left:0;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:18px;box-shadow:0 10px 30px rgba(29,16,9,.14);padding:8px;min-width:170px;z-index:200;animation:bfSlideIn .18s cubic-bezier(.16,1,.3,1);">
-      <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#1D1009;text-align:left;">
+      <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Início
       </button>
-      <button onClick="{{ goMenu }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#1D1009;text-align:left;">
+      <button onClick="{{ goMenu }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2Z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
         {{ labelCardapio }}
       </button>
-      <button onClick="{{ goConta }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#1D1009;text-align:left;">
+      <button onClick="{{ goConta }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
         Conta
       </button>
@@ -417,7 +417,7 @@
       <div style="display:flex;align-items:center;gap:12px;">
         <div style="width:46px;height:46px;border-radius:50%;background:#FBE3DF;color:var(--cor-primaria, #B5161C);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;flex:none;">{{ usuarioIniciais }}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-weight:700;font-size:15px;color:#1D1009;">{{ usuarioNome }}</div>
+          <div style="font-weight:700;font-size:15px;color:var(--cor-texto, #1D1009);">{{ usuarioNome }}</div>
           <div style="font-size:12px;color:#8C8075;">{{ usuarioContato }}</div>
         </div>
         <button onClick="{{ goCadastro }}" style="background:none;border:none;color:#D62828;font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Editar</button>
@@ -706,7 +706,7 @@
     <sc-if value="{{ isDinheiroSelecionado }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:10px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
         <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Precisa de troco para quanto? (opcional)</label>
-        <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="Ex: 100,00" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;color:#1D1009;outline:none;"/>
+        <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="Ex: 100,00" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;color:var(--cor-texto, #1D1009);outline:none;"/>
         <sc-if value="{{ hasTroco }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;">
             <span style="font-weight:700;font-size:13px;color:{{ trocoColor }}">{{ trocoLabel }}</span>
@@ -1752,7 +1752,7 @@ class Component extends DCLogic {
       border: selecionado ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
       background: esgotado ? '#F6F1E7' : 'var(--cor-card, #fff)', borderRadius:'13px', padding:'13px 14px',
       cursor: esgotado ? 'not-allowed' : 'pointer', opacity: esgotado ? .55 : 1,
-      fontWeight:600, fontSize:'14px', color:'#1D1009'
+      fontWeight:600, fontSize:'14px', color:'var(--cor-texto, #1D1009)'
     });
     const marmitaProteinaOptions = mc.proteinas.filter(p => p.ativo).map(p => {
       const selecionado = s.marmitaSelProteinas.includes(p.id);
@@ -1868,7 +1868,7 @@ class Component extends DCLogic {
       display:'flex', alignItems:'center', justifyContent:'space-between', gap:'10px', width:'100%', textAlign:'left',
       border: selecionado ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
       background:'var(--cor-card, #fff)', borderRadius:'13px', padding:'14px 15px',
-      cursor:'pointer', fontWeight:700, fontSize:'15px', color:'#1D1009'
+      cursor:'pointer', fontWeight:700, fontSize:'15px', color:'var(--cor-texto, #1D1009)'
     });
     const escolhaBairro = s.bairroEscolhaTemp;
     const bairroOpcoes = s.bairros.filter(b => b.ativo).map(b => {
