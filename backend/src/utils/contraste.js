@@ -35,12 +35,18 @@ const LIMIAR_AA_TEXTO_NORMAL = 4.5;
  * pra texto normal, WCAG 2.2).
  */
 function calcularContrasteBranding(branding) {
-  const botao = razaoContraste(branding.corBotao, branding.corTextoBotao);
-  const texto = razaoContraste(branding.corFundo, branding.corTexto);
-  const aviso = [];
-  if (botao < LIMIAR_AA_TEXTO_NORMAL) aviso.push('botao');
-  if (texto < LIMIAR_AA_TEXTO_NORMAL) aviso.push('texto');
-  return { botao, texto, aviso };
+  const pares = {
+    botao: razaoContraste(branding.botaoPrimarioFundo, branding.botaoPrimarioTexto),
+    texto: razaoContraste(branding.corFundo, branding.corTexto),
+    botaoSecundario: razaoContraste(branding.botaoSecundarioFundo, branding.botaoSecundarioTexto),
+    cardTitulo: razaoContraste(branding.corCard, branding.cardCorTitulo),
+    cardTextoSecundario: razaoContraste(branding.corCard, branding.cardCorTextoSecundario),
+    header: razaoContraste(branding.headerFundo, branding.headerCorSaudacao),
+    navInferiorAtivo: razaoContraste(branding.navInferiorFundo, branding.navInferiorTextoAtivo),
+    navInferiorNormal: razaoContraste(branding.navInferiorFundo, branding.navInferiorTextoNormal),
+  };
+  const aviso = Object.keys(pares).filter((chave) => pares[chave] < LIMIAR_AA_TEXTO_NORMAL);
+  return { ...pares, aviso };
 }
 
 module.exports = { corValida, razaoContraste, calcularContrasteBranding };
