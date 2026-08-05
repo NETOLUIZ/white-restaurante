@@ -246,6 +246,10 @@
             <button onClick="{{ goSubAbaNavegacao }}" style="{{ subAbaNavegacaoStyle }}">Navegação</button>
           </div>
 
+          <div style="margin-bottom:20px;border-radius:14px;overflow:hidden;border:1px solid rgba(29,16,9,.1);height:520px;">
+            <iframe ref="{{ setPreviewFrame }}" src="{{ previewUrl }}" title="Preview da loja" style="width:100%;height:100%;border:none;" onLoad="{{ onPreviewFrameLoad }}"></iframe>
+          </div>
+
           <!-- IDENTIDADE VISUAL -->
           <sc-if value="{{ isSubAbaIdentidade }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
@@ -727,7 +731,16 @@ class Component extends DCLogic {
     const { branding, contraste } = await this.apiGet('/super/tenants/' + this.state.tenantDetalheId + '/branding');
     this.setState({ branding, contraste, brandingMsg: '', logoFile: null, logoPreviewLocal: null });
   }
-  onCorCampo(campo, e) { this.setState(s => ({ branding: { ...s.branding, [campo]: e.target.value } })); }
+  onCorCampo(campo, e) {
+    this.setState(s => ({ branding: { ...s.branding, [campo]: e.target.value } }));
+    setTimeout(() => this.enviarPreview(), 0);
+  }
+  enviarPreview() {
+    if (!this._previewFrame || !this._previewFrameReady || !this.state.branding || !this.state.tenantAtual) return;
+    var targetOrigin;
+    try { targetOrigin = new URL(this.urlLoja(this.state.tenantAtual.slug)).origin; } catch (e) { return; }
+    this._previewFrame.contentWindow.postMessage({ type: 'bf-preview-update', branding: this.state.branding }, targetOrigin);
+  }
   onCorPrimaria(e) { this.onCorCampo('corPrimaria', e); }
   onCorSecundaria(e) { this.onCorCampo('corSecundaria', e); }
   onCorFundo(e) { this.onCorCampo('corFundo', e); }
@@ -750,7 +763,7 @@ class Component extends DCLogic {
   onCardCorTitulo(e) { this.onCorCampo('cardCorTitulo', e); }
   onCardCorTextoSecundario(e) { this.onCorCampo('cardCorTextoSecundario', e); }
   onCardCorHover(e) { this.onCorCampo('cardCorHover', e); }
-  onCardRaioBorda(e) { this.setState(s => ({ branding: { ...s.branding, cardRaioBorda: e.target.value } })); }
+  onCardRaioBorda(e) { this.setState(s => ({ branding: { ...s.branding, cardRaioBorda: e.target.value } })); setTimeout(() => this.enviarPreview(), 0); }
   onHeaderFundo(e) { this.onCorCampo('headerFundo', e); }
   onHeaderCorSaudacao(e) { this.onCorCampo('headerCorSaudacao', e); }
   onHeaderCorIconeUsuario(e) { this.onCorCampo('headerCorIconeUsuario', e); }
@@ -992,6 +1005,9 @@ class Component extends DCLogic {
       isAbaGeral: s.abaDetalhe === 'geral', isAbaMarca: s.abaDetalhe === 'marca', isAbaFeatures: s.abaDetalhe === 'features', isAbaImpersonar: s.abaDetalhe === 'impersonar',
 
       tenantSlug: s.tenantAtual ? s.tenantAtual.slug : '',
+      previewUrl: s.tenantAtual ? this.urlLoja(s.tenantAtual.slug) : '',
+      setPreviewFrame: (el) => { this._previewFrame = el; },
+      onPreviewFrameLoad: () => { this._previewFrameReady = true; this.enviarPreview(); },
       tenantNome: s.tenantAtual ? s.tenantAtual.nome : '',
       nomeEditavel: s.nomeEditavel, onNomeEditavel: (e) => this.onNomeEditavel(e),
       salvarNome: () => this.salvarNome(), salvarNomeLabel: s.salvandoNome ? 'Salvando...' : 'Salvar',
