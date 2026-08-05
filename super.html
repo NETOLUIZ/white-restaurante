@@ -633,6 +633,11 @@ class Component extends DCLogic {
     this.carregarBranding();
   }
   goSubAbaMarca(sub) { this.setState({ subAbaMarca: sub }); }
+  goSubAbaIdentidade() { this.goSubAbaMarca('identidade'); }
+  goSubAbaCoresBase() { this.goSubAbaMarca('coresBase'); }
+  goSubAbaBotoes() { this.goSubAbaMarca('botoes'); }
+  goSubAbaCards() { this.goSubAbaMarca('cards'); }
+  goSubAbaNavegacao() { this.goSubAbaMarca('navegacao'); }
   goAbaFeatures() {
     this.setState({ abaDetalhe: 'features' });
     this.carregarFeatures();
@@ -877,7 +882,8 @@ class Component extends DCLogic {
       voltarTenants: () => this.voltarTenants(),
       goAbaGeral: () => this.goAbaGeral(), goAbaMarca: () => this.goAbaMarca(), goAbaFeatures: () => this.goAbaFeatures(), goAbaImpersonar: () => this.goAbaImpersonar(),
       abaGeral: abaStyle(s.abaDetalhe === 'geral'), abaMarca: abaStyle(s.abaDetalhe === 'marca'), abaFeatures: abaStyle(s.abaDetalhe === 'features'), abaImpersonar: abaStyle(s.abaDetalhe === 'impersonar'),
-      goSubAbaMarca: (sub) => this.goSubAbaMarca(sub),
+      goSubAbaIdentidade: () => this.goSubAbaIdentidade(), goSubAbaCoresBase: () => this.goSubAbaCoresBase(),
+      goSubAbaBotoes: () => this.goSubAbaBotoes(), goSubAbaCards: () => this.goSubAbaCards(), goSubAbaNavegacao: () => this.goSubAbaNavegacao(),
       isSubAbaIdentidade: s.subAbaMarca === 'identidade', isSubAbaCoresBase: s.subAbaMarca === 'coresBase',
       isSubAbaBotoes: s.subAbaMarca === 'botoes', isSubAbaCards: s.subAbaMarca === 'cards', isSubAbaNavegacao: s.subAbaMarca === 'navegacao',
       subAbaIdentidadeStyle: abaStyle(s.subAbaMarca === 'identidade'), subAbaCoresBaseStyle: abaStyle(s.subAbaMarca === 'coresBase'),
