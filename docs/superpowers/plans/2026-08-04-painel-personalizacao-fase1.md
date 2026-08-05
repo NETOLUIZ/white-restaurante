@@ -1143,16 +1143,22 @@ por:
 
 - [ ] **Step 2: Método pra trocar de sub-aba (não recarrega o branding, só muda a view)**
 
-Logo abaixo de `goAbaMarca()` (`super.html:631-634`), adicionar:
+Logo abaixo de `goAbaMarca()` (`super.html:631-634`), adicionar o helper interno e um wrapper sem argumento por sub-aba (o runtime de templates deste projeto compila `onClick` para `createElement` puro do React — o handler só recebe o evento de clique, nunca um atributo do template como `data-sub`; por isso não dá pra ter um único handler parametrizado exposto direto ao template, e sim um wrapper por aba, no mesmo padrão de `onCorCampo`/`onCorPrimaria` etc.):
 ```js
   goSubAbaMarca(sub) { this.setState({ subAbaMarca: sub }); }
+  goSubAbaIdentidade() { this.goSubAbaMarca('identidade'); }
+  goSubAbaCoresBase() { this.goSubAbaMarca('coresBase'); }
+  goSubAbaBotoes() { this.goSubAbaMarca('botoes'); }
+  goSubAbaCards() { this.goSubAbaMarca('cards'); }
+  goSubAbaNavegacao() { this.goSubAbaMarca('navegacao'); }
 ```
 
 - [ ] **Step 3: Expor no enrich**
 
 Em `super.html:872-874`, adicionar (junto dos outros `goAba*`/`isAba*`):
 ```js
-      goSubAbaMarca: (sub) => this.goSubAbaMarca(sub),
+      goSubAbaIdentidade: () => this.goSubAbaIdentidade(), goSubAbaCoresBase: () => this.goSubAbaCoresBase(),
+      goSubAbaBotoes: () => this.goSubAbaBotoes(), goSubAbaCards: () => this.goSubAbaCards(), goSubAbaNavegacao: () => this.goSubAbaNavegacao(),
       isSubAbaIdentidade: s.subAbaMarca === 'identidade', isSubAbaCoresBase: s.subAbaMarca === 'coresBase',
       isSubAbaBotoes: s.subAbaMarca === 'botoes', isSubAbaCards: s.subAbaMarca === 'cards', isSubAbaNavegacao: s.subAbaMarca === 'navegacao',
       subAbaIdentidadeStyle: abaStyle(s.subAbaMarca === 'identidade'), subAbaCoresBaseStyle: abaStyle(s.subAbaMarca === 'coresBase'),
@@ -1189,11 +1195,11 @@ Trocar todo o trecho de `super.html:237-281` (do `<!-- MARCA -->` até o `</sc-i
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
 
           <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
-            <button onClick="{{ goSubAbaMarca }}" data-sub="identidade" style="{{ subAbaIdentidadeStyle }}">Identidade Visual</button>
-            <button onClick="{{ goSubAbaMarca }}" data-sub="coresBase" style="{{ subAbaCoresBaseStyle }}">Cores Base</button>
-            <button onClick="{{ goSubAbaMarca }}" data-sub="botoes" style="{{ subAbaBotoesStyle }}">Botões</button>
-            <button onClick="{{ goSubAbaMarca }}" data-sub="cards" style="{{ subAbaCardsStyle }}">Cards e Blocos</button>
-            <button onClick="{{ goSubAbaMarca }}" data-sub="navegacao" style="{{ subAbaNavegacaoStyle }}">Navegação</button>
+            <button onClick="{{ goSubAbaIdentidade }}" style="{{ subAbaIdentidadeStyle }}">Identidade Visual</button>
+            <button onClick="{{ goSubAbaCoresBase }}" style="{{ subAbaCoresBaseStyle }}">Cores Base</button>
+            <button onClick="{{ goSubAbaBotoes }}" style="{{ subAbaBotoesStyle }}">Botões</button>
+            <button onClick="{{ goSubAbaCards }}" style="{{ subAbaCardsStyle }}">Cards e Blocos</button>
+            <button onClick="{{ goSubAbaNavegacao }}" style="{{ subAbaNavegacaoStyle }}">Navegação</button>
           </div>
 
           <!-- IDENTIDADE VISUAL -->
