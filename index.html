@@ -20,11 +20,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;}
-  body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#B5161C;font-size:15px;line-height:1.5;}
+  body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:var(--cor-primaria, #B5161C);font-size:15px;line-height:1.5;}
   ::-webkit-scrollbar{width:0;height:0;}
   input,textarea,button{font-family:inherit;}
   textarea{resize:none;}
-  button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #D62828;outline-offset:2px;}
+  button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--botao-primario-borda, #D62828);outline-offset:2px;}
   /* Feedback tátil consistente em todo botão clicável — sem isso o app parece estático ao toque. */
   button{-webkit-tap-highlight-color:transparent;transition:transform .12s ease;}
   button:active{transform:scale(.96);}
@@ -35,7 +35,6 @@
   @media (hover:hover){ .bf-card:hover{transform:translateY(-3px);filter:brightness(1.015);} }
   @keyframes bfUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   @keyframes bfRing{to{transform:rotate(360deg);}}
-  @keyframes bfPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.12);}}
   @keyframes bfSlideIn{from{opacity:0;transform:translateX(16px);}to{opacity:1;transform:translateX(0);}}
   @keyframes bfBadgePop{0%{transform:scale(1);}40%{transform:scale(1.5);}100%{transform:scale(1);}}
   /* Animação de entrada dos cards de produto — entram em cascata (stagger por ordem na grade/lista). */
@@ -55,7 +54,7 @@
   .bf-promo-slide{flex:none;padding:22px;display:flex;align-items:center;gap:12px;color:#FFF3DC;min-height:148px;}
   .bf-promo-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:6px;}
   .bf-promo-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,243,220,.45);border:none;cursor:pointer;padding:0;transition:width .25s ease,background .25s ease;}
-  .bf-promo-dot[aria-current="true"]{width:18px;border-radius:4px;background:#FFF3DC;}
+  .bf-promo-dot[aria-current="true"]{width:18px;border-radius:4px;background:var(--cor-fundo-secundaria, #FFF3DC);}
   /* Texto mais legível: parágrafos sem line-height explícito ganham respiro melhor por padrão. */
   p{line-height:1.5;}
   /* Mapa OpenStreetMap (Leaflet) — moldura consistente com o resto do app. */
@@ -66,12 +65,11 @@
      o modo de emulação do DevTools sem recarregar a página). */
   @media (max-width:859px){ #bf-top-nav{display:none!important;} }
   @media (min-width:860px){ #bf-bottom-nav{display:none!important;} }
-  .bf-courier-pin{width:42px;height:42px;border-radius:50%;background:#D62828;border:3px solid #fff;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 6px 14px rgba(0,0,0,.25);animation:bfPulse 1.8s ease-in-out infinite;}
-  .bf-dest-pin{width:30px;height:30px;border-radius:50%;background:#F2B705;border:3px solid #fff;display:flex;align-items:center;justify-content:center;color:#7A1209;box-shadow:0 4px 10px rgba(0,0,0,.2);}
+  .bf-dest-pin{width:30px;height:30px;border-radius:50%;background:var(--cor-secundaria, #F2B705);border:3px solid #fff;display:flex;align-items:center;justify-content:center;color:#7A1209;box-shadow:0 4px 10px rgba(0,0,0,.2);}
 </style>
 </helmet>
 
-<div style="{{ rootStyle }}">
+<div data-bf-app-root style="{{ rootStyle }}">
 <div style="{{ shellStyle }}">
 
 <!-- ===================== SPLASH ===================== -->
@@ -83,7 +81,7 @@
 
 <!-- ===================== TOP NAV (desktop main tabs) ===================== -->
 <sc-if value="{{ showTop }}" hint-placeholder-val="{{ false }}">
-<div id="bf-top-nav" style="display:flex;align-items:center;gap:18px;padding:16px 26px;background:#F2B705;color:#7A1209;flex:none;">
+<div id="bf-top-nav" style="display:flex;align-items:center;gap:18px;padding:16px 26px;background:var(--header-fundo, #F2B705);color:#7A1209;flex:none;">
   <div style="display:flex;align-items:center;gap:12px;margin-right:8px;">
     <div style="width:42px;height:42px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div>
     <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:.01em;white-space:nowrap;">Bel do Frango</span>
@@ -96,16 +94,16 @@
     </button>
     <sc-if value="{{ hamburgerOpen }}" hint-placeholder-val="{{ false }}">
     <div style="position:absolute;top:calc(100% + 10px);left:0;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:18px;box-shadow:0 10px 30px rgba(29,16,9,.14);padding:8px;min-width:170px;z-index:200;animation:bfSlideIn .18s cubic-bezier(.16,1,.3,1);">
-      <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#1D1009;text-align:left;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Início
       </button>
-      <button onClick="{{ goMenu }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#1D1009;text-align:left;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2Z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+      <button onClick="{{ goMenu }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2Z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
         {{ labelCardapio }}
       </button>
-      <button onClick="{{ goConta }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:#1D1009;text-align:left;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
+      <button onClick="{{ goConta }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
         Conta
       </button>
     </div>
@@ -120,48 +118,48 @@
     <button onClick="{{ goConta }}" style="{{ topContaStyle }}">Conta</button>
   </div>
   </sc-if>
-  <button onClick="{{ goCart }}" aria-label="Carrinho" style="margin-left:auto;position:relative;display:flex;align-items:center;gap:9px;background:#D62828;color:#fff;border:none;border-radius:14px;padding:10px 16px;font-weight:700;cursor:pointer;">
+  <button onClick="{{ goCart }}" aria-label="Carrinho" style="margin-left:auto;position:relative;display:flex;align-items:center;gap:9px;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:14px;padding:10px 16px;font-weight:700;cursor:pointer;">
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     <span style="font-family:'DM Mono',monospace;font-size:13px;">{{ cartTotalFmt }}</span>
-    <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-7px;min-width:21px;height:21px;padding:0 5px;border-radius:11px;background:#B5161C;color:#F2C078;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #C0271A;">{{ cartCount }}</span></sc-if>
+    <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-7px;min-width:21px;height:21px;padding:0 5px;border-radius:11px;background:var(--cor-primaria, #B5161C);color:#F2C078;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #C0271A;">{{ cartCount }}</span></sc-if>
   </button>
 </div>
 </sc-if>
 
 <!-- ===================== SCROLL AREA ===================== -->
 <sc-if value="{{ isMainTab }}" hint-placeholder-val="{{ false }}">
-<div ref="{{ setMain }}" style="flex:1;overflow-y:auto;overflow-x:hidden;background:#FFF6D6;">
+<div ref="{{ setMain }}" style="flex:1;overflow-y:auto;overflow-x:hidden;background:var(--cor-fundo, #FFF6D6);">
 
 <!-- ---------- HOME ---------- -->
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Home" style="animation:bfSlideIn .22s cubic-bezier(.16,1,.3,1);padding-bottom:18px;">
 <div style="{{ pageWrap }}">
-  <div style="background:#F2B705;color:#7A1209;padding:calc(16px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 26px 26px;">
+  <div style="background:var(--header-fundo, #F2B705);color:#7A1209;padding:calc(16px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 26px 26px;">
     <div style="display:flex;align-items:center;gap:12px;">
-      <div style="width:44px;height:44px;border-radius:50%;background:#FFF3DC;border:2px solid #F2C078;flex:none;display:flex;align-items:center;justify-content:center;color:#B5161C;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></div>
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--cor-fundo-secundaria, #FFF3DC);border:2px solid #F2C078;flex:none;display:flex;align-items:center;justify-content:center;color:var(--header-cor-icone-usuario, #B5161C);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></div>
       <div style="flex:1;min-width:0;">
-        <div style="font-size:13px;color:#8A1C12;font-weight:600;">{{ saudacao }}</div>
-        <button onClick="{{ goCadastro }}" aria-label="Alterar endereço de entrega" style="display:flex;align-items:center;gap:5px;background:none;border:none;color:#7A1209;padding:2px 0 0;cursor:pointer;font-weight:700;font-size:14px;">
+        <div style="font-size:13px;color:var(--header-cor-saudacao, #8A1C12);font-weight:600;">{{ saudacao }}</div>
+        <button onClick="{{ goCadastro }}" aria-label="Alterar endereço de entrega" style="display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--header-cor-localizacao, #7A1209);padding:2px 0 0;cursor:pointer;font-weight:700;font-size:14px;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
           <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">Entregar em: {{ enderecoCurto }}</span>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
       </div>
-      <button onClick="{{ onBell }}" aria-label="Notificações" style="position:relative;width:42px;height:42px;border-radius:14px;background:rgba(122,18,9,.12);border:none;color:#7A1209;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;">
+      <button onClick="{{ onBell }}" aria-label="Notificações" style="position:relative;width:42px;height:42px;border-radius:14px;background:rgba(122,18,9,.12);border:none;color:var(--header-cor-localizacao, #7A1209);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
-        <span style="position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:#B5161C;border:2px solid #F2B705;"></span>
+        <span style="position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--header-cor-notificacao, #B5161C);border:2px solid var(--header-fundo, #F2B705);"></span>
       </button>
     </div>
-    <div style="margin-top:16px;display:flex;align-items:center;gap:10px;background:#FFF6D6;border-radius:16px;padding:0 14px;height:50px;">
+    <div style="margin-top:16px;display:flex;align-items:center;gap:10px;background:var(--cor-fundo, #FFF6D6);border-radius:16px;padding:0 14px;height:50px;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="O que você tá com vontade?" aria-label="Buscar no cardápio" style="flex:1;border:none;background:none;font-size:15px;color:#B5161C;outline:none;"/>
-      <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goMenu }}" style="background:#D62828;color:#fff;border:none;border-radius:10px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;">Ver</button></sc-if>
+      <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="O que você tá com vontade?" aria-label="Buscar no cardápio" style="flex:1;border:none;background:none;font-size:15px;color:var(--cor-primaria, #B5161C);outline:none;"/>
+      <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goMenu }}" style="background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:10px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;">Ver</button></sc-if>
     </div>
   </div>
 
   <sc-if value="{{ mostrarAvisoFechado }}" hint-placeholder-val="{{ false }}">
   <div style="margin:14px 18px 0;background:#FBEAE8;border:1px solid #F0B8B0;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <div>
       <div style="font-weight:800;font-size:14px;color:#7A1209;">Loja fechada no momento</div>
       <div style="font-size:12.5px;color:#8A1C12;">Dá pra navegar pelo cardápio, mas o pedido só é aceito dentro do horário de funcionamento.</div>
@@ -178,7 +176,7 @@
             <span style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.18em;color:#F2C078;text-transform:uppercase;">{{ slide.eyebrow }}</span>
             <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:23px;margin:6px 0 4px;line-height:1.15;white-space:pre-line;">{{ slide.title }}</h3>
             <p style="margin:0 0 14px;font-size:13px;color:#F2C078;">{{ slide.sub }}</p>
-            <button onClick="{{ slide.onCta }}" style="background:#F2B705;color:#7A1209;border:none;border-radius:13px;padding:11px 18px;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap;">{{ slide.ctaLabel }}</button>
+            <button onClick="{{ slide.onCta }}" style="background:var(--cor-secundaria, #F2B705);color:#7A1209;border:none;border-radius:13px;padding:11px 18px;font-weight:800;font-size:14px;cursor:pointer;white-space:nowrap;">{{ slide.ctaLabel }}</button>
           </div>
           <sc-if value="{{ slide.isLogoIcon }}" hint-placeholder-val="{{ false }}"><div style="width:88px;height:88px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div></sc-if>
           <sc-if value="{{ slide.hasEmojiIcon }}" hint-placeholder-val="{{ false }}"><span style="font-size:54px;flex:none;line-height:1;">{{ slide.emojiIcon }}</span></sc-if>
@@ -193,7 +191,7 @@
   </div>
 
   <!-- monte sua marmita (card todo clicável; montar o pedido acontece no Cardápio) -->
-  <div data-feature="marmita" onClick="{{ goMarmitasTab }}" style="margin:14px 18px 0;border-radius:24px;background:linear-gradient(120deg,#F2B705 0%,#E89A3C 100%);color:#7A1209;padding:18px 22px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+  <div data-feature="marmita" onClick="{{ goMarmitasTab }}" style="margin:14px 18px 0;border-radius:24px;background:linear-gradient(120deg,var(--cor-secundaria, #F2B705) 0%,#E89A3C 100%);color:#7A1209;padding:18px 22px;display:flex;align-items:center;gap:12px;cursor:pointer;">
     <img src="assets/marmita.webp" alt="" style="width:78px;height:78px;flex:none;object-fit:contain;"/>
     <div style="flex:1;min-width:0;">
       <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0 0 2px;">Monte sua marmita</h3>
@@ -204,13 +202,13 @@
 
   <!-- categories -->
   <div style="display:flex;align-items:baseline;justify-content:space-between;padding:24px 18px 12px;">
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;color:#B5161C;">Categorias</h2>
+    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;color:var(--cor-primaria, #B5161C);">Categorias</h2>
   </div>
   <div style="{{ categoriesRowStyle }}">
     <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="5">
       <button onClick="{{ cat.onClick }}" style="flex:none;display:flex;flex-direction:column;align-items:center;gap:9px;background:none;border:none;cursor:pointer;width:72px;">
         <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;overflow:hidden;border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);"><img src="{{ cat.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:#FFF3DC;border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-4.5-4.5a2 2 0 0 0-2.8 0L5 19"/></svg></div></sc-if>
+        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-4.5-4.5a2 2 0 0 0-2.8 0L5 19"/></svg></div></sc-if>
         <span style="font-size:12px;font-weight:600;color:#C0271A;text-align:center;line-height:1.1;">{{ cat.label }}</span>
       </button>
     </sc-for>
@@ -219,7 +217,7 @@
   <!-- mais pedidos -->
   <div style="display:flex;align-items:baseline;justify-content:space-between;padding:26px 18px 12px;">
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;">Mais pedidos hoje</h2>
-    <button onClick="{{ goMenu }}" style="background:none;border:none;color:#D62828;font-weight:700;font-size:13px;cursor:pointer;padding:8px 6px;margin:-8px -6px;">Ver tudo</button>
+    <button onClick="{{ goMenu }}" style="background:none;border:none;color:var(--botao-primario-fundo, #D62828);font-weight:700;font-size:13px;cursor:pointer;padding:8px 6px;margin:-8px -6px;">Ver tudo</button>
   </div>
   <div style="{{ gridStyle }}">
     <sc-for list="{{ homeFeatured }}" as="p" hint-placeholder-count="4">
@@ -231,17 +229,17 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
             <span style="font-family:'DM Mono',monospace;font-size:12px;color:#8C8075;">{{ p.rating }}</span>
           </div>
-          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15.5px;margin:0 0 3px;line-height:1.2;color:#B5161C;">{{ p.name }}</h3>
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15.5px;margin:0 0 3px;line-height:1.2;color:var(--card-cor-titulo, #B5161C);">{{ p.name }}</h3>
           <p style="{{ p.descStyle }}">{{ p.desc }}</p>
           <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;">{{ p.priceFmt }}</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:var(--botao-primario-fundo, #D62828);">{{ p.priceFmt }}</span>
             <div style="display:flex;align-items:center;gap:7px;">
               <sc-if value="{{ p.hasAdicionais }}" hint-placeholder-val="{{ false }}">
-                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2"/><path d="M12 6h8"/><circle cx="16" cy="12" r="2"/><path d="M4 12h10"/><circle cx="8" cy="18" r="2"/><path d="M12 18h8"/></svg>
                 </button>
               </sc-if>
-              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:#D62828;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
+              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:var(--botao-primario-fundo, #D62828);border:none;color:var(--botao-primario-texto, #fff);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </button>
             </div>
@@ -258,7 +256,7 @@
 <sc-if value="{{ isMenu }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Cardapio" style="animation:bfSlideIn .22s cubic-bezier(.16,1,.3,1);padding-bottom:18px;">
 <div style="{{ pageWrap }}">
-  <div style="position:sticky;top:0;z-index:5;background:#FFF6D6;padding:calc(16px + env(safe-area-inset-top)) 18px 6px;">
+  <div style="position:sticky;top:0;z-index:5;background:var(--cor-fundo, #FFF6D6);padding:calc(16px + env(safe-area-inset-top)) 18px 6px;">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
       <div style="width:40px;height:40px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
       <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;margin:0;flex:1;">{{ labelCardapio }}</h1>
@@ -289,7 +287,7 @@
             <div style="flex:1;min-width:0;">
               <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;margin:0 0 3px;">{{ m.nome }}</h3>
               <p style="margin:0;font-size:13px;color:#8C8075;">{{ m.subtitulo }}</p>
-              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;margin-top:6px;display:block;">{{ m.priceFmt }}</span>
+              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:var(--botao-primario-fundo, #D62828);margin-top:6px;display:block;">{{ m.priceFmt }}</span>
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
@@ -304,20 +302,20 @@
           <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#A01818;opacity:.75;letter-spacing:.06em;">{{ p.tileLabel }}</span></div></sc-if>
           <div style="{{ p.bodyStyle }}">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
-              <sc-if value="{{ p.hasTag }}" hint-placeholder-val="{{ false }}"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#D62828;background:#FFF3DC;border:1px solid #F2C078;border-radius:6px;padding:2px 6px;">{{ p.tag }}</span></sc-if>
+              <sc-if value="{{ p.hasTag }}" hint-placeholder-val="{{ false }}"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--botao-primario-fundo, #D62828);background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:6px;padding:2px 6px;">{{ p.tag }}</span></sc-if>
               <span style="display:flex;align-items:center;gap:3px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span style="font-family:'DM Mono',monospace;font-size:11px;color:#8C8075;">{{ p.rating }}</span></span>
             </div>
             <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16.5px;margin:0 0 3px;line-height:1.2;">{{ p.name }}</h3>
             <p style="{{ p.descStyle }}">{{ p.desc }}</p>
             <div style="margin-top:9px;display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;">{{ p.priceFmt }}</span>
+              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:var(--botao-primario-fundo, #D62828);">{{ p.priceFmt }}</span>
               <div style="display:flex;align-items:center;gap:7px;">
               <sc-if value="{{ p.hasAdicionais }}" hint-placeholder-val="{{ false }}">
-                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2"/><path d="M12 6h8"/><circle cx="16" cy="12" r="2"/><path d="M4 12h10"/><circle cx="8" cy="18" r="2"/><path d="M12 18h8"/></svg>
                 </button>
               </sc-if>
-              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:#D62828;border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
+              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:var(--botao-primario-fundo, #D62828);border:none;color:var(--botao-primario-texto, #fff);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </button>
               </div>
@@ -345,14 +343,14 @@
 
   <sc-if value="{{ isCartEmpty }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:46px 16px;gap:18px;">
-      <div style="width:120px;height:120px;border-radius:50%;background:#FFF3DC;border:2px dashed #F2C078;display:flex;align-items:center;justify-content:center;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <div style="width:120px;height:120px;border-radius:50%;background:var(--cor-fundo-secundaria, #FFF3DC);border:2px dashed #F2C078;display:flex;align-items:center;justify-content:center;">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       </div>
       <div>
         <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin:0 0 6px;">Tá vazio por aqui...</h2>
         <p style="margin:0;color:#8C8075;font-size:14px;max-width:260px;">O galeto tá esperando. Bora escolher?</p>
       </div>
-      <button onClick="{{ goMenu }}" style="background:#D62828;color:#fff;border:none;border-radius:15px;padding:14px 26px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.32);">Ver o cardápio completo</button>
+      <button onClick="{{ goMenu }}" style="background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:15px;padding:14px 26px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.32);">Ver o cardápio completo</button>
     </div>
   </sc-if>
 
@@ -370,11 +368,11 @@
             <sc-if value="{{ it.isMarmitaCustom }}" hint-placeholder-val="{{ false }}"><p style="margin:3px 0 0;font-size:12px;color:#8C8075;">{{ it.marmitaDesc }}</p></sc-if>
             <sc-if value="{{ it.hasObs }}" hint-placeholder-val="{{ false }}"><p style="margin:3px 0 0;font-size:12px;color:#8C8075;font-style:italic;">"{{ it.obs }}"</p></sc-if>
             <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:#D62828;">{{ it.lineFmt }}</span>
-              <div style="display:flex;align-items:center;gap:0;background:#FFF3DC;border-radius:12px;padding:3px;">
+              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:var(--botao-primario-fundo, #D62828);">{{ it.lineFmt }}</span>
+              <div style="display:flex;align-items:center;gap:0;background:var(--cor-fundo-secundaria, #FFF3DC);border-radius:12px;padding:3px;">
                 <button onClick="{{ it.onDec }}" aria-label="Diminuir" style="width:32px;height:32px;border-radius:9px;border:none;background:#fff;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.08);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                 <span style="font-family:'DM Mono',monospace;font-weight:500;min-width:30px;text-align:center;font-size:15px;">{{ it.qty }}</span>
-                <button onClick="{{ it.onInc }}" aria-label="Aumentar" style="width:32px;height:32px;border-radius:9px;border:none;background:#D62828;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                <button onClick="{{ it.onInc }}" aria-label="Aumentar" style="width:32px;height:32px;border-radius:9px;border:none;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
               </div>
             </div>
           </div>
@@ -384,7 +382,7 @@
 
     <!-- coupon -->
     <div data-feature="cupom" style="margin-top:16px;display:flex;gap:10px;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:15px;padding:4px 4px 4px 14px;">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1.4" fill="#D62828"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1.4" fill="var(--botao-primario-fundo, #D62828)"/></svg>
       <input value="{{ coupon }}" onChange="{{ onCoupon }}" placeholder="Cupom de desconto" aria-label="Cupom" style="flex:1;border:none;background:none;outline:none;font-size:14px;text-transform:uppercase;"/>
       <button onClick="{{ applyCoupon }}" style="background:#C0271A;color:#FFF3DC;border:none;border-radius:11px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Aplicar</button>
     </div>
@@ -396,9 +394,9 @@
       <div style="display:flex;justify-content:space-between;font-size:14px;color:#C0271A;margin-bottom:9px;"><span>Taxa de entrega</span><span style="font-family:'DM Mono',monospace;">{{ feeFmt }}</span></div>
       <sc-if value="{{ hasDiscount }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:14px;color:#2D9E60;margin-bottom:9px;"><span>Desconto</span><span style="font-family:'DM Mono',monospace;">-{{ discountFmt }}</span></div></sc-if>
       <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 12px;"></div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:21px;color:#D62828;">{{ totalFmt }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:21px;color:var(--botao-primario-fundo, #D62828);">{{ totalFmt }}</span></div>
     </div>
-    <button onClick="{{ goCheckout }}" style="margin-top:16px;width:100%;background:#D62828;color:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Fechar pedido</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;opacity:.9;">{{ totalFmt }}</span></button>
+    <button onClick="{{ goCheckout }}" style="margin-top:16px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Fechar pedido</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;opacity:.9;">{{ totalFmt }}</span></button>
     <button onClick="{{ goMenu }}" style="margin-top:10px;width:100%;background:none;border:none;color:#C0271A;font-weight:700;font-size:14px;cursor:pointer;padding:8px;">Continuar comprando</button>
   </sc-if>
 </div>
@@ -407,7 +405,7 @@
 <!-- ---------- CONTA ---------- -->
 <sc-if value="{{ isConta }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Conta" style="animation:bfSlideIn .22s cubic-bezier(.16,1,.3,1);padding:calc(16px + env(safe-area-inset-top)) 18px 24px;">
-  <div style="background:#FFF3DC;border:1px solid #F2C078;border-radius:26px;padding:22px 18px;text-align:center;box-shadow:0 8px 22px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;">
+  <div style="background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:26px;padding:22px 18px;text-align:center;box-shadow:0 8px 22px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;">
     <img src="assets/logo-full.png" alt="Galeteria Bel do Frango — O sabor que você ama" style="width:min(76%,250px);max-height:180px;display:block;margin:0 auto;mix-blend-mode:multiply;object-fit:contain;"/>
   </div>
   <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:22px 2px 4px;">Minha Conta</h1>
@@ -417,26 +415,26 @@
   <sc-if value="{{ temUsuario }}" hint-placeholder-val="{{ false }}">
     <div style="margin-top:16px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:18px;padding:16px;box-shadow:0 5px 14px rgba(29,16,9,.05);">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:46px;height:46px;border-radius:50%;background:#FBE3DF;color:#B5161C;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;flex:none;">{{ usuarioIniciais }}</div>
+        <div style="width:46px;height:46px;border-radius:50%;background:#FBE3DF;color:var(--cor-primaria, #B5161C);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;flex:none;">{{ usuarioIniciais }}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-weight:700;font-size:15px;color:#1D1009;">{{ usuarioNome }}</div>
+          <div style="font-weight:700;font-size:15px;color:var(--cor-texto, #1D1009);">{{ usuarioNome }}</div>
           <div style="font-size:12px;color:#8C8075;">{{ usuarioContato }}</div>
         </div>
-        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:#D62828;font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Editar</button>
+        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:var(--botao-primario-fundo, #D62828);font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Editar</button>
       </div>
       <sc-if value="{{ temEndereco }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:12px;padding-top:12px;border-top:1px dashed rgba(29,16,9,.12);display:flex;gap:10px;align-items:flex-start;">
-          <span style="color:#D62828;flex:none;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <span style="color:var(--botao-primario-fundo, #D62828);flex:none;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
           <div style="font-size:13px;color:#6B2E12;line-height:1.4;"><strong>Endereço salvo: </strong>{{ usuarioEndereco }}</div>
         </div>
       </sc-if>
     </div>
   </sc-if>
   <sc-if value="{{ semUsuario }}" hint-placeholder-val="{{ true }}">
-    <button onClick="{{ goCadastro }}" style="margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px dashed #D62828;border-radius:18px;padding:16px;cursor:pointer;text-align:left;">
-      <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
+    <button onClick="{{ goCadastro }}" style="margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px dashed var(--botao-primario-fundo, #D62828);border-radius:18px;padding:16px;cursor:pointer;text-align:left;">
+      <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
       <span style="flex:1;min-width:0;">
-        <span style="display:block;font-weight:700;font-size:14px;color:#B5161C;">Criar conta (opcional)</span>
+        <span style="display:block;font-weight:700;font-size:14px;color:var(--cor-primaria, #B5161C);">Criar conta (opcional)</span>
         <span style="display:block;font-size:12px;color:#8C8075;margin-top:2px;">Salve seu endereço e peça de novo em 1 clique</span>
       </span>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -446,8 +444,8 @@
   <div style="margin-top:18px;display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:18px;overflow:hidden;box-shadow:0 5px 14px rgba(29,16,9,.05);">
     <sc-for list="{{ contaRows }}" as="r" hint-placeholder-count="4">
       <button onClick="{{ r.onClick }}" style="display:flex;align-items:center;gap:14px;background:none;border:none;border-bottom:1px solid rgba(29,16,9,.05);padding:16px 16px;cursor:pointer;text-align:left;width:100%;">
-        <span style="width:38px;height:38px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;">{{ r.icon }}</span>
-        <span style="flex:1;font-weight:600;font-size:15px;color:#B5161C;">{{ r.label }}</span>
+        <span style="width:38px;height:38px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;">{{ r.icon }}</span>
+        <span style="flex:1;font-weight:600;font-size:15px;color:var(--cor-primaria, #B5161C);">{{ r.label }}</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </sc-for>
@@ -462,9 +460,9 @@
 
 <!-- ===================== FLOW: CADASTRO (opcional) ===================== -->
 <sc-if value="{{ isCadastro }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Cadastro" style="height:100%;display:flex;flex-direction:column;background:#FFF6D6;animation:bfUp .24s ease-out;">
-  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:#FFF6D6;flex:none;">
-    <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+<div data-screen-label="Cadastro" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
+    <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">{{ cadastroTitulo }}</h1>
   </div>
   <div style="flex:1;overflow-y:auto;padding:8px 18px 18px;">
@@ -514,18 +512,18 @@
     </sc-if>
     <div style="height:14px;"></div>
   </div>
-  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:#FFF6D6;border-top:1px solid rgba(29,16,9,.06);">
-    <button onClick="{{ salvarCadastro }}" style="width:100%;background:#D62828;color:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);">Salvar cadastro</button>
+  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);">
+    <button onClick="{{ salvarCadastro }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);">Salvar cadastro</button>
   </div>
 </div>
 </sc-if>
 
 <!-- ===================== FLOW: BAIRRO (obrigatório após o splash, na 1ª vez) ===================== -->
 <sc-if value="{{ isBairroScreen }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Bairro" style="height:100%;display:flex;flex-direction:column;background:#FFF6D6;animation:bfUp .24s ease-out;">
-  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:#FFF6D6;flex:none;">
+<div data-screen-label="Bairro" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
     <sc-if value="{{ mostrarVoltarBairro }}" hint-placeholder-val="{{ false }}">
-      <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     </sc-if>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">Escolha seu bairro</h1>
   </div>
@@ -540,7 +538,7 @@
       </sc-for>
     </div>
   </div>
-  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:#FFF6D6;border-top:1px solid rgba(29,16,9,.06);">
+  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);">
     <button onClick="{{ confirmarBairro }}" disabled="{{ bairroConfirmDisabled }}" style="{{ bairroConfirmStyle }}">Confirmar</button>
   </div>
 </div>
@@ -548,44 +546,44 @@
 
 <!-- ===================== FLOW: MONTE SUA MARMITA ===================== -->
 <sc-if value="{{ isMarmita }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Marmita" style="height:100%;display:flex;flex-direction:column;background:#FFF6D6;animation:bfUp .24s ease-out;">
-  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:#FFF6D6;flex:none;">
-    <button onClick="{{ goMenu }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+<div data-screen-label="Marmita" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
+    <button onClick="{{ goMenu }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">{{ marmitaNomeTitulo }}</h1>
   </div>
   <div style="flex:1;overflow-y:auto;padding:8px 18px 18px;">
     <div style="display:flex;align-items:center;gap:9px;margin:12px 0 8px;">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0;color:#C0271A;flex:1;">Escolha {{ marmitaProteinasLabel }}</h2>
-      <button onClick="{{ onFalarTituloProteinas }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+      <button onClick="{{ onFalarTituloProteinas }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <sc-for list="{{ marmitaProteinaOptions }}" as="o" hint-placeholder-count="4">
         <button onClick="{{ o.onClick }}" style="{{ o.style }}">
-          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
+          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
           <span style="flex:1;">{{ o.nome }}</span>
           <sc-if value="{{ o.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border-radius:7px;padding:3px 8px;flex:none;">Esgotado</span></sc-if>
-          <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
+          <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
         </button>
       </sc-for>
     </div>
     <div style="display:flex;align-items:center;gap:9px;margin:22px 0 8px;">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0;color:#C0271A;flex:1;">Complementos (escolha quantos quiser)</h2>
-      <button onClick="{{ onFalarTituloComplementos }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+      <button onClick="{{ onFalarTituloComplementos }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <sc-for list="{{ marmitaComplementoOptions }}" as="o" hint-placeholder-count="6">
         <button onClick="{{ o.onClick }}" style="{{ o.style }}">
-          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
+          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
           <span style="flex:1;">{{ o.nome }}</span>
           <sc-if value="{{ o.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border-radius:7px;padding:3px 8px;flex:none;">Esgotado</span></sc-if>
-          <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
+          <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
         </button>
       </sc-for>
     </div>
     <div style="height:14px;"></div>
   </div>
-  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:#FFF6D6;border-top:1px solid rgba(29,16,9,.06);">
-    <button onClick="{{ adicionarMarmitaAoCarrinho }}" style="width:100%;background:#D62828;color:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;">
+  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);">
+    <button onClick="{{ adicionarMarmitaAoCarrinho }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;">
       <span>Adicionar ao carrinho</span><span style="font-family:'DM Mono',monospace;font-size:18px;">{{ marmitaPriceFmt }}</span>
     </button>
   </div>
@@ -594,19 +592,19 @@
 
 <!-- ===================== FLOW: PRODUTO ===================== -->
 <sc-if value="{{ isProduct }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Produto" style="height:100%;display:flex;flex-direction:column;background:#FFF6D6;animation:bfUp .24s ease-out;">
+<div data-screen-label="Produto" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
   <div style="flex:1;overflow-y:auto;">
     <div style="{{ heroStyle }}">
       <div style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;right:16px;display:flex;justify-content:space-between;z-index:2;">
-        <button onClick="{{ goBack }}" aria-label="Voltar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button onClick="{{ toggleFav }}" aria-label="Favoritar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="21" height="21" viewBox="0 0 24 24" fill="{{ favFill }}" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        <button onClick="{{ goBack }}" aria-label="Voltar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button onClick="{{ toggleFav }}" aria-label="Favoritar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="21" height="21" viewBox="0 0 24 24" fill="{{ favFill }}" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
       </div>
       <sc-if value="{{ pHasFoto }}" hint-placeholder-val="{{ false }}"><img src="{{ pFotoSrc }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;"/></sc-if>
       <sc-if value="{{ pSemFoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:'DM Mono',monospace;font-size:11px;color:#A01818;letter-spacing:.1em;background:rgba(255,249,238,.85);padding:6px 12px;border-radius:20px;">FOTO DO PRATO</span></sc-if>
     </div>
     <div style="padding:20px 20px 0;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-        <span style="display:flex;align-items:center;gap:4px;background:#FFF3DC;border:1px solid #F2C078;border-radius:9px;padding:4px 9px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span style="font-family:'DM Mono',monospace;font-size:12px;color:#C0271A;">{{ pRating }}</span></span>
+        <span style="display:flex;align-items:center;gap:4px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:9px;padding:4px 9px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span style="font-family:'DM Mono',monospace;font-size:12px;color:#C0271A;">{{ pRating }}</span></span>
         <span style="font-size:12px;color:#8C8075;">{{ pCat }}</span>
       </div>
       <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;margin:0 0 10px;line-height:1.12;">{{ pName }}</h1>
@@ -623,9 +621,9 @@
         <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Quantidade</h2>
         <div style="display:flex;align-items:center;gap:14px;">
           <div style="display:flex;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.1);border-radius:14px;padding:5px;">
-            <button onClick="{{ decDetail }}" aria-label="Diminuir" style="width:42px;height:42px;border-radius:11px;border:none;background:#FFF3DC;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button onClick="{{ decDetail }}" aria-label="Diminuir" style="width:42px;height:42px;border-radius:11px;border:none;background:var(--cor-fundo-secundaria, #FFF3DC);color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
             <span style="font-family:'DM Mono',monospace;font-weight:500;min-width:44px;text-align:center;font-size:19px;">{{ detailQty }}</span>
-            <button onClick="{{ incDetail }}" aria-label="Aumentar" style="width:42px;height:42px;border-radius:11px;border:none;background:#D62828;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button onClick="{{ incDetail }}" aria-label="Aumentar" style="width:42px;height:42px;border-radius:11px;border:none;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
           </div>
           <span style="color:#8C8075;font-size:13px;">{{ pUnitFmt }}</span>
         </div>
@@ -642,12 +640,12 @@
       </sc-if>
 
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Observações</h2>
-      <textarea value="{{ detailObs }}" onChange="{{ onObs }}" placeholder="Ex: sem cebola, ponto da carne, troco para R$ 100..." aria-label="Observações do pedido" rows="3" style="width:100%;border:1px solid rgba(29,16,9,.12);background:#fff;border-radius:14px;padding:13px;font-size:14px;color:#B5161C;outline:none;line-height:1.4;"></textarea>
+      <textarea value="{{ detailObs }}" onChange="{{ onObs }}" placeholder="Ex: sem cebola, ponto da carne, troco para R$ 100..." aria-label="Observações do pedido" rows="3" style="width:100%;border:1px solid rgba(29,16,9,.12);background:#fff;border-radius:14px;padding:13px;font-size:14px;color:var(--cor-primaria, #B5161C);outline:none;line-height:1.4;"></textarea>
       <div style="height:14px;"></div>
     </div>
   </div>
-  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:#FFF6D6;border-top:1px solid rgba(29,16,9,.06);box-shadow:0 -6px 18px rgba(29,16,9,.05);">
-    <button onClick="{{ addDetail }}" style="width:100%;background:#D62828;color:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 24px rgba(214,40,40,.32);">
+  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);box-shadow:0 -6px 18px rgba(29,16,9,.05);">
+    <button onClick="{{ addDetail }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 24px rgba(214,40,40,.32);">
       <span style="display:flex;align-items:center;gap:9px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Adicionar</span>
       <span style="font-family:'DM Mono',monospace;font-size:18px;">{{ detailTotalFmt }}</span>
     </button>
@@ -657,9 +655,9 @@
 
 <!-- ===================== FLOW: CHECKOUT ===================== -->
 <sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Checkout" style="height:100%;display:flex;flex-direction:column;background:#FFF6D6;animation:bfUp .24s ease-out;">
-  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:#FFF6D6;flex:none;">
-    <button onClick="{{ goCart }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+<div data-screen-label="Checkout" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
+    <button onClick="{{ goCart }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">Finalizar pedido</h1>
     <div style="width:36px;height:36px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
   </div>
@@ -671,17 +669,17 @@
 
     <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:18px 0 8px;color:#C0271A;">Endereço de entrega</h2>
-      <div style="display:flex;gap:12px;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <span style="width:40px;height:40px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+      <div style="display:flex;gap:12px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
         <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">{{ enderecoTitulo }}</div><div style="font-size:13px;color:#8C8075;">{{ enderecoSub }}</div></div>
-        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:#D62828;font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Trocar</button>
+        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:var(--botao-primario-fundo, #D62828);font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Trocar</button>
       </div>
     </sc-if>
 
     <sc-if value="{{ isPedidoRetirada }}" hint-placeholder-val="{{ false }}">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:18px 0 8px;color:#C0271A;">Retirar no local</h2>
-      <div style="display:flex;gap:12px;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <span style="width:40px;height:40px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg></span>
+      <div style="display:flex;gap:12px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg></span>
         <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">Bel do Frango</div><div style="font-size:13px;color:#8C8075;">{{ enderecoLoja }}</div></div>
       </div>
     </sc-if>
@@ -689,26 +687,26 @@
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Forma de pagamento</h2>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <button onClick="{{ setPix }}" aria-pressed="{{ pixPressed }}" style="{{ pixStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#2D9E60;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3z"/><path d="M20 14v3M14 20h6M20 20v.01"/></svg></span>
+        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#2D9E60;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3z"/><path d="M20 14v3M14 20h6M20 20v.01"/></svg></span>
         <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Pix</span><span style="font-size:12px;color:#2D9E60;font-weight:600;">Aprovação na hora • recomendado</span></span>
         <span style="{{ pixRadio }}"></span>
       </button>
       <button onClick="{{ setCard }}" aria-pressed="{{ cardPressed }}" style="{{ cardStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
         <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Cartão na entrega</span><span style="font-size:12px;color:#8C8075;">Crédito ou débito</span></span>
         <span style="{{ cardRadio }}"></span>
       </button>
       <button onClick="{{ setDinheiro }}" aria-pressed="{{ dinheiroPressed }}" style="{{ dinheiroStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#A8730B;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></span>
+        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#A8730B;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></span>
         <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Dinheiro na entrega</span><span style="font-size:12px;color:#8C8075;">Pague em espécie ao entregador</span></span>
         <span style="{{ dinheiroRadio }}"></span>
       </button>
     </div>
 
     <sc-if value="{{ isDinheiroSelecionado }}" hint-placeholder-val="{{ false }}">
-      <div style="margin-top:10px;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+      <div style="margin-top:10px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
         <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Precisa de troco para quanto? (opcional)</label>
-        <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="Ex: 100,00" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;color:#1D1009;outline:none;"/>
+        <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="Ex: 100,00" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;color:var(--cor-texto, #1D1009);outline:none;"/>
         <sc-if value="{{ hasTroco }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;">
             <span style="font-weight:700;font-size:13px;color:{{ trocoColor }}">{{ trocoLabel }}</span>
@@ -719,17 +717,17 @@
     </sc-if>
 
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Resumo do pedido</h2>
-    <div style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+    <div style="background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.06));border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
       <sc-for list="{{ cartLines }}" as="it" hint-placeholder-count="2">
-        <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;"><span style="color:#B5161C;">{{ it.qty }}× {{ it.name }}</span><span style="font-family:'DM Mono',monospace;color:#C0271A;">{{ it.lineFmt }}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;"><span style="color:var(--cor-primaria, #B5161C);">{{ it.qty }}× {{ it.name }}</span><span style="font-family:'DM Mono',monospace;color:#C0271A;">{{ it.lineFmt }}</span></div>
       </sc-for>
       <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 10px;"></div>
       <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#8C8075;margin-bottom:6px;"><span>Taxa de entrega</span><span style="font-family:'DM Mono',monospace;">{{ feeFmt }}</span></div></sc-if>
       <sc-if value="{{ hasDiscount }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#2D9E60;margin-bottom:6px;"><span>Desconto</span><span style="font-family:'DM Mono',monospace;">-{{ discountFmt }}</span></div></sc-if>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:20px;color:#D62828;">{{ totalFmt }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:20px;color:var(--botao-primario-fundo, #D62828);">{{ totalFmt }}</span></div>
     </div>
   </div>
-  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:#FFF6D6;border-top:1px solid rgba(29,16,9,.06);">
+  <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);">
     <button onClick="{{ placeOrder }}" style="width:100%;background:#2D9E60;color:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(45,158,96,.3);display:flex;align-items:center;justify-content:center;gap:10px;">
       <sc-if value="{{ placing }}" hint-placeholder-val="{{ false }}"><span style="width:19px;height:19px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:bfRing .7s linear infinite;"></span></sc-if>
       {{ confirmLabel }}
@@ -740,20 +738,23 @@
 
 <!-- ===================== FLOW: ACOMPANHAR PEDIDO ===================== -->
 <sc-if value="{{ isTracking }}" hint-placeholder-val="{{ false }}">
-<div data-screen-label="Acompanhar" style="height:100%;display:flex;flex-direction:column;background:#FFF6D6;animation:bfUp .24s ease-out;">
+<div data-screen-label="Acompanhar" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
   <div style="flex:1;overflow-y:auto;">
-    <!-- mapa real (OpenStreetMap via Leaflet) com a rota restaurante → endereço de entrega -->
-    <div style="position:relative;height:230px;overflow:hidden;">
-      <div class="bf-map" ref="{{ setTrackingMap }}"></div>
-      <div style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;z-index:400;">
-        <button onClick="{{ goHome }}" aria-label="Voltar ao início" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.95);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.14);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-      </div>
+    <!-- Mesmo padrão do card do entregador (entregador.html): endereço em texto + link
+         pro Google Maps, sem geocodificação própria — não depende do Nominatim achar a
+         rua, então não diverge do que o entregador vê pro mesmo pedido (ver fix anterior). -->
+    <div style="position:relative;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;background:#7A1209;">
+      <button onClick="{{ goHome }}" aria-label="Voltar ao início" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.95);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.14);margin-bottom:14px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <a href="{{ trackingMapsUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--cor-fundo-secundaria, #FFF3DC);color:#7A1209;border-radius:14px;padding:13px;font-weight:700;font-size:14px;text-decoration:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+        Ver endereço de entrega no Mapa
+      </a>
     </div>
 
     <div style="padding:0 18px;margin-top:-24px;position:relative;">
       <div style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(29,16,9,.1);">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span style="display:flex;align-items:center;gap:6px;background:#FFF3DC;color:#D62828;border-radius:9px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>{{ etaText }}</span>
+          <span style="display:flex;align-items:center;gap:6px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);border-radius:9px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>{{ etaText }}</span>
           <span style="font-size:12px;color:#8C8075;">Pedido {{ orderId }}</span>
         </div>
         <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:12px 0 18px;">{{ statusTitle }}</h1>
@@ -784,7 +785,7 @@
         <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:15px;">{{ entregadorNome }}</div><div style="font-size:12px;color:#8C8075;">Seu entregador</div></div>
       </div>
       </sc-if>
-      <button onClick="{{ goMenu }}" style="margin-top:14px;width:100%;background:#D62828;color:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);">Continuar comprando</button>
+      <button onClick="{{ goMenu }}" style="margin-top:14px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);">Continuar comprando</button>
       <button onClick="{{ noop }}" style="margin:10px 0 22px;width:100%;background:none;border:1px solid rgba(29,16,9,.14);border-radius:14px;padding:14px;font-weight:700;font-size:14px;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Preciso de ajuda</button>
     </div>
   </div>
@@ -793,25 +794,25 @@
 
 <!-- ===================== BOTTOM NAV (mobile main tabs) ===================== -->
 <sc-if value="{{ showBottom }}" hint-placeholder-val="{{ false }}">
-<div id="bf-bottom-nav" style="display:flex;background:#fff;border-top:1px solid rgba(29,16,9,.07);padding:8px 6px calc(8px + env(safe-area-inset-bottom));flex:none;box-shadow:0 -4px 18px rgba(29,16,9,.05);">
+<div id="bf-bottom-nav" style="display:flex;background:var(--nav-inferior-fundo, #fff);border-top:1px solid rgba(29,16,9,.07);padding:8px 6px calc(8px + env(safe-area-inset-bottom));flex:none;box-shadow:0 -4px 18px rgba(29,16,9,.05);">
   <button onClick="{{ goHome }}" style="{{ navHomeStyle }}">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
-    <span style="font-size:11px;font-weight:600;">Início</span>
+    <span style="font-size:11px;font-weight:600;color:{{ navHomeTextStyle.color }};">Início</span>
   </button>
   <button onClick="{{ goMenu }}" style="{{ navMenuStyle }}">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a3 3 0 0 1 3 3v13a2.5 2.5 0 0 0-2.5-2.5H2z"/><path d="M22 4h-6a3 3 0 0 0-3 3v13a2.5 2.5 0 0 1 2.5-2.5H22z"/></svg>
-    <span style="font-size:11px;font-weight:600;">{{ labelCardapio }}</span>
+    <span style="font-size:11px;font-weight:600;color:{{ navMenuTextStyle.color }};">{{ labelCardapio }}</span>
   </button>
   <button id="bf-cart-target" onClick="{{ goCart }}" style="{{ navCartStyle }}">
     <span style="position:relative;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-9px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#D62828;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;">{{ cartCount }}</span></sc-if>
+      <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-9px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;">{{ cartCount }}</span></sc-if>
     </span>
-    <span style="font-size:11px;font-weight:600;">Carrinho</span>
+    <span style="font-size:11px;font-weight:600;color:{{ navCartTextStyle.color }};">Carrinho</span>
   </button>
   <button onClick="{{ goConta }}" style="{{ navContaStyle }}">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
-    <span style="font-size:11px;font-weight:600;">Conta</span>
+    <span style="font-size:11px;font-weight:600;color:{{ navContaTextStyle.color }};">Conta</span>
   </button>
 </div>
 </sc-if>
@@ -820,7 +821,7 @@
 <sc-if value="{{ hasAdicionaisModal }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:70;">
   <div onClick="{{ fecharAdicionaisModal }}" style="position:absolute;inset:0;background:rgba(29,16,9,.42);"></div>
-  <div style="position:absolute;left:0;right:0;bottom:0;max-height:82%;background:#FFF6D6;border-radius:22px 22px 0 0;box-shadow:0 -12px 30px rgba(29,16,9,.2);display:flex;flex-direction:column;animation:bfUp .22s cubic-bezier(.16,1,.3,1);">
+  <div style="position:absolute;left:0;right:0;bottom:0;max-height:82%;background:var(--cor-fundo, #FFF6D6);border-radius:22px 22px 0 0;box-shadow:0 -12px 30px rgba(29,16,9,.2);display:flex;flex-direction:column;animation:bfUp .22s cubic-bezier(.16,1,.3,1);">
     <div style="display:flex;align-items:center;gap:12px;padding:18px 20px 12px;border-bottom:1px solid rgba(29,16,9,.07);">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;margin:0;flex:1;">Adicionais — {{ adicionaisModalNome }}</h2>
       <button onClick="{{ fecharAdicionaisModal }}" aria-label="Fechar" style="width:34px;height:34px;border-radius:10px;background:#fff;border:none;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
@@ -830,7 +831,7 @@
         <div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(29,16,9,.06);">
           <div style="flex:1;min-width:0;">
             <div style="font-weight:700;font-size:14.5px;">{{ a.nome }}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:13px;color:#D62828;margin-top:2px;">{{ a.precoFmt }}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--botao-primario-fundo, #D62828);margin-top:2px;">{{ a.precoFmt }}</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;flex:none;">
             <button onClick="{{ a.onDec }}" aria-label="Diminuir" style="width:32px;height:32px;border-radius:9px;background:#fff;border:1px solid rgba(29,16,9,.12);color:#6B2E12;font-weight:700;font-size:17px;cursor:pointer;">−</button>
@@ -841,7 +842,7 @@
       </sc-for>
     </div>
     <div style="padding:14px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid rgba(29,16,9,.07);">
-      <button onClick="{{ confirmarAdicionaisModal }}" style="width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);display:flex;align-items:center;justify-content:space-between;padding-left:20px;padding-right:20px;box-sizing:border-box;">
+      <button onClick="{{ confirmarAdicionaisModal }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);display:flex;align-items:center;justify-content:space-between;padding-left:20px;padding-right:20px;box-sizing:border-box;">
         <span>Adicionar ao carrinho</span><span style="font-family:'DM Mono',monospace;font-size:16px;">{{ adicionaisModalTotalFmt }}</span>
       </button>
     </div>
@@ -905,7 +906,7 @@ class Component extends DCLogic {
     couponOk: false,
     pedidoTipo: 'entrega', // 'entrega' | 'retirada' — escolhido no checkout
     payment: 'pix',
-    valorRecebido: '', // só usado quando payment === 'money', pro cálculo do troco (nunca enviado à API)
+    valorRecebido: '', // só usado quando payment === 'money', pro cálculo do troco (enviado como valorTrocoPara em pedidos de entrega)
     placing: false,
     pedidoAtual: null, // { codigo, id, total } do ultimo pedido criado de verdade na API
     orderStep: 0,
@@ -989,9 +990,9 @@ class Component extends DCLogic {
   // quando existir, senão cai num gradiente de reserva (cicla pelos 3 abaixo).
   mapBanner(b, i){
     const FALLBACK_BG = [
-      'linear-gradient(120deg,#B5161C 0%,#C0271A 60%,#A01818 130%)',
-      'linear-gradient(120deg,#7A1209 0%,#B5161C 55%,#E89A3C 130%)',
-      'linear-gradient(120deg,#7A1209 0%,#A8730B 60%,#F2B705 130%)'
+      'linear-gradient(120deg,var(--cor-primaria, #B5161C) 0%,#C0271A 60%,#A01818 130%)',
+      'linear-gradient(120deg,#7A1209 0%,var(--cor-primaria, #B5161C) 55%,#E89A3C 130%)',
+      'linear-gradient(120deg,#7A1209 0%,#A8730B 60%,var(--cor-secundaria, #F2B705) 130%)'
     ];
     const fotoUrl = b.foto ? this.apiBase.replace('/api', '') + '/uploads/' + b.foto : null;
     return {
@@ -1045,8 +1046,12 @@ class Component extends DCLogic {
     const [proteinas, complementos, tamanhos] = await Promise.all([
       this.apiGet('/proteinas'), this.apiGet('/complementos'), this.apiGet('/marmita-tamanhos')
     ]);
+    // Chave é o slug ('pequena'/'grande'), não o id numérico do banco — é isso
+    // que marmitaSizeCards/abrirMarmita/marmitaSize usam pra indexar (ver
+    // hardcode ['pequena','grande'] logo abaixo). Com t.id aqui, a busca por
+    // slug nunca batia e todo tamanho caía no fallback de fábrica (R$0).
     const marmitaSizes = {};
-    tamanhos.forEach((t) => { marmitaSizes[t.id] = { nome:t.nome, proteinas:t.qtdProteinas, price:t.preco }; });
+    tamanhos.forEach((t) => { marmitaSizes[t.slug] = { nome:t.nome, proteinas:t.qtdProteinas, price:t.preco }; });
     this.setState({ marmitaConfig: { proteinas, complementos, marmitaSizes } });
   }
   async carregarConfiguracao(){
@@ -1059,37 +1064,20 @@ class Component extends DCLogic {
 
   fee = 7.9; // padrão de fábrica até carregarConfiguracao() resolver
 
-  // Ponto de retirada (fixo, demonstração) usado como origem da rota no mapa de rastreamento.
+  // Ponto fixo (demonstração) usado só como centro de fallback do preview de endereço da
+  // tela de Cadastro (setCadastroMap), quando o Nominatim ainda não geocodificou nada.
   RESTAURANT_LATLNG = [-29.1685, -51.1796]; // Caxias do Sul, RS
   RESTAURANT_ENDERECO = 'Rua das Galeterias, 123 — Centro, Caxias do Sul/RS';
 
-  // Definidos como propriedades de classe (não recriados a cada render) para que o `ref` do mapa
-  // não fique trocando de identidade — senão o React desmonta/remonta o mapa Leaflet a cada re-render.
-  setTrackingMap = (el) => {
-    if (!el) {
-      if (this._trackingMap) { this._trackingMap.remove(); this._trackingMap = null; this._trackingCourier = null; }
-      return;
-    }
-    if (this._trackingMap || typeof L === 'undefined') return;
-    const restLL = this.RESTAURANT_LATLNG;
-    const destLL = this.state.cadastroLatLng || [restLL[0] + 0.012, restLL[1] + 0.016];
-    const map = L.map(el, { zoomControl:false, attributionControl:true, scrollWheelZoom:false });
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap', maxZoom:18 }).addTo(map);
-    const restIcon = L.divIcon({ html:'<div style="width:34px;height:34px;border-radius:50%;background:#fff;border:3px solid #7A1209;display:flex;align-items:center;justify-content:center;font-size:15px;box-shadow:0 4px 10px rgba(0,0,0,.2);">🍗</div>', className:'', iconSize:[34,34], iconAnchor:[17,17] });
-    const destIcon = L.divIcon({ html:'<div class="bf-dest-pin"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg></div>', className:'', iconSize:[30,30], iconAnchor:[15,15] });
-    const courierIcon = L.divIcon({ html:'<div class="bf-courier-pin"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="18.5" cy="17.5" r="3.5"/><path d="M15 17.5h-6l-2-7H4"/><path d="M9 10.5h7l-1.5 7"/><path d="M14 6h3l1 4"/></svg></div>', className:'', iconSize:[42,42], iconAnchor:[21,21] });
-    L.marker(restLL, { icon:restIcon }).addTo(map);
-    L.marker(destLL, { icon:destIcon }).addTo(map);
-    L.polyline([restLL, destLL], { color:'#D62828', weight:3, opacity:.55, dashArray:'6,8' }).addTo(map);
-    const frac = Math.min(1, (this.state.orderStep || 0) / 3);
-    const courierLL = [restLL[0] + (destLL[0] - restLL[0]) * frac, restLL[1] + (destLL[1] - restLL[1]) * frac];
-    this._trackingCourier = L.marker(courierLL, { icon:courierIcon }).addTo(map);
-    map.fitBounds(L.latLngBounds([restLL, destLL]), { padding:[36, 36] });
-    this._trackingMap = map; this._trackingRestLL = restLL; this._trackingDestLL = destLL;
-    // O container nasce no meio de uma animação de entrada (bfUp) — recalcula o tamanho depois que ela assenta.
-    setTimeout(() => map.invalidateSize(), 80);
-    setTimeout(() => map.invalidateSize(), 350);
-  };
+  // Mesmo formato de query do entregador (entregador.html, enderecoParaMaps) — mesma fonte,
+  // sem geocode nosso, pra nunca divergir do que o entregador vê pro mesmo pedido.
+  enderecoParaMaps(e){
+    if (!e) return '#';
+    // CEP por último — mesmo raciocínio do entregador.html: ajuda o Maps a corrigir
+    // sozinho quando o nome da rua (ex: "Rua 122" de loteamento) não bate com nada indexado.
+    const q = [e.rua, e.numero, e.bairro, e.cidade, e.cep].filter(Boolean).join(', ');
+    return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(q);
+  }
 
   // Preview de localização na tela de Cadastro — mostra o pino assim que o endereço é geocodificado (Nominatim).
   setCadastroMap = (el) => {
@@ -1178,7 +1166,6 @@ class Component extends DCLogic {
   componentWillUnmount() {
     clearTimeout(this._t); clearInterval(this._o); clearTimeout(this._toast); clearInterval(this._promoTimer); clearTimeout(this._geocodeTimer);
     window.removeEventListener('resize', this._r);
-    if (this._trackingMap) { this._trackingMap.remove(); this._trackingMap = null; }
     if (this._cadastroMap) { this._cadastroMap.remove(); this._cadastroMap = null; }
   }
 
@@ -1214,13 +1201,6 @@ class Component extends DCLogic {
       } else {
         sessionStorage.removeItem(this.STORAGE_KEY);
       }
-    }
-    // Move o marcador do entregador ao longo da rota conforme o pedido avança (orderStep 0..3).
-    if (this._trackingMap && this._trackingCourier && this._trackingRestLL && this._trackingDestLL) {
-      const frac = Math.min(1, (this.state.orderStep || 0) / 3);
-      const lat = this._trackingRestLL[0] + (this._trackingDestLL[0] - this._trackingRestLL[0]) * frac;
-      const lng = this._trackingRestLL[1] + (this._trackingDestLL[1] - this._trackingRestLL[1]) * frac;
-      this._trackingCourier.setLatLng([lat, lng]);
     }
     // Recentraliza o preview do Cadastro quando a geocodificação do endereço terminar depois do mapa já ter montado.
     if (this._cadastroMap && this.state.cadastroLatLng && this._cadastroLastLL !== this.state.cadastroLatLng) {
@@ -1350,6 +1330,10 @@ class Component extends DCLogic {
       itens,
       formaPagamento: s.payment === 'pix' ? 'PIX' : s.payment === 'money' ? 'DINHEIRO' : 'CARTAO',
     };
+    if (s.payment === 'money' && s.pedidoTipo !== 'retirada') {
+      const valorRecebidoNum = parseFloat(String(s.valorRecebido).replace(',', '.'));
+      if (valorRecebidoNum > 0) payload.valorTrocoPara = valorRecebidoNum;
+    }
     if (s.couponApplied && s.coupon) payload.cupomCodigo = s.coupon.trim().toUpperCase();
     if (s.pedidoTipo !== 'retirada' && s.bairroSelecionado && !s.bairroSelecionado.outro) payload.bairroId = s.bairroSelecionado.id;
 
@@ -1635,14 +1619,14 @@ class Component extends DCLogic {
       alignItems: (isDesktop && !wide) ? 'center' : 'flex-start',
       justifyContent: (isDesktop && !wide) ? 'center' : 'flex-start',
       padding: (isDesktop && !wide) ? '26px' : '0',
-      background: (isDesktop && !wide) ? 'radial-gradient(900px 520px at 50% 0%, #C0271A 0%, #7A1209 55%, #3A0A06 100%)' : '#FFF6D6',
+      background: (isDesktop && !wide) ? 'radial-gradient(900px 520px at 50% 0%, #C0271A 0%, #7A1209 55%, #3A0A06 100%)' : 'var(--cor-fundo, #FFF6D6)',
       fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif"
     };
     const shellStyle = {
       width:'100%',
       maxWidth: (isDesktop && !wide) ? '440px' : '100%',
       height: wide ? '100vh' : (isDesktop ? 'min(880px, 94vh)' : '100dvh'),
-      background:'#FFF6D6', display:'flex', flexDirection:'column', overflow:'hidden',
+      background:'var(--cor-fundo, #FFF6D6)', display:'flex', flexDirection:'column', overflow:'hidden',
       borderRadius: (isDesktop && !wide) ? '30px' : '0',
       boxShadow: (isDesktop && !wide) ? '0 40px 90px rgba(0,0,0,.45)' : 'none',
       position:'relative'
@@ -1659,17 +1643,17 @@ class Component extends DCLogic {
       const baseTile = this.tile();
       let cardStyle, tileStyle, fotoTileStyle, bodyStyle, descStyle;
       if (wide) {
-        cardStyle = { display:'flex', flexDirection:'column', background:'#fff', border:'1px solid rgba(29,16,9,.06)', borderRadius:'8px', boxShadow:'0 6px 18px rgba(29,16,9,.05)', cursor:'pointer', overflow:'hidden' };
+        cardStyle = { display:'flex', flexDirection:'column', background:'var(--cor-card, #fff)', border:'1px solid var(--card-cor-borda, rgba(29,16,9,.06))', borderRadius:'var(--card-raio-borda, 8px)', boxShadow:'0 6px 18px rgba(29,16,9,.05)', cursor:'pointer', overflow:'hidden' };
         tileStyle = { width:'100%', height:'148px', flex:'none', borderRadius:'0', background:'linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%)', display:'flex', alignItems:'center', justifyContent:'center', padding:'16px', textAlign:'center' };
         fotoTileStyle = { width:'100%', height:'148px', flex:'none', overflow:'hidden', borderRadius:'0' };
         bodyStyle = { padding:'12px 14px 14px', display:'flex', flexDirection:'column', gap:'4px' };
-        descStyle = { margin:'0', fontSize:'13px', color:'#7A6C5D', lineHeight:'1.4', display:'-webkit-box', WebkitLineClamp:'2', WebkitBoxOrient:'vertical', overflow:'hidden' };
+        descStyle = { margin:'0', fontSize:'13px', color:'var(--card-cor-texto-secundario, #7A6C5D)', lineHeight:'1.4', display:'-webkit-box', WebkitLineClamp:'2', WebkitBoxOrient:'vertical', overflow:'hidden' };
       } else {
-        cardStyle = { display:'flex', gap:'14px', background:'#fff', border:'1px solid rgba(29,16,9,.06)', borderRadius:'8px', padding:'12px', boxShadow:'0 6px 18px rgba(29,16,9,.05)', cursor:'pointer', alignItems:'center' };
+        cardStyle = { display:'flex', gap:'14px', background:'var(--cor-card, #fff)', border:'1px solid var(--card-cor-borda, rgba(29,16,9,.06))', borderRadius:'var(--card-raio-borda, 8px)', padding:'12px', boxShadow:'0 6px 18px rgba(29,16,9,.05)', cursor:'pointer', alignItems:'center' };
         tileStyle = baseTile;
         fotoTileStyle = { ...baseTile, padding:0, overflow:'hidden' };
         bodyStyle = { flex:'1', minWidth:'0' };
-        descStyle = { margin:'0', fontSize:'13px', color:'#7A6C5D', lineHeight:'1.4', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' };
+        descStyle = { margin:'0', fontSize:'13px', color:'var(--card-cor-texto-secundario, #7A6C5D)', lineHeight:'1.4', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' };
       }
       return {
         id:p.id, name:p.name, desc:p.desc, rating:p.rating || '—', priceFmt:this.fmt(p.price) + (p.vendidoPorPeso ? '/kg' : ''),
@@ -1724,7 +1708,7 @@ class Component extends DCLogic {
         label:c.label,
         onClick:() => this.setState({ selectedCat:c.id, search:'', selectedSubcat:null }),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'12px', padding:'9px 16px', fontWeight:700, fontSize:'13px',
-          background: active ? '#C0271A' : '#FFF3DC', color: active ? '#FFF3DC' : '#C0271A',
+          background: active ? '#C0271A' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#FFF3DC' : '#C0271A',
           boxShadow: active ? '0 5px 12px rgba(107,46,18,.25)' : 'none' }
       };
     });
@@ -1738,7 +1722,7 @@ class Component extends DCLogic {
         label:sc.label || sc.nome,
         onClick:() => this.setState({ selectedSubcat:sc.id }),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'7px 13px', fontWeight:700, fontSize:'12px',
-          background: active ? '#D97706' : '#FFF3DC', color: active ? '#fff' : '#8A4A1C' }
+          background: active ? '#D97706' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#fff' : '#8A4A1C' }
       };
     });
 
@@ -1765,10 +1749,10 @@ class Component extends DCLogic {
     const marmitaSize = mc.marmitaSizes[s.marmitaSizeId] || mc.marmitaSizes.pequena || marmitaSizeDefault(s.marmitaSizeId || 'pequena');
     const optBtnStyle = (selecionado, esgotado) => ({
       display:'flex', alignItems:'center', gap:'10px', width:'100%', textAlign:'left',
-      border: selecionado ? '2px solid #D62828' : '1px solid rgba(29,16,9,.1)',
-      background: esgotado ? '#F6F1E7' : '#fff', borderRadius:'13px', padding:'13px 14px',
+      border: selecionado ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
+      background: esgotado ? '#F6F1E7' : 'var(--cor-card, #fff)', borderRadius:'13px', padding:'13px 14px',
       cursor: esgotado ? 'not-allowed' : 'pointer', opacity: esgotado ? .55 : 1,
-      fontWeight:600, fontSize:'14px', color:'#1D1009'
+      fontWeight:600, fontSize:'14px', color:'var(--cor-texto, #1D1009)'
     });
     const marmitaProteinaOptions = mc.proteinas.filter(p => p.ativo).map(p => {
       const selecionado = s.marmitaSelProteinas.includes(p.id);
@@ -1794,7 +1778,7 @@ class Component extends DCLogic {
       const active = s.horarioRetirada === h;
       return { label:h, onClick:() => this.selecionarHorarioRetirada(h),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'9px 14px', fontWeight:700, fontSize:'13px',
-          background: active ? '#D62828' : '#FFF3DC', color: active ? '#fff' : '#B5161C' } };
+          background: active ? 'var(--botao-primario-fundo, #D62828)' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#fff' : 'var(--cor-primaria, #B5161C)' } };
     });
 
     const cartLines = T.lines.map(({ p, v }) => {
@@ -1811,13 +1795,13 @@ class Component extends DCLogic {
     });
 
     const payBtn = (on) => ({ display:'flex', alignItems:'center', gap:'13px', width:'100%', cursor:'pointer',
-      background:'#fff', borderRadius:'16px', padding:'14px', textAlign:'left',
-      border: on ? '2px solid #D62828' : '1px solid rgba(29,16,9,.1)',
+      background:'var(--cor-card, #fff)', borderRadius:'16px', padding:'14px', textAlign:'left',
+      border: on ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
       boxShadow: on ? '0 6px 16px rgba(214,40,40,.16)' : '0 3px 10px rgba(29,16,9,.04)' });
     const radio = (on) => ({ width:'22px', height:'22px', borderRadius:'50%', flex:'none',
-      border: on ? '7px solid #D62828' : '2px solid #C9BBA8', background:'#fff', boxSizing:'border-box' });
+      border: on ? '7px solid var(--botao-primario-borda, #D62828)' : '2px solid #C9BBA8', background:'#fff', boxSizing:'border-box' });
     const tipoPedidoBtnStyle = (on) => ({ flex:1, border:'none', cursor:'pointer', borderRadius:'12px', padding:'11px', fontWeight:700, fontSize:'13.5px',
-      background: on ? '#D62828' : '#FFF3DC', color: on ? '#fff' : '#B5161C' });
+      background: on ? 'var(--botao-primario-fundo, #D62828)' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: on ? '#fff' : 'var(--cor-primaria, #B5161C)' });
 
     const stepsDef = [
       { label:'Pedido confirmado', sub:'Recebemos seu pedido' },
@@ -1827,12 +1811,12 @@ class Component extends DCLogic {
     ];
     const orderSteps = stepsDef.map((st, i) => {
       const done = i < s.orderStep, active = i === s.orderStep, last = i === stepsDef.length - 1;
-      const color = done ? '#2D9E60' : active ? '#D62828' : '#E5D9C5';
+      const color = done ? '#2D9E60' : active ? 'var(--botao-primario-fundo, #D62828)' : '#E5D9C5';
       return {
         label:st.label, sub:st.sub, done, active, line:!last,
         dotStyle:{ width:'30px', height:'30px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', flex:'none', background:color, boxShadow: active ? '0 0 0 5px rgba(214,40,40,.18)' : 'none' },
         lineStyle:{ width:'3px', flex:1, minHeight:'24px', background: done ? '#2D9E60' : '#E5D9C5', borderRadius:'2px' },
-        labelStyle:{ fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:700, fontSize:'15px', color: (done||active) ? '#B5161C' : '#9C9183' }
+        labelStyle:{ fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:700, fontSize:'15px', color: (done||active) ? 'var(--cor-primaria, #B5161C)' : '#9C9183' }
       };
     });
     const statusTitles = ['Pedido confirmado!','Preparando seu pedido','Saiu para entrega','Pedido entregue!'];
@@ -1840,7 +1824,8 @@ class Component extends DCLogic {
 
     const navBtn = (on) => ({ flex:1, display:'flex', flexDirection:'column', alignItems:'center', gap:'4px',
       background:'none', border:'none', cursor:'pointer', padding:'6px 0',
-      color: on ? '#D62828' : '#A89A88' });
+      color: on ? 'var(--nav-inferior-icone-ativo, #D62828)' : 'var(--nav-inferior-icone-normal, #A89A88)' });
+    const navTextStyle = (on) => ({ color: on ? 'var(--nav-inferior-texto-ativo, #D62828)' : 'var(--nav-inferior-texto-normal, #A89A88)' });
     const topBtn = (on) => ({ border:'none', cursor:'pointer', borderRadius:'11px', padding:'9px 15px', fontWeight:700, fontSize:'14px',
       background: on ? 'rgba(122,18,9,.14)' : 'transparent', color: on ? '#7A1209' : 'rgba(122,18,9,.62)' });
 
@@ -1863,7 +1848,7 @@ class Component extends DCLogic {
     const enderecoCurto = temEndereco ? (u.endereco.rua + (u.endereco.numero ? ', ' + u.endereco.numero : '')) : 'Sua localização';
 
     const c = s.cadastro;
-    const inputStyle2 = { width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 14px', fontSize:'15px', color:'#B5161C', outline:'none' };
+    const inputStyle2 = { width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 14px', fontSize:'15px', color:'var(--cor-primaria, #B5161C)', outline:'none' };
     const cepInputStyle = { ...inputStyle2, paddingRight:'38px' }; // espaço reservado pro spinner de busca não cobrir os dígitos do CEP
     const labelStyle2 = { display:'block', fontSize:'13px', fontWeight:600, color:'#6B2E12', margin:'0 0 6px' };
     const cepMsgStyle = { margin:'6px 2px 0', fontSize:'12px', fontWeight:600, color: c.cepOk === false ? '#C0392B' : c.cepOk === true ? '#2D9E60' : '#8C8075' };
@@ -1881,9 +1866,9 @@ class Component extends DCLogic {
     // ---- tela de escolha de bairro (obrigatória após o splash, na 1ª vez) ----
     const bairroOptStyle = (selecionado) => ({
       display:'flex', alignItems:'center', justifyContent:'space-between', gap:'10px', width:'100%', textAlign:'left',
-      border: selecionado ? '2px solid #D62828' : '1px solid rgba(29,16,9,.1)',
-      background:'#fff', borderRadius:'13px', padding:'14px 15px',
-      cursor:'pointer', fontWeight:700, fontSize:'15px', color:'#1D1009'
+      border: selecionado ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
+      background:'var(--cor-card, #fff)', borderRadius:'13px', padding:'14px 15px',
+      cursor:'pointer', fontWeight:700, fontSize:'15px', color:'var(--cor-texto, #1D1009)'
     });
     const escolhaBairro = s.bairroEscolhaTemp;
     const bairroOpcoes = s.bairros.filter(b => b.ativo).map(b => {
@@ -1964,7 +1949,7 @@ class Component extends DCLogic {
       inputStyle2, labelStyle2, cepInputStyle,
       hasCadastroMap: !!s.cadastroLatLng, cadastroGeocoding: s.cadastroGeocoding && !s.cadastroLatLng,
       setCadastroMap: this.setCadastroMap,
-      setTrackingMap: this.setTrackingMap,
+      trackingMapsUrl: this.enderecoParaMaps(s.usuario && s.usuario.endereco),
 
       hasAdicionaisModal: !!am, adicionaisModalNome: amProduto ? amProduto.name : '',
       adicionaisModalItens, adicionaisModalTotalFmt: this.fmt(adicionaisModalTotal),
@@ -2018,7 +2003,7 @@ class Component extends DCLogic {
         this.go('cart');
       },
       toggleFav:() => this.setState(st => ({ fav: { ...st.fav, [sp.id]: !st.fav[sp.id] } })),
-      favFill: s.fav[sp.id] ? '#D62828' : 'none',
+      favFill: s.fav[sp.id] ? 'var(--botao-primario-fundo, #D62828)' : 'none',
 
       pixStyle:payBtn(s.payment === 'pix'), cardStyle:payBtn(s.payment === 'card'), dinheiroStyle:payBtn(s.payment === 'money'),
       pixPressed: s.payment === 'pix', cardPressed: s.payment === 'card', dinheiroPressed: s.payment === 'money',
@@ -2041,6 +2026,7 @@ class Component extends DCLogic {
       entregadorNome: s.entregadorNome, entregadorInicial: s.entregadorNome ? s.entregadorNome[0].toUpperCase() : 'E',
 
       navHomeStyle:navBtn(isHome), navMenuStyle:navBtn(isMenu), navCartStyle:navBtn(isCart), navContaStyle:navBtn(isConta),
+      navHomeTextStyle:navTextStyle(isHome), navMenuTextStyle:navTextStyle(isMenu), navCartTextStyle:navTextStyle(isCart), navContaTextStyle:navTextStyle(isConta),
       topHomeStyle:topBtn(isHome), topMenuStyle:topBtn(isMenu), topContaStyle:topBtn(isConta),
 
       contaRows

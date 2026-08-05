@@ -78,9 +78,33 @@ async function criar(req, res) {
   try {
     const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, custo, codigoBarras, avaliacao, tag, destaque, ativo, estoque, vendidoPorPeso } = req.body;
     let catId = categoriaId ? parseInt(categoriaId, 10) : null;
-    if (!catId) {
-      const primCat = await req.prisma.categoriaProduto.findFirst({ orderBy: { id: 'asc' } });
-      catId = primCat ? primCat.id : 1;
+    if (catId) {
+      // findFirst é escopado por tenant via req.prisma (ver prismaTenant.js) —
+      // se o id vier de outro tenant, a busca não acha nada. Sem essa checagem,
+      // um categoriaId de outro tenant salvava normalmente (mesma classe do
+      // achado de bairroId no checkout, ver AUDITORIA.md) e o produto ficava
+      // "órfão" pro isolamento: nunca aparecia em /api/categorias do próprio
+      // tenant, então a Home não tinha como agrupar/exibi-lo.
+      const categoria = await req.prisma.categoriaProduto.findFirst({ where: { id: catId } });
+      if (!categoria) {
+        return res.status(400).json({ erro: 'Categoria inválida' });
+      }
+    } else {
+      // Mesmo raciocínio pro fallback "sem categoria escolhida": antes caía
+      // num id global fixo (1), que podia pertencer a outro tenant. Sem
+      // nenhuma categoria própria, é melhor recusar do que adivinhar.
+      // "Marmitas" fica de fora do fallback: não é uma categoria de produto
+      // de verdade, é a âncora que a Home/Cardápio usam pra abrir o
+      // construtor de marmita (ver index.html, marmitaCatId) — um produto
+      // caindo nela por padrão fica invisível, nunca aparece numa grade.
+      const primCat = await req.prisma.categoriaProduto.findFirst({
+        where: { nome: { not: 'Marmitas' } },
+        orderBy: { id: 'asc' },
+      });
+      if (!primCat) {
+        return res.status(400).json({ erro: 'Crie uma categoria antes de adicionar produtos' });
+      }
+      catId = primCat.id;
     }
     const produto = await req.prisma.produto.create({
       data: {
@@ -120,7 +144,14 @@ async function atualizar(req, res) {
     const id = parseInt(req.params.id, 10);
     const { categoriaId, subcategoriaId, nome, descricaoCurta, descricaoCompleta, preco, custo, codigoBarras, avaliacao, tag, destaque, ativo, estoque, disponivelEmpresa, vendidoPorPeso } = req.body;
     const data = {};
-    if (categoriaId !== undefined) data.categoriaId = parseInt(categoriaId, 10);
+    if (categoriaId !== undefined) {
+      const novoCatId = parseInt(categoriaId, 10);
+      const categoria = await req.prisma.categoriaProduto.findFirst({ where: { id: novoCatId } });
+      if (!categoria) {
+        return res.status(400).json({ erro: 'Categoria inválida' });
+      }
+      data.categoriaId = novoCatId;
+    }
     if (subcategoriaId !== undefined) data.subcategoriaId = subcategoriaId ? parseInt(subcategoriaId, 10) : null;
     if (nome !== undefined) data.nome = String(nome).trim();
     if (descricaoCurta !== undefined) data.descricaoCurta = String(descricaoCurta).trim();

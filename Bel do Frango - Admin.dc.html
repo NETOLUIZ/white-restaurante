@@ -139,6 +139,10 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="18" cy="6" r="3" fill="currentColor"/></svg>
         <span style="flex:1;text-align:left;">Entregadores</span>
       </button>
+      <button data-feature="entregador" onClick="{{ goCaixaEntregadores }}" style="{{ navCaixaEntregadores }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg>
+        <span style="flex:1;text-align:left;">Caixa dos Entregadores</span>
+      </button>
       <sc-if value="{{ isRestauranteTenant }}" hint-placeholder-val="{{ true }}">
       <button data-feature="mesas" onClick="{{ goGarcons }}" style="{{ navGarcons }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 2a5 5 0 0 1-5 5 5 5 0 0 1-5-5"/><path d="M7 22a5 5 0 0 1 5-5 5 5 0 0 1 5 5"/></svg>
@@ -768,6 +772,25 @@
             </div>
           </sc-for>
           <sc-if value="{{ entregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- CAIXA DOS ENTREGADORES ---------- -->
+      <sc-if value="{{ isCaixaEntregadores }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:adIn .25s ease-out;">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:grid;grid-template-columns:2fr 1fr 120px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Nome</span><span>Saldo</span><span></span>
+          </div>
+          <sc-for list="{{ caixaEntregadorRows }}" as="ce" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:2fr 1fr 120px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+              <div style="font-weight:700;font-size:14px;">{{ ce.nome }}</div>
+              <div style="font-family:'DM Mono',monospace;font-weight:700;font-size:15px;color:#D97706;">{{ ce.saldoFmt }}</div>
+              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ ce.onZerar }}" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:9px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;">Zerar</button></div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ caixaEntregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
         </div>
       </div>
       </sc-if>
@@ -1493,6 +1516,7 @@ class Component extends DCLogic {
     subcategorias:[],
     banners:[],
     entregadores:[],
+    caixaEntregadores:[],
     entregadorDraft:null,
     garcons:[],
     garcomDraft:null,
@@ -1688,6 +1712,20 @@ class Component extends DCLogic {
 
   // ---- sessão / login ----
   async checkSession(){
+    // Código de uso único emitido pelo link "Gerar acesso" do Super Admin
+    // (POST /api/super/tenants/:id/impersonar) — troca por um cookie de
+    // sessão de impersonation ANTES do /auth/me abaixo, senão a página só
+    // carrega a tela de login normal e o código nunca é resgatado. Sempre
+    // limpa da URL depois (usado ou não): é de uso único, então um F5
+    // reenviando o mesmo código só ia falhar (já consumido), e deixá-lo
+    // visível na barra de endereço/histórico é exposição desnecessária.
+    const codigoImpersonacao = new URLSearchParams(location.search).get('codigo');
+    if (codigoImpersonacao) {
+      try {
+        await this.apiSend('POST', '/auth/impersonar', { codigo: codigoImpersonacao });
+      } catch (e) { /* código inválido/expirado — segue pro fluxo normal, que vai pedir login */ }
+      history.replaceState(null, '', location.pathname + location.hash);
+    }
     try {
       const { admin, impersonando, tenant } = await this.apiGet('/auth/me');
       const tenantDev = new URLSearchParams(location.search).get('_tenant');
@@ -1844,6 +1882,18 @@ class Component extends DCLogic {
   async carregarEntregadores(){
     const lista = await this.apiGet('/admin/entregadores');
     this.setState({ entregadores: lista });
+  }
+  async carregarCaixaEntregadores(){
+    const lista = await this.apiGet('/admin/entregadores/saldos');
+    this.setState({ caixaEntregadores: lista });
+  }
+  async zerarSaldoEntregador(id){
+    if (!confirm('Zerar o saldo desse entregador? Essa ação não pode ser desfeita.')) return;
+    try {
+      await this.apiSend('POST', '/admin/entregadores/' + id + '/zerar-saldo', {});
+      await this.carregarCaixaEntregadores();
+      this.showToast('Saldo zerado');
+    } catch (e) { this.showToast(e.message || 'Erro ao zerar saldo'); }
   }
   async carregarGarcons(){
     const lista = await this.apiGet('/admin/garcons');
@@ -2681,7 +2731,9 @@ class Component extends DCLogic {
   fecharImportResumo(){ this.setState({ importResumo:null }); }
 
   newProduct(){
-    const catId = this.state.categorias[0] ? this.state.categorias[0].id : null;
+    // "Marmitas" fora do fallback — mesmo motivo do fallback em saveProduct().
+    const catsFallback = this.state.categorias.filter((c) => c.nome !== 'Marmitas');
+    const catId = catsFallback[0] ? catsFallback[0].id : null;
     this.setState({ productDraft:{ id:null, name:'', desc:'', cat:catId, subcat:null, price:'', stock:'', custo:'', codigoBarras:'', active:true, porPeso:false, foto:null, fotoFile:null, fotoUrlOFF:null, adicionais:[] }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null });
   }
   editProduct(p){ this.setState({ productDraft:{ id:p.id, name:p.name, desc:p.desc, cat:p.cat, subcat:p.subcat||null, price:String(p.price).replace('.',','), stock:String(p.stock), custo: p.custo!=null ? String(p.custo).replace('.',',') : '', codigoBarras: p.codigoBarras||'', active:p.active, porPeso: !!p.vendidoPorPeso, foto:p.foto||null, fotoFile:null, fotoUrlOFF:null, adicionais:(p.adicionais||[]).slice() }, novoAdicionalNome:'', novoAdicionalPreco:'', adicionalDraftEdit:null }); }
@@ -2725,7 +2777,11 @@ class Component extends DCLogic {
     const d = this.state.productDraft; if (!d) return;
     const price = parseFloat(String(d.price||'').replace(/\./g,'').replace(',','.')) || 0;
     const stock = parseInt(String(d.stock||'').replace(/\D/g,''), 10) || 0;
-    const cat = d.cat || (this.state.categorias[0] ? this.state.categorias[0].id : null);
+    // "Marmitas" nunca é fallback: é a categoria-âncora que abre o construtor
+    // de marmita (ver index.html, marmitaCatId) — um produto caindo nela por
+    // padrão nunca aparece em grade nenhuma, fica invisível pro cliente.
+    const catsFallback = this.state.categorias.filter((c) => c.nome !== 'Marmitas');
+    const cat = d.cat || (catsFallback[0] ? catsFallback[0].id : null);
     const payload = { categoriaId:cat, subcategoriaId:d.subcat||null, nome:(d.name||'').trim() || 'Novo Produto', descricaoCurta:(d.desc||'').trim(), descricaoCompleta:(d.desc||'').trim(), preco:price, estoque:stock, ativo:d.active, vendidoPorPeso:d.porPeso };
     if (this.state.tipoTenant === 'MERCANTIL') {
       payload.custo = d.custo ? parseFloat(String(d.custo).replace(/\./g,'').replace(',','.')) || 0 : null;
@@ -3000,7 +3056,7 @@ class Component extends DCLogic {
       caixaBreakdown:[
         { label:'Dinheiro', value:this.fmt(pay.Dinheiro||0), color:'#2D9E60' },
         { label:'Pix', value:this.fmt(pay.Pix||0), color:'#2563EB' },
-        { label:'Cartão', value:this.fmt(pay['Cartão']||0), color:'#D97706' },
+        { label:'Cartão', value:this.fmt(pay['Cartão']||0), color:'#CC8400' },
         { label:'Em aberto (mesas)', value:this.fmt(pay['Na mesa']||0), color:'#A8730B' }
       ],
       hasFechamento: !!f,
@@ -3088,7 +3144,7 @@ class Component extends DCLogic {
       vendasOnNextWeek:() => this.setState(s2 => ({ vendasSelectedDate: this.addDiasIso(s2.vendasSelectedDate, 7) })),
       vendasOnHoje:() => this.setState({ vendasSelectedDate: todayIso }),
       vendasKpis:[
-        { label:'Itens vendidos', value:String(totalItens), color:'#D97706', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#D97706', display:'inline-block' } },
+        { label:'Itens vendidos', value:String(totalItens), color:'#CC8400', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#CC8400', display:'inline-block' } },
         { label:'Faturamento', value:this.fmt(totalReceita), color:'#2D9E60', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#2D9E60', display:'inline-block' } },
         { label:'Produtos', value:String(s.products.length), color:'#6B2E12', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#6B2E12', display:'inline-block' } },
         { label:'Estoque baixo', value:String(lowCount), color:'#C0392B', dotStyle:{ width:'9px', height:'9px', borderRadius:'3px', background:'#C0392B', display:'inline-block' } }
@@ -3111,6 +3167,7 @@ class Component extends DCLogic {
       mesas:['Mesas','Controle o salão e o consumo das mesas'],
       caixa:['Caixa','Abra e feche o caixa do dia'],
       entregadores:['Entregadores','Cadastre e gerencie os entregadores do delivery'],
+      caixaentregadores:['Caixa dos Entregadores','Quanto cada entregador tem em mãos pra devolver'],
       garcons:['Garçons','Cadastre e gerencie os garçons do salão'],
       atendentes:['Atendentes','Cadastre e gerencie os atendentes do balcão'],
       empresas:['Empresas','Clientes corporativos, cota diária e cardápio de hoje'],
@@ -3128,7 +3185,7 @@ class Component extends DCLogic {
     const ticket = active.length ? faturamento / active.length : 0;
     const kpiDotStyle = (color) => ({ width:'9px', height:'9px', borderRadius:'3px', background:color, display:'inline-block' });
     const kpisRestaurante = [
-      { label:'Pedidos hoje', value:String(s.orders.length), color:'#D97706' },
+      { label:'Pedidos hoje', value:String(s.orders.length), color:'#CC8400' },
       { label:'Em aberto', value:String(emAberto), color:'#2563EB' },
       { label:'Faturamento', value:this.fmt(faturamento), color:'#2D9E60' },
       { label:'Ticket médio', value:this.fmt(ticket), color:'#6B2E12' }
@@ -3144,7 +3201,7 @@ class Component extends DCLogic {
     const ESTOQUE_BAIXO_LIMITE = 5;
     const estoqueBaixoCount = s.products.filter(p => p.stock <= ESTOQUE_BAIXO_LIMITE).length;
     const kpisMercantil = [
-      { label:'Vendas hoje', value:String(activeHojeMercantil.length), color:'#D97706' },
+      { label:'Vendas hoje', value:String(activeHojeMercantil.length), color:'#CC8400' },
       { label:'Produtos vendidos', value:String(produtosVendidosMercantil), color:'#2563EB' },
       { label:'Estoque baixo', value:String(estoqueBaixoCount), color: estoqueBaixoCount > 0 ? '#C0392B' : '#8C8075' },
       { label:'Caixa', value: s.caixa.aberto ? 'Aberto' : 'Fechado', color: s.caixa.aberto ? '#2D9E60' : '#8C8075' },
@@ -3179,7 +3236,7 @@ class Component extends DCLogic {
       const b = this.badge(o.status, o.tipo);
       const canAdvance = o.status !== 'concluido' && o.status !== 'cancelado';
       const resumo = o.itens.map(i => i.q + '× ' + i.n).join(', ');
-      const tipoColor = o.tipo === 'Entrega' ? '#2563EB' : o.tipo === 'Mesa' ? '#D97706' : o.tipo === 'Empresa' ? '#6B2E12' : '#2D9E60';
+      const tipoColor = o.tipo === 'Entrega' ? '#2563EB' : o.tipo === 'Mesa' ? '#CC8400' : o.tipo === 'Empresa' ? '#6B2E12' : '#2D9E60';
       return {
         id:o.id, hora:o.hora, cliente:o.cliente, itensResumo:resumo, tipo:o.tipo,
         tipoIcon: o.tipo === 'Entrega' ? '◆' : o.tipo === 'Mesa' ? '■' : o.tipo === 'Empresa' ? '●' : '▲',
@@ -3400,7 +3457,7 @@ class Component extends DCLogic {
     const bd = s.bannerDraft;
 
     // ---- mesas ----
-    const mesaMeta = { livre:{ label:'Livre', color:'#2D9E60' }, ocupada:{ label:'Ocupada', color:'#D97706' }, reservada:{ label:'Reservada', color:'#2563EB' }, conta:{ label:'Aguardando conta', color:'#A8730B' } };
+    const mesaMeta = { livre:{ label:'Livre', color:'#2D9E60' }, ocupada:{ label:'Ocupada', color:'#CC8400' }, reservada:{ label:'Reservada', color:'#2563EB' }, conta:{ label:'Aguardando conta', color:'#A8730B' } };
     const mesaLegend = ['livre','ocupada','reservada','conta'].map(k => ({ label:mesaMeta[k].label, color:mesaMeta[k].color, count:String(s.tables.filter(t => t.status === k).length) }));
     const mesaCards = s.tables.map(t => {
       const m = mesaMeta[t.status];
@@ -3430,10 +3487,10 @@ class Component extends DCLogic {
       const actions = [];
       const btn = (label, bg, fg, fn, bd) => ({ label, onClick:fn, style:{ width:'100%', border: bd?('1px solid '+bd):'none', cursor:'pointer', borderRadius:'13px', padding:'13px', fontWeight:700, fontSize:'15px', background:bg, color:fg } });
       if (selT.status === 'livre'){
-        actions.push(btn('Abrir mesa (ocupar)', '#D97706', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
+        actions.push(btn('Abrir mesa (ocupar)', '#CC8400', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
         actions.push(btn('Marcar reserva', '#fff', '#2563EB', () => this.setTableStatus(selT.id, 'reservada'), '#BBCDF6'));
       } else if (selT.status === 'reservada'){
-        actions.push(btn('Confirmar chegada', '#D97706', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
+        actions.push(btn('Confirmar chegada', '#CC8400', '#fff', () => this.setTableStatus(selT.id, 'ocupada')));
         actions.push(btn('Cancelar reserva', '#fff', '#C0392B', () => this.setTableStatus(selT.id, 'livre'), '#F0CFCB'));
       } else if (selT.status === 'ocupada'){
         actions.push(btn('Fechar conta', '#A8730B', '#fff', () => this.setTableStatus(selT.id, 'conta')));
@@ -3442,7 +3499,7 @@ class Component extends DCLogic {
         // Em vez de um único botão genérico, a conta só fecha ao escolher a forma de pagamento usada pelo cliente.
         actions.push(btn('Dinheiro', '#2D9E60', '#fff', () => this.confirmarPagamento(selT.id, 'Dinheiro')));
         actions.push(btn('Pix', '#2563EB', '#fff', () => this.confirmarPagamento(selT.id, 'Pix')));
-        actions.push(btn('Cartão', '#D97706', '#fff', () => this.confirmarPagamento(selT.id, 'Cartão')));
+        actions.push(btn('Cartão', '#CC8400', '#fff', () => this.confirmarPagamento(selT.id, 'Cartão')));
       }
       md = { num:String(selT.num), seats:String(selT.seats),
         nome: selT.cliente || '', onNome:(e) => this.setTableName(selT.id, e.target.value),
@@ -3492,10 +3549,10 @@ class Component extends DCLogic {
       adminInicial: adminNome ? adminNome[0].toUpperCase() : 'A',
       goPedidos:() => this.nav('pedidos'), goProdutos:() => this.nav('produtos'), goCategorias:() => this.nav('categorias'), goMarmitas:() => this.nav('marmitas'),
       goBanners:() => this.nav('banners'), goMesas:() => this.nav('mesas'), goSenha:() => this.nav('senha'),
-      goCaixa:() => this.nav('caixa'), goVendas:() => this.nav('vendas'), goEntregadores:() => this.nav('entregadores'),
+      goCaixa:() => this.nav('caixa'), goVendas:() => this.nav('vendas'), goEntregadores:() => this.nav('entregadores'), goCaixaEntregadores:() => { this.nav('caixaentregadores'); this.carregarCaixaEntregadores(); },
       goGarcons:() => this.nav('garcons'), goAtendentes:() => this.nav('atendentes'), goEmpresas:() => this.nav('empresas'),
       navPedidos:navStyle(s.view==='pedidos'), navProdutos:navStyle(s.view==='produtos'), navCategorias:navStyle(s.view==='categorias'), navMarmitas:navStyle(s.view==='marmitas'), navBanners:navStyle(s.view==='banners'), navMesas:navStyle(s.view==='mesas'), navSenha:navStyle(s.view==='senha'),
-      navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'),
+      navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'), navCaixaEntregadores:navStyle(s.view==='caixaentregadores'),
       navGarcons:navStyle(s.view==='garcons'), navAtendentes:navStyle(s.view==='atendentes'), navEmpresas:navStyle(s.view==='empresas'),
       hasNovos: novosCount > 0, novosCount:String(novosCount),
 
@@ -3506,7 +3563,7 @@ class Component extends DCLogic {
       todayDate: this.formatarDataHoje(), openLabel:'Aberto agora',
 
       isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha',
-      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes', isEmpresas: s.view==='empresas',
+      isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isCaixaEntregadores: s.view==='caixaentregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes', isEmpresas: s.view==='empresas',
 
       novoEntregador:() => this.novoEntregador(),
       isEntregadorDraft: !!s.entregadorDraft,
@@ -3530,6 +3587,12 @@ class Component extends DCLogic {
         knobStyle: this.knobStyle(),
         onToggle:() => this.toggleEntregadorAtivo(e.id),
         onEdit:() => this.editEntregador(e)
+      })),
+      caixaEntregadoresEmpty: s.caixaEntregadores.length === 0,
+      caixaEntregadorRows: s.caixaEntregadores.map(ce => ({
+        nome: ce.nome,
+        saldoFmt: this.fmt(ce.saldo),
+        onZerar:() => this.zerarSaldoEntregador(ce.id)
       })),
 
       novoGarcom:() => this.novoGarcom(),

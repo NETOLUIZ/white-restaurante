@@ -349,6 +349,7 @@ model Pedido {
   /// Obrigatorio para ENTREGA; nulo para MESA/RETIRADA.
   telefone             String?
   endereco             Json?
+  valorTrocoPara       Float?
   itens                ItemPedido[]
   cupomId              Int?
   cupom                Cupom?          @relation(fields: [cupomId], references: [id], onDelete: SetNull)
@@ -361,6 +362,9 @@ model Pedido {
   formaPagamento       FormaPagamento?
   /// Atualizado manualmente pelo admin (painel) conforme o pedido avanca na cozinha/entrega/mesa.
   statusEntrega        StatusEntrega   @default(CONFIRMADO)
+  /// Marcado uma única vez, no momento em que statusEntrega vira ENTREGUE — usado
+  /// pra calcular o saldo em dinheiro do entregador (não usar createdAt/updatedAt pra isso).
+  entregueEm           DateTime?
   entregadorId         Int?
   entregador           Entregador?     @relation(fields: [entregadorId], references: [id], onDelete: SetNull)
   createdAt            DateTime        @default(now())
@@ -368,6 +372,7 @@ model Pedido {
 
   @@unique([tenantId, codigoAcompanhamento])
   @@index([tenantId])
+  @@index([entregadorId, statusEntrega, formaPagamento, entregueEm])
 }
 
 /// Um item de pedido é OU um produto fixo do cardápio (produtoId preenchido)
@@ -608,6 +613,7 @@ model Entregador {
   /// Marca a ultima troca de senha — o middleware rejeita tokens JWT emitidos
   /// antes dessa data (sessoes antigas nao ficam validas apos a troca).
   senhaAlteradaEm DateTime?
+  saldoZeradoEm   DateTime?
   pedidos         Pedido[]
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
@@ -645,13 +651,48 @@ model TenantBranding {
   logoUrl    String?
   faviconUrl String?
 
-  corPrimaria   String @default("#C8102E")
-  corSecundaria String @default("#F5A623")
-  corBotao      String @default("#C8102E")
-  corTextoBotao String @default("#FFFFFF")
-  corFundo      String @default("#FFFFFF")
-  corTexto      String @default("#1A1A1A")
-  corCard       String @default("#FFFFFF")
+  // Cores Base
+  corPrimaria        String @default("#C8102E")
+  corSecundaria      String @default("#F5A623")
+  corFundo           String @default("#FFFFFF")
+  corFundoSecundaria String @default("#F7F7F7")
+  corTexto           String @default("#1A1A1A")
+  corDestaque        String @default("#F5A623")
+  corSucesso         String @default("#16A34A")
+  corAlerta          String @default("#F59E0B")
+  corErro            String @default("#DC2626")
+
+  // Botões
+  botaoPrimarioFundo     String @default("#C8102E")
+  botaoPrimarioTexto     String @default("#FFFFFF")
+  botaoPrimarioBorda     String @default("#C8102E")
+  botaoSecundarioFundo   String @default("#FFFFFF")
+  botaoSecundarioTexto   String @default("#C8102E")
+  botaoSecundarioBorda   String @default("#C8102E")
+  botaoDesabilitadoFundo String @default("#E5E5E5")
+  botaoDesabilitadoTexto String @default("#9CA3AF")
+
+  // Cards e Blocos
+  corCard                String @default("#FFFFFF")
+  cardCorBorda           String @default("#E5E5E5")
+  cardCorTitulo          String @default("#1A1A1A")
+  cardCorTextoSecundario String @default("#6B7280")
+  cardCorHover           String @default("#F5F5F5")
+  cardRaioBorda          String @default("8px")
+
+  // Navegação — Cabeçalho
+  headerFundo           String @default("#FFFFFF")
+  headerCorSaudacao     String @default("#1A1A1A")
+  headerCorIconeUsuario String @default("#1A1A1A")
+  headerCorLocalizacao  String @default("#6B7280")
+  headerCorNotificacao  String @default("#C8102E")
+
+  // Navegação — Barra inferior
+  navInferiorFundo       String @default("#FFFFFF")
+  navInferiorIconeNormal String @default("#9CA3AF")
+  navInferiorIconeAtivo  String @default("#C8102E")
+  navInferiorTextoNormal String @default("#9CA3AF")
+  navInferiorTextoAtivo  String @default("#C8102E")
 
   fonteTitulo String @default("Inter")
   fonteTexto  String @default("Inter")

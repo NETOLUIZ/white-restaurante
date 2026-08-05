@@ -132,11 +132,14 @@ app.use(cookieParser());
 // trocar o id na URL e listar/baixar arquivo de outro cliente. resolveTenant
 // roda só neste path (não em todo /uploads) pra decidir quem está pedindo;
 // o 404 (não 403) não confirma se o arquivo existe pra quem não deveria ver.
+// Exceção: o subdomínio "super" nunca tem req.tenantId (não é um tenant) —
+// sem o bypass, o painel do super admin nunca conseguiria mostrar preview de
+// logo de tenant nenhum, já que toda comparação de posse falharia sempre.
 app.use(
   '/uploads/:tenantId',
   resolveTenant,
   (req, res, next) => {
-    if (req.params.tenantId !== req.tenantId) {
+    if (!req.ehSuperAdmin && req.params.tenantId !== req.tenantId) {
       return res.status(404).json({ erro: 'Não encontrado' });
     }
     next();
