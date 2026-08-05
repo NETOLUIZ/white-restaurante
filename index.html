@@ -24,7 +24,7 @@
   ::-webkit-scrollbar{width:0;height:0;}
   input,textarea,button{font-family:inherit;}
   textarea{resize:none;}
-  button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid #D62828;outline-offset:2px;}
+  button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--botao-primario-borda, #D62828);outline-offset:2px;}
   /* Feedback tátil consistente em todo botão clicável — sem isso o app parece estático ao toque. */
   button{-webkit-tap-highlight-color:transparent;transition:transform .12s ease;}
   button:active{transform:scale(.96);}
@@ -1749,7 +1749,7 @@ class Component extends DCLogic {
     const marmitaSize = mc.marmitaSizes[s.marmitaSizeId] || mc.marmitaSizes.pequena || marmitaSizeDefault(s.marmitaSizeId || 'pequena');
     const optBtnStyle = (selecionado, esgotado) => ({
       display:'flex', alignItems:'center', gap:'10px', width:'100%', textAlign:'left',
-      border: selecionado ? '2px solid #D62828' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
+      border: selecionado ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
       background: esgotado ? '#F6F1E7' : 'var(--cor-card, #fff)', borderRadius:'13px', padding:'13px 14px',
       cursor: esgotado ? 'not-allowed' : 'pointer', opacity: esgotado ? .55 : 1,
       fontWeight:600, fontSize:'14px', color:'#1D1009'
@@ -1796,7 +1796,7 @@ class Component extends DCLogic {
 
     const payBtn = (on) => ({ display:'flex', alignItems:'center', gap:'13px', width:'100%', cursor:'pointer',
       background:'var(--cor-card, #fff)', borderRadius:'16px', padding:'14px', textAlign:'left',
-      border: on ? '2px solid #D62828' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
+      border: on ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
       boxShadow: on ? '0 6px 16px rgba(214,40,40,.16)' : '0 3px 10px rgba(29,16,9,.04)' });
     const radio = (on) => ({ width:'22px', height:'22px', borderRadius:'50%', flex:'none',
       border: on ? '7px solid #D62828' : '2px solid #C9BBA8', background:'#fff', boxSizing:'border-box' });
@@ -1866,7 +1866,7 @@ class Component extends DCLogic {
     // ---- tela de escolha de bairro (obrigatória após o splash, na 1ª vez) ----
     const bairroOptStyle = (selecionado) => ({
       display:'flex', alignItems:'center', justifyContent:'space-between', gap:'10px', width:'100%', textAlign:'left',
-      border: selecionado ? '2px solid #D62828' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
+      border: selecionado ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
       background:'var(--cor-card, #fff)', borderRadius:'13px', padding:'14px 15px',
       cursor:'pointer', fontWeight:700, fontSize:'15px', color:'#1D1009'
     });
