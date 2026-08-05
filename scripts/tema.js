@@ -198,15 +198,15 @@
     var logoUrl = config.branding && config.branding.logoUrl;
     if (nome) {
       document.querySelectorAll('*').forEach(function (el) {
-        if (el.children.length === 0 && el.textContent && el.textContent.trim() === 'Bel do Frango') {
-          el.textContent = nome;
+        if (el.children.length === 0 && el.textContent && el.textContent.indexOf('Bel do Frango') !== -1) {
+          el.textContent = el.textContent.replace(/Bel do Frango/g, nome);
         }
       });
-      // Título da aba (<title>) é string composta ("Entregas — Bel do Frango",
-      // "Garçom — Bel do Frango" etc.) — nunca bate no match exato acima, por
-      // isso fica de fora do loop e troca por substring aqui.
+      document.querySelectorAll('img[alt*="Bel do Frango"]').forEach(function (img) {
+        img.alt = img.alt.replace(/Bel do Frango/g, nome);
+      });
       if (document.title.indexOf('Bel do Frango') !== -1) {
-        document.title = document.title.replace('Bel do Frango', nome);
+        document.title = document.title.replace(/Bel do Frango/g, nome);
       }
     }
     if (logoUrl) {

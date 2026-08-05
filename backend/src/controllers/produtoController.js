@@ -374,7 +374,7 @@ async function importarProdutos(req, res) {
       for (const nomeCategoria of categoriasParaCriar) {
         const chave = normalizarNome(nomeCategoria);
         if (categoriaIdPorNome.has(chave)) continue; // já resolvida por uma linha anterior deste mesmo lote
-        const nova = await tx.categoriaProduto.create({ data: { nome: nomeCategoria } });
+        const nova = await tx.categoriaProduto.create({ data: { tenantId: req.tenantId, nome: nomeCategoria } });
         categoriaIdPorNome.set(chave, nova.id);
         categoriasCriadas++;
       }
@@ -382,6 +382,7 @@ async function importarProdutos(req, res) {
       for (const linha of linhas) {
         await tx.produto.create({
           data: {
+            tenantId: req.tenantId,
             categoriaId: categoriaIdPorNome.get(normalizarNome(linha.categoriaNome)),
             nome: linha.nome,
             descricaoCurta: linha.descricaoCurta,

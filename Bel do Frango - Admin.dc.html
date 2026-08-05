@@ -287,7 +287,7 @@
           </div>
           <sc-for list="{{ productRows }}" as="p" hint-placeholder-count="6">
             <div onClick="{{ p.onEdit }}" style="display:grid;grid-template-columns:62px 2.4fr 1fr 110px 130px 96px 70px;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;">
-              <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:48px;height:48px;border-radius:11px;overflow:hidden;flex:none;"><img src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+              <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:48px;height:48px;border-radius:11px;overflow:hidden;flex:none;"><img sc-camel-src="p.fotoSrc" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
               <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:48px;height:48px;border-radius:11px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;"><span style="font-family:'DM Mono',monospace;font-size:8px;color:#B45309;opacity:.7;">foto</span></div></sc-if>
               <div style="min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.name }}</div><div style="font-size:12px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.desc }}</div></div>
               <div style="font-size:13px;color:#6B2E12;">{{ p.catLabel }}</div>
@@ -340,7 +340,7 @@
                 <button onClick="{{ cat.onEdit }}" aria-label="Editar" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
                 <button onClick="{{ cat.onExcluir }}" aria-label="Excluir" style="background:none;border:1px solid rgba(192,57,43,.25);color:#C0392B;border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
               </div>
-              <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:72px;height:72px;border-radius:50%;overflow:hidden;flex:none;"><img src="{{ cat.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+              <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:72px;height:72px;border-radius:50%;overflow:hidden;flex:none;"><img sc-camel-src="cat.fotoSrc" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
               <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.75;">foto</span></div></sc-if>
               <div>
                 <div style="font-weight:700;font-size:14px;">{{ cat.nome }}</div>
@@ -465,7 +465,7 @@
             <div style="display:flex;align-items:center;gap:12px;">
               <sc-if value="{{ hasSplashPreview }}" hint-placeholder-val="{{ false }}">
                 <div style="width:54px;height:54px;border-radius:14px;overflow:hidden;border:1px solid rgba(29,16,9,.12);flex:none;">
-                  <img src="{{ splashPreviewSrc }}" alt="Splash Preview" style="width:100%;height:100%;object-fit:cover;"/>
+                  <img sc-camel-src="splashPreviewSrc" alt="Splash Preview" style="width:100%;height:100%;object-fit:cover;"/>
                 </div>
               </sc-if>
               <input ref="{{ setSplashInput }}" type="file" accept="image/*" onChange="{{ onSplashSelected }}" style="display:none;"/>
@@ -488,7 +488,7 @@
                 <div style="flex:1;min-width:0;"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;color:#F2C078;text-transform:uppercase;">{{ b.badge }}</span><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;color:#FFF3DC;line-height:1.1;margin-top:3px;">{{ b.titulo }}</div><div style="font-size:11px;color:#F2C078;margin-top:2px;">{{ b.subtitulo }}</div></div>
                 <div style="width:46px;height:46px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div>
               </div>
-              <sc-if value="{{ b.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:56px;height:56px;border-radius:12px;overflow:hidden;flex:none;"><img src="{{ b.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+              <sc-if value="{{ b.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:56px;height:56px;border-radius:12px;overflow:hidden;flex:none;"><img sc-camel-src="b.fotoSrc" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
               <div style="flex:1;min-width:0;">
                 <div style="display:flex;align-items:center;gap:9px;"><span style="{{ b.statusBadge }}">{{ b.statusLabel }}</span><span style="font-family:'DM Mono',monospace;font-size:11px;color:#8C8075;">posição {{ b.pos }}</span></div>
                 <div style="font-weight:700;font-size:15px;margin-top:7px;">{{ b.titulo }}</div>
@@ -1237,7 +1237,7 @@
       </div>
       <div style="flex:1;overflow-y:auto;padding:20px 22px;">
         <div style="display:flex;gap:14px;align-items:center;margin-bottom:20px;">
-          <sc-if value="{{ draftHasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:88px;height:88px;border-radius:16px;overflow:hidden;flex:none;"><img src="{{ draftFotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+          <sc-if value="{{ draftHasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:88px;height:88px;border-radius:16px;overflow:hidden;flex:none;"><img sc-camel-src="draftFotoSrc" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
           <sc-if value="{{ draftSemFoto }}" hint-placeholder-val="{{ true }}"><div style="width:88px;height:88px;border-radius:16px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.75;">foto</span></div></sc-if>
           <input ref="{{ setFotoInput }}" type="file" accept="image/*" onChange="{{ onFotoSelected }}" style="display:none;"/>
           <div style="display:flex;flex-direction:column;gap:8px;">
@@ -1352,7 +1352,7 @@
           <div style="width:54px;height:54px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div>
         </div>
         <div style="display:flex;gap:14px;align-items:center;margin-top:18px;">
-          <sc-if value="{{ bDraftHasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:88px;height:88px;border-radius:16px;overflow:hidden;flex:none;"><img src="{{ bDraftFotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+          <sc-if value="{{ bDraftHasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:88px;height:88px;border-radius:16px;overflow:hidden;flex:none;"><img sc-camel-src="bDraftFotoSrc" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
           <sc-if value="{{ bDraftSemFoto }}" hint-placeholder-val="{{ true }}"><div style="width:88px;height:88px;border-radius:16px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);display:flex;align-items:center;justify-content:center;flex:none;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.75;">foto</span></div></sc-if>
           <input ref="{{ setBannerFotoInput }}" type="file" accept="image/*" onChange="{{ onBannerFotoSelected }}" style="display:none;"/>
           <div style="display:flex;flex-direction:column;gap:8px;">
