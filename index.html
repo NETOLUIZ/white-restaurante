@@ -54,7 +54,7 @@
   .bf-promo-slide{flex:none;padding:22px;display:flex;align-items:center;gap:12px;color:#FFF3DC;min-height:148px;}
   .bf-promo-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:6px;}
   .bf-promo-dot{width:7px;height:7px;border-radius:50%;background:rgba(255,243,220,.45);border:none;cursor:pointer;padding:0;transition:width .25s ease,background .25s ease;}
-  .bf-promo-dot[aria-current="true"]{width:18px;border-radius:4px;background:#FFF3DC;}
+  .bf-promo-dot[aria-current="true"]{width:18px;border-radius:4px;background:var(--cor-fundo-secundaria, #FFF3DC);}
   /* Texto mais legível: parágrafos sem line-height explícito ganham respiro melhor por padrão. */
   p{line-height:1.5;}
   /* Mapa OpenStreetMap (Leaflet) — moldura consistente com o resto do app. */
@@ -136,7 +136,7 @@
 <div style="{{ pageWrap }}">
   <div style="background:var(--header-fundo, #F2B705);color:#7A1209;padding:calc(16px + env(safe-area-inset-top)) 18px 22px;border-radius:0 0 26px 26px;">
     <div style="display:flex;align-items:center;gap:12px;">
-      <div style="width:44px;height:44px;border-radius:50%;background:#FFF3DC;border:2px solid #F2C078;flex:none;display:flex;align-items:center;justify-content:center;color:var(--header-cor-icone-usuario, #B5161C);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></div>
+      <div style="width:44px;height:44px;border-radius:50%;background:var(--cor-fundo-secundaria, #FFF3DC);border:2px solid #F2C078;flex:none;display:flex;align-items:center;justify-content:center;color:var(--header-cor-icone-usuario, #B5161C);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg></div>
       <div style="flex:1;min-width:0;">
         <div style="font-size:13px;color:var(--header-cor-saudacao, #8A1C12);font-weight:600;">{{ saudacao }}</div>
         <button onClick="{{ goCadastro }}" aria-label="Alterar endereço de entrega" style="display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--header-cor-localizacao, #7A1209);padding:2px 0 0;cursor:pointer;font-weight:700;font-size:14px;">
@@ -208,7 +208,7 @@
     <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="5">
       <button onClick="{{ cat.onClick }}" style="flex:none;display:flex;flex-direction:column;align-items:center;gap:9px;background:none;border:none;cursor:pointer;width:72px;">
         <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;overflow:hidden;border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);"><img src="{{ cat.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:#FFF3DC;border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-4.5-4.5a2 2 0 0 0-2.8 0L5 19"/></svg></div></sc-if>
+        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-4.5-4.5a2 2 0 0 0-2.8 0L5 19"/></svg></div></sc-if>
         <span style="font-size:12px;font-weight:600;color:#C0271A;text-align:center;line-height:1.1;">{{ cat.label }}</span>
       </button>
     </sc-for>
@@ -235,7 +235,7 @@
             <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;">{{ p.priceFmt }}</span>
             <div style="display:flex;align-items:center;gap:7px;">
               <sc-if value="{{ p.hasAdicionais }}" hint-placeholder-val="{{ false }}">
-                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2"/><path d="M12 6h8"/><circle cx="16" cy="12" r="2"/><path d="M4 12h10"/><circle cx="8" cy="18" r="2"/><path d="M12 18h8"/></svg>
                 </button>
               </sc-if>
@@ -302,7 +302,7 @@
           <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#A01818;opacity:.75;letter-spacing:.06em;">{{ p.tileLabel }}</span></div></sc-if>
           <div style="{{ p.bodyStyle }}">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
-              <sc-if value="{{ p.hasTag }}" hint-placeholder-val="{{ false }}"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#D62828;background:#FFF3DC;border:1px solid #F2C078;border-radius:6px;padding:2px 6px;">{{ p.tag }}</span></sc-if>
+              <sc-if value="{{ p.hasTag }}" hint-placeholder-val="{{ false }}"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#D62828;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:6px;padding:2px 6px;">{{ p.tag }}</span></sc-if>
               <span style="display:flex;align-items:center;gap:3px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span style="font-family:'DM Mono',monospace;font-size:11px;color:#8C8075;">{{ p.rating }}</span></span>
             </div>
             <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16.5px;margin:0 0 3px;line-height:1.2;">{{ p.name }}</h3>
@@ -311,7 +311,7 @@
               <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;">{{ p.priceFmt }}</span>
               <div style="display:flex;align-items:center;gap:7px;">
               <sc-if value="{{ p.hasAdicionais }}" hint-placeholder-val="{{ false }}">
-                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2"/><path d="M12 6h8"/><circle cx="16" cy="12" r="2"/><path d="M4 12h10"/><circle cx="8" cy="18" r="2"/><path d="M12 18h8"/></svg>
                 </button>
               </sc-if>
@@ -343,7 +343,7 @@
 
   <sc-if value="{{ isCartEmpty }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:46px 16px;gap:18px;">
-      <div style="width:120px;height:120px;border-radius:50%;background:#FFF3DC;border:2px dashed #F2C078;display:flex;align-items:center;justify-content:center;">
+      <div style="width:120px;height:120px;border-radius:50%;background:var(--cor-fundo-secundaria, #FFF3DC);border:2px dashed #F2C078;display:flex;align-items:center;justify-content:center;">
         <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       </div>
       <div>
@@ -369,7 +369,7 @@
             <sc-if value="{{ it.hasObs }}" hint-placeholder-val="{{ false }}"><p style="margin:3px 0 0;font-size:12px;color:#8C8075;font-style:italic;">"{{ it.obs }}"</p></sc-if>
             <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
               <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:#D62828;">{{ it.lineFmt }}</span>
-              <div style="display:flex;align-items:center;gap:0;background:#FFF3DC;border-radius:12px;padding:3px;">
+              <div style="display:flex;align-items:center;gap:0;background:var(--cor-fundo-secundaria, #FFF3DC);border-radius:12px;padding:3px;">
                 <button onClick="{{ it.onDec }}" aria-label="Diminuir" style="width:32px;height:32px;border-radius:9px;border:none;background:#fff;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.08);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                 <span style="font-family:'DM Mono',monospace;font-weight:500;min-width:30px;text-align:center;font-size:15px;">{{ it.qty }}</span>
                 <button onClick="{{ it.onInc }}" aria-label="Aumentar" style="width:32px;height:32px;border-radius:9px;border:none;background:#D62828;color:var(--botao-primario-texto, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
@@ -405,7 +405,7 @@
 <!-- ---------- CONTA ---------- -->
 <sc-if value="{{ isConta }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Conta" style="animation:bfSlideIn .22s cubic-bezier(.16,1,.3,1);padding:calc(16px + env(safe-area-inset-top)) 18px 24px;">
-  <div style="background:#FFF3DC;border:1px solid #F2C078;border-radius:26px;padding:22px 18px;text-align:center;box-shadow:0 8px 22px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;">
+  <div style="background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:26px;padding:22px 18px;text-align:center;box-shadow:0 8px 22px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;">
     <img src="assets/logo-full.png" alt="Galeteria Bel do Frango — O sabor que você ama" style="width:min(76%,250px);max-height:180px;display:block;margin:0 auto;mix-blend-mode:multiply;object-fit:contain;"/>
   </div>
   <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:22px 2px 4px;">Minha Conta</h1>
@@ -432,7 +432,7 @@
   </sc-if>
   <sc-if value="{{ semUsuario }}" hint-placeholder-val="{{ true }}">
     <button onClick="{{ goCadastro }}" style="margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px dashed #D62828;border-radius:18px;padding:16px;cursor:pointer;text-align:left;">
-      <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
+      <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
       <span style="flex:1;min-width:0;">
         <span style="display:block;font-weight:700;font-size:14px;color:#B5161C;">Criar conta (opcional)</span>
         <span style="display:block;font-size:12px;color:#8C8075;margin-top:2px;">Salve seu endereço e peça de novo em 1 clique</span>
@@ -444,7 +444,7 @@
   <div style="margin-top:18px;display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:18px;overflow:hidden;box-shadow:0 5px 14px rgba(29,16,9,.05);">
     <sc-for list="{{ contaRows }}" as="r" hint-placeholder-count="4">
       <button onClick="{{ r.onClick }}" style="display:flex;align-items:center;gap:14px;background:none;border:none;border-bottom:1px solid rgba(29,16,9,.05);padding:16px 16px;cursor:pointer;text-align:left;width:100%;">
-        <span style="width:38px;height:38px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;">{{ r.icon }}</span>
+        <span style="width:38px;height:38px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;">{{ r.icon }}</span>
         <span style="flex:1;font-weight:600;font-size:15px;color:#B5161C;">{{ r.label }}</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
@@ -554,12 +554,12 @@
   <div style="flex:1;overflow-y:auto;padding:8px 18px 18px;">
     <div style="display:flex;align-items:center;gap:9px;margin:12px 0 8px;">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0;color:#C0271A;flex:1;">Escolha {{ marmitaProteinasLabel }}</h2>
-      <button onClick="{{ onFalarTituloProteinas }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+      <button onClick="{{ onFalarTituloProteinas }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <sc-for list="{{ marmitaProteinaOptions }}" as="o" hint-placeholder-count="4">
         <button onClick="{{ o.onClick }}" style="{{ o.style }}">
-          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
+          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
           <span style="flex:1;">{{ o.nome }}</span>
           <sc-if value="{{ o.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border-radius:7px;padding:3px 8px;flex:none;">Esgotado</span></sc-if>
           <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
@@ -568,12 +568,12 @@
     </div>
     <div style="display:flex;align-items:center;gap:9px;margin:22px 0 8px;">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0;color:#C0271A;flex:1;">Complementos (escolha quantos quiser)</h2>
-      <button onClick="{{ onFalarTituloComplementos }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
+      <button onClick="{{ onFalarTituloComplementos }}" aria-label="Ouvir instrução" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></button>
     </div>
     <div style="display:flex;flex-direction:column;gap:8px;">
       <sc-for list="{{ marmitaComplementoOptions }}" as="o" hint-placeholder-count="6">
         <button onClick="{{ o.onClick }}" style="{{ o.style }}">
-          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
+          <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
           <span style="flex:1;">{{ o.nome }}</span>
           <sc-if value="{{ o.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border-radius:7px;padding:3px 8px;flex:none;">Esgotado</span></sc-if>
           <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
@@ -604,7 +604,7 @@
     </div>
     <div style="padding:20px 20px 0;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
-        <span style="display:flex;align-items:center;gap:4px;background:#FFF3DC;border:1px solid #F2C078;border-radius:9px;padding:4px 9px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span style="font-family:'DM Mono',monospace;font-size:12px;color:#C0271A;">{{ pRating }}</span></span>
+        <span style="display:flex;align-items:center;gap:4px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:9px;padding:4px 9px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span style="font-family:'DM Mono',monospace;font-size:12px;color:#C0271A;">{{ pRating }}</span></span>
         <span style="font-size:12px;color:#8C8075;">{{ pCat }}</span>
       </div>
       <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:26px;margin:0 0 10px;line-height:1.12;">{{ pName }}</h1>
@@ -621,7 +621,7 @@
         <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Quantidade</h2>
         <div style="display:flex;align-items:center;gap:14px;">
           <div style="display:flex;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.1);border-radius:14px;padding:5px;">
-            <button onClick="{{ decDetail }}" aria-label="Diminuir" style="width:42px;height:42px;border-radius:11px;border:none;background:#FFF3DC;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button onClick="{{ decDetail }}" aria-label="Diminuir" style="width:42px;height:42px;border-radius:11px;border:none;background:var(--cor-fundo-secundaria, #FFF3DC);color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
             <span style="font-family:'DM Mono',monospace;font-weight:500;min-width:44px;text-align:center;font-size:19px;">{{ detailQty }}</span>
             <button onClick="{{ incDetail }}" aria-label="Aumentar" style="width:42px;height:42px;border-radius:11px;border:none;background:#D62828;color:var(--botao-primario-texto, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
           </div>
@@ -670,7 +670,7 @@
     <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:18px 0 8px;color:#C0271A;">Endereço de entrega</h2>
       <div style="display:flex;gap:12px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <span style="width:40px;height:40px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
         <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">{{ enderecoTitulo }}</div><div style="font-size:13px;color:#8C8075;">{{ enderecoSub }}</div></div>
         <button onClick="{{ goCadastro }}" style="background:none;border:none;color:#D62828;font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Trocar</button>
       </div>
@@ -679,7 +679,7 @@
     <sc-if value="{{ isPedidoRetirada }}" hint-placeholder-val="{{ false }}">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:18px 0 8px;color:#C0271A;">Retirar no local</h2>
       <div style="display:flex;gap:12px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <span style="width:40px;height:40px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg></span>
+        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg></span>
         <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">Bel do Frango</div><div style="font-size:13px;color:#8C8075;">{{ enderecoLoja }}</div></div>
       </div>
     </sc-if>
@@ -687,17 +687,17 @@
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Forma de pagamento</h2>
     <div style="display:flex;flex-direction:column;gap:10px;">
       <button onClick="{{ setPix }}" aria-pressed="{{ pixPressed }}" style="{{ pixStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#2D9E60;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3z"/><path d="M20 14v3M14 20h6M20 20v.01"/></svg></span>
+        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#2D9E60;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3z"/><path d="M20 14v3M14 20h6M20 20v.01"/></svg></span>
         <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Pix</span><span style="font-size:12px;color:#2D9E60;font-weight:600;">Aprovação na hora • recomendado</span></span>
         <span style="{{ pixRadio }}"></span>
       </button>
       <button onClick="{{ setCard }}" aria-pressed="{{ cardPressed }}" style="{{ cardStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
         <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Cartão na entrega</span><span style="font-size:12px;color:#8C8075;">Crédito ou débito</span></span>
         <span style="{{ cardRadio }}"></span>
       </button>
       <button onClick="{{ setDinheiro }}" aria-pressed="{{ dinheiroPressed }}" style="{{ dinheiroStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:#FFF3DC;color:#A8730B;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></span>
+        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#A8730B;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></span>
         <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Dinheiro na entrega</span><span style="font-size:12px;color:#8C8075;">Pague em espécie ao entregador</span></span>
         <span style="{{ dinheiroRadio }}"></span>
       </button>
@@ -745,7 +745,7 @@
          rua, então não diverge do que o entregador vê pro mesmo pedido (ver fix anterior). -->
     <div style="position:relative;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;background:#7A1209;">
       <button onClick="{{ goHome }}" aria-label="Voltar ao início" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.95);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.14);margin-bottom:14px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-      <a href="{{ trackingMapsUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#FFF3DC;color:#7A1209;border-radius:14px;padding:13px;font-weight:700;font-size:14px;text-decoration:none;">
+      <a href="{{ trackingMapsUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--cor-fundo-secundaria, #FFF3DC);color:#7A1209;border-radius:14px;padding:13px;font-weight:700;font-size:14px;text-decoration:none;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
         Ver endereço de entrega no Mapa
       </a>
@@ -754,7 +754,7 @@
     <div style="padding:0 18px;margin-top:-24px;position:relative;">
       <div style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(29,16,9,.1);">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span style="display:flex;align-items:center;gap:6px;background:#FFF3DC;color:#D62828;border-radius:9px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>{{ etaText }}</span>
+          <span style="display:flex;align-items:center;gap:6px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;border-radius:9px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>{{ etaText }}</span>
           <span style="font-size:12px;color:#8C8075;">Pedido {{ orderId }}</span>
         </div>
         <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:12px 0 18px;">{{ statusTitle }}</h1>
@@ -1708,7 +1708,7 @@ class Component extends DCLogic {
         label:c.label,
         onClick:() => this.setState({ selectedCat:c.id, search:'', selectedSubcat:null }),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'12px', padding:'9px 16px', fontWeight:700, fontSize:'13px',
-          background: active ? '#C0271A' : '#FFF3DC', color: active ? '#FFF3DC' : '#C0271A',
+          background: active ? '#C0271A' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#FFF3DC' : '#C0271A',
           boxShadow: active ? '0 5px 12px rgba(107,46,18,.25)' : 'none' }
       };
     });
@@ -1722,7 +1722,7 @@ class Component extends DCLogic {
         label:sc.label || sc.nome,
         onClick:() => this.setState({ selectedSubcat:sc.id }),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'7px 13px', fontWeight:700, fontSize:'12px',
-          background: active ? '#D97706' : '#FFF3DC', color: active ? '#fff' : '#8A4A1C' }
+          background: active ? '#D97706' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#fff' : '#8A4A1C' }
       };
     });
 
@@ -1778,7 +1778,7 @@ class Component extends DCLogic {
       const active = s.horarioRetirada === h;
       return { label:h, onClick:() => this.selecionarHorarioRetirada(h),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'9px 14px', fontWeight:700, fontSize:'13px',
-          background: active ? '#D62828' : '#FFF3DC', color: active ? '#fff' : '#B5161C' } };
+          background: active ? '#D62828' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#fff' : '#B5161C' } };
     });
 
     const cartLines = T.lines.map(({ p, v }) => {
@@ -1801,7 +1801,7 @@ class Component extends DCLogic {
     const radio = (on) => ({ width:'22px', height:'22px', borderRadius:'50%', flex:'none',
       border: on ? '7px solid #D62828' : '2px solid #C9BBA8', background:'#fff', boxSizing:'border-box' });
     const tipoPedidoBtnStyle = (on) => ({ flex:1, border:'none', cursor:'pointer', borderRadius:'12px', padding:'11px', fontWeight:700, fontSize:'13.5px',
-      background: on ? '#D62828' : '#FFF3DC', color: on ? '#fff' : '#B5161C' });
+      background: on ? '#D62828' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: on ? '#fff' : '#B5161C' });
 
     const stepsDef = [
       { label:'Pedido confirmado', sub:'Recebemos seu pedido' },
