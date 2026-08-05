@@ -20,7 +20,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;}
-  body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#B5161C;font-size:15px;line-height:1.5;}
+  body{margin:0;font-family:'Plus Jakarta Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:var(--cor-primaria, #B5161C);font-size:15px;line-height:1.5;}
   ::-webkit-scrollbar{width:0;height:0;}
   input,textarea,button{font-family:inherit;}
   textarea{resize:none;}
@@ -121,7 +121,7 @@
   <button onClick="{{ goCart }}" aria-label="Carrinho" style="margin-left:auto;position:relative;display:flex;align-items:center;gap:9px;background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:14px;padding:10px 16px;font-weight:700;cursor:pointer;">
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     <span style="font-family:'DM Mono',monospace;font-size:13px;">{{ cartTotalFmt }}</span>
-    <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-7px;min-width:21px;height:21px;padding:0 5px;border-radius:11px;background:#B5161C;color:#F2C078;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #C0271A;">{{ cartCount }}</span></sc-if>
+    <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-7px;min-width:21px;height:21px;padding:0 5px;border-radius:11px;background:var(--cor-primaria, #B5161C);color:#F2C078;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #C0271A;">{{ cartCount }}</span></sc-if>
   </button>
 </div>
 </sc-if>
@@ -152,14 +152,14 @@
     </div>
     <div style="margin-top:16px;display:flex;align-items:center;gap:10px;background:var(--cor-fundo, #FFF6D6);border-radius:16px;padding:0 14px;height:50px;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="O que você tá com vontade?" aria-label="Buscar no cardápio" style="flex:1;border:none;background:none;font-size:15px;color:#B5161C;outline:none;"/>
+      <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="O que você tá com vontade?" aria-label="Buscar no cardápio" style="flex:1;border:none;background:none;font-size:15px;color:var(--cor-primaria, #B5161C);outline:none;"/>
       <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goMenu }}" style="background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:10px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;">Ver</button></sc-if>
     </div>
   </div>
 
   <sc-if value="{{ mostrarAvisoFechado }}" hint-placeholder-val="{{ false }}">
   <div style="margin:14px 18px 0;background:#FBEAE8;border:1px solid #F0B8B0;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
     <div>
       <div style="font-weight:800;font-size:14px;color:#7A1209;">Loja fechada no momento</div>
       <div style="font-size:12.5px;color:#8A1C12;">Dá pra navegar pelo cardápio, mas o pedido só é aceito dentro do horário de funcionamento.</div>
@@ -202,7 +202,7 @@
 
   <!-- categories -->
   <div style="display:flex;align-items:baseline;justify-content:space-between;padding:24px 18px 12px;">
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;color:#B5161C;">Categorias</h2>
+    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;color:var(--cor-primaria, #B5161C);">Categorias</h2>
   </div>
   <div style="{{ categoriesRowStyle }}">
     <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="5">
@@ -415,7 +415,7 @@
   <sc-if value="{{ temUsuario }}" hint-placeholder-val="{{ false }}">
     <div style="margin-top:16px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:18px;padding:16px;box-shadow:0 5px 14px rgba(29,16,9,.05);">
       <div style="display:flex;align-items:center;gap:12px;">
-        <div style="width:46px;height:46px;border-radius:50%;background:#FBE3DF;color:#B5161C;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;flex:none;">{{ usuarioIniciais }}</div>
+        <div style="width:46px;height:46px;border-radius:50%;background:#FBE3DF;color:var(--cor-primaria, #B5161C);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;flex:none;">{{ usuarioIniciais }}</div>
         <div style="flex:1;min-width:0;">
           <div style="font-weight:700;font-size:15px;color:#1D1009;">{{ usuarioNome }}</div>
           <div style="font-size:12px;color:#8C8075;">{{ usuarioContato }}</div>
@@ -434,7 +434,7 @@
     <button onClick="{{ goCadastro }}" style="margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px dashed #D62828;border-radius:18px;padding:16px;cursor:pointer;text-align:left;">
       <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
       <span style="flex:1;min-width:0;">
-        <span style="display:block;font-weight:700;font-size:14px;color:#B5161C;">Criar conta (opcional)</span>
+        <span style="display:block;font-weight:700;font-size:14px;color:var(--cor-primaria, #B5161C);">Criar conta (opcional)</span>
         <span style="display:block;font-size:12px;color:#8C8075;margin-top:2px;">Salve seu endereço e peça de novo em 1 clique</span>
       </span>
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -445,7 +445,7 @@
     <sc-for list="{{ contaRows }}" as="r" hint-placeholder-count="4">
       <button onClick="{{ r.onClick }}" style="display:flex;align-items:center;gap:14px;background:none;border:none;border-bottom:1px solid rgba(29,16,9,.05);padding:16px 16px;cursor:pointer;text-align:left;width:100%;">
         <span style="width:38px;height:38px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;">{{ r.icon }}</span>
-        <span style="flex:1;font-weight:600;font-size:15px;color:#B5161C;">{{ r.label }}</span>
+        <span style="flex:1;font-weight:600;font-size:15px;color:var(--cor-primaria, #B5161C);">{{ r.label }}</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </sc-for>
@@ -462,7 +462,7 @@
 <sc-if value="{{ isCadastro }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Cadastro" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
   <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
-    <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">{{ cadastroTitulo }}</h1>
   </div>
   <div style="flex:1;overflow-y:auto;padding:8px 18px 18px;">
@@ -480,7 +480,7 @@
     <label for="cad-cep" style="{{ labelStyle2 }}">CEP</label>
     <div style="position:relative;">
       <input id="cad-cep" value="{{ cadCep }}" onChange="{{ onCadCep }}" placeholder="00000-000" inputmode="numeric" maxlength="9" style="{{ cepInputStyle }}"/>
-      <sc-if value="{{ cepBuscando }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:13px;top:13px;width:17px;height:17px;border:2.5px solid rgba(181,22,28,.25);border-top-color:#B5161C;border-radius:50%;animation:bfRing .7s linear infinite;"></span></sc-if>
+      <sc-if value="{{ cepBuscando }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:13px;top:13px;width:17px;height:17px;border:2.5px solid rgba(181,22,28,.25);border-top-color:var(--cor-primaria, #B5161C);border-radius:50%;animation:bfRing .7s linear infinite;"></span></sc-if>
     </div>
     <sc-if value="{{ hasCepMsg }}" hint-placeholder-val="{{ false }}"><p style="{{ cepMsgStyle }}">{{ cepMsg }}</p></sc-if>
     <div style="height:12px;"></div>
@@ -501,7 +501,7 @@
     <!-- preview de localização (OpenStreetMap / Nominatim) — só visual, mostra o pino do endereço digitado -->
     <sc-if value="{{ cadastroGeocoding }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:14px;height:46px;border-radius:14px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;gap:9px;color:#8C8075;font-size:13px;">
-        <span style="width:15px;height:15px;border:2.5px solid rgba(181,22,28,.25);border-top-color:#B5161C;border-radius:50%;animation:bfRing .7s linear infinite;"></span>Localizando endereço no mapa...
+        <span style="width:15px;height:15px;border:2.5px solid rgba(181,22,28,.25);border-top-color:var(--cor-primaria, #B5161C);border-radius:50%;animation:bfRing .7s linear infinite;"></span>Localizando endereço no mapa...
       </div>
     </sc-if>
     <sc-if value="{{ hasCadastroMap }}" hint-placeholder-val="{{ false }}">
@@ -523,7 +523,7 @@
 <div data-screen-label="Bairro" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
   <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
     <sc-if value="{{ mostrarVoltarBairro }}" hint-placeholder-val="{{ false }}">
-      <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button onClick="{{ goConta }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     </sc-if>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">Escolha seu bairro</h1>
   </div>
@@ -548,7 +548,7 @@
 <sc-if value="{{ isMarmita }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Marmita" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
   <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
-    <button onClick="{{ goMenu }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button onClick="{{ goMenu }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">{{ marmitaNomeTitulo }}</h1>
   </div>
   <div style="flex:1;overflow-y:auto;padding:8px 18px 18px;">
@@ -596,7 +596,7 @@
   <div style="flex:1;overflow-y:auto;">
     <div style="{{ heroStyle }}">
       <div style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;right:16px;display:flex;justify-content:space-between;z-index:2;">
-        <button onClick="{{ goBack }}" aria-label="Voltar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <button onClick="{{ goBack }}" aria-label="Voltar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
         <button onClick="{{ toggleFav }}" aria-label="Favoritar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="21" height="21" viewBox="0 0 24 24" fill="{{ favFill }}" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
       </div>
       <sc-if value="{{ pHasFoto }}" hint-placeholder-val="{{ false }}"><img src="{{ pFotoSrc }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;"/></sc-if>
@@ -640,7 +640,7 @@
       </sc-if>
 
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Observações</h2>
-      <textarea value="{{ detailObs }}" onChange="{{ onObs }}" placeholder="Ex: sem cebola, ponto da carne, troco para R$ 100..." aria-label="Observações do pedido" rows="3" style="width:100%;border:1px solid rgba(29,16,9,.12);background:#fff;border-radius:14px;padding:13px;font-size:14px;color:#B5161C;outline:none;line-height:1.4;"></textarea>
+      <textarea value="{{ detailObs }}" onChange="{{ onObs }}" placeholder="Ex: sem cebola, ponto da carne, troco para R$ 100..." aria-label="Observações do pedido" rows="3" style="width:100%;border:1px solid rgba(29,16,9,.12);background:#fff;border-radius:14px;padding:13px;font-size:14px;color:var(--cor-primaria, #B5161C);outline:none;line-height:1.4;"></textarea>
       <div style="height:14px;"></div>
     </div>
   </div>
@@ -657,7 +657,7 @@
 <sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Checkout" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
   <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
-    <button onClick="{{ goCart }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button onClick="{{ goCart }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">Finalizar pedido</h1>
     <div style="width:36px;height:36px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
   </div>
@@ -719,7 +719,7 @@
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Resumo do pedido</h2>
     <div style="background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.06));border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
       <sc-for list="{{ cartLines }}" as="it" hint-placeholder-count="2">
-        <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;"><span style="color:#B5161C;">{{ it.qty }}× {{ it.name }}</span><span style="font-family:'DM Mono',monospace;color:#C0271A;">{{ it.lineFmt }}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;"><span style="color:var(--cor-primaria, #B5161C);">{{ it.qty }}× {{ it.name }}</span><span style="font-family:'DM Mono',monospace;color:#C0271A;">{{ it.lineFmt }}</span></div>
       </sc-for>
       <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 10px;"></div>
       <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#8C8075;margin-bottom:6px;"><span>Taxa de entrega</span><span style="font-family:'DM Mono',monospace;">{{ feeFmt }}</span></div></sc-if>
@@ -744,7 +744,7 @@
          pro Google Maps, sem geocodificação própria — não depende do Nominatim achar a
          rua, então não diverge do que o entregador vê pro mesmo pedido (ver fix anterior). -->
     <div style="position:relative;padding:calc(14px + env(safe-area-inset-top)) 16px 16px;background:#7A1209;">
-      <button onClick="{{ goHome }}" aria-label="Voltar ao início" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.95);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.14);margin-bottom:14px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B5161C" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <button onClick="{{ goHome }}" aria-label="Voltar ao início" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.95);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.14);margin-bottom:14px;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
       <a href="{{ trackingMapsUrl }}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:var(--cor-fundo-secundaria, #FFF3DC);color:#7A1209;border-radius:14px;padding:13px;font-weight:700;font-size:14px;text-decoration:none;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
         Ver endereço de entrega no Mapa
@@ -990,8 +990,8 @@ class Component extends DCLogic {
   // quando existir, senão cai num gradiente de reserva (cicla pelos 3 abaixo).
   mapBanner(b, i){
     const FALLBACK_BG = [
-      'linear-gradient(120deg,#B5161C 0%,#C0271A 60%,#A01818 130%)',
-      'linear-gradient(120deg,#7A1209 0%,#B5161C 55%,#E89A3C 130%)',
+      'linear-gradient(120deg,var(--cor-primaria, #B5161C) 0%,#C0271A 60%,#A01818 130%)',
+      'linear-gradient(120deg,#7A1209 0%,var(--cor-primaria, #B5161C) 55%,#E89A3C 130%)',
       'linear-gradient(120deg,#7A1209 0%,#A8730B 60%,#F2B705 130%)'
     ];
     const fotoUrl = b.foto ? this.apiBase.replace('/api', '') + '/uploads/' + b.foto : null;
@@ -1778,7 +1778,7 @@ class Component extends DCLogic {
       const active = s.horarioRetirada === h;
       return { label:h, onClick:() => this.selecionarHorarioRetirada(h),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'9px 14px', fontWeight:700, fontSize:'13px',
-          background: active ? '#D62828' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#fff' : '#B5161C' } };
+          background: active ? '#D62828' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#fff' : 'var(--cor-primaria, #B5161C)' } };
     });
 
     const cartLines = T.lines.map(({ p, v }) => {
@@ -1801,7 +1801,7 @@ class Component extends DCLogic {
     const radio = (on) => ({ width:'22px', height:'22px', borderRadius:'50%', flex:'none',
       border: on ? '7px solid #D62828' : '2px solid #C9BBA8', background:'#fff', boxSizing:'border-box' });
     const tipoPedidoBtnStyle = (on) => ({ flex:1, border:'none', cursor:'pointer', borderRadius:'12px', padding:'11px', fontWeight:700, fontSize:'13.5px',
-      background: on ? '#D62828' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: on ? '#fff' : '#B5161C' });
+      background: on ? '#D62828' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: on ? '#fff' : 'var(--cor-primaria, #B5161C)' });
 
     const stepsDef = [
       { label:'Pedido confirmado', sub:'Recebemos seu pedido' },
@@ -1816,7 +1816,7 @@ class Component extends DCLogic {
         label:st.label, sub:st.sub, done, active, line:!last,
         dotStyle:{ width:'30px', height:'30px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', flex:'none', background:color, boxShadow: active ? '0 0 0 5px rgba(214,40,40,.18)' : 'none' },
         lineStyle:{ width:'3px', flex:1, minHeight:'24px', background: done ? '#2D9E60' : '#E5D9C5', borderRadius:'2px' },
-        labelStyle:{ fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:700, fontSize:'15px', color: (done||active) ? '#B5161C' : '#9C9183' }
+        labelStyle:{ fontFamily:"'Bricolage Grotesque',sans-serif", fontWeight:700, fontSize:'15px', color: (done||active) ? 'var(--cor-primaria, #B5161C)' : '#9C9183' }
       };
     });
     const statusTitles = ['Pedido confirmado!','Preparando seu pedido','Saiu para entrega','Pedido entregue!'];
@@ -1848,7 +1848,7 @@ class Component extends DCLogic {
     const enderecoCurto = temEndereco ? (u.endereco.rua + (u.endereco.numero ? ', ' + u.endereco.numero : '')) : 'Sua localização';
 
     const c = s.cadastro;
-    const inputStyle2 = { width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 14px', fontSize:'15px', color:'#B5161C', outline:'none' };
+    const inputStyle2 = { width:'100%', border:'1px solid rgba(29,16,9,.14)', background:'#fff', borderRadius:'12px', padding:'13px 14px', fontSize:'15px', color:'var(--cor-primaria, #B5161C)', outline:'none' };
     const cepInputStyle = { ...inputStyle2, paddingRight:'38px' }; // espaço reservado pro spinner de busca não cobrir os dígitos do CEP
     const labelStyle2 = { display:'block', fontSize:'13px', fontWeight:600, color:'#6B2E12', margin:'0 0 6px' };
     const cepMsgStyle = { margin:'6px 2px 0', fontSize:'12px', fontWeight:600, color: c.cepOk === false ? '#C0392B' : c.cepOk === true ? '#2D9E60' : '#8C8075' };
