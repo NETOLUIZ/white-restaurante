@@ -53,6 +53,39 @@
     { rgb: 'rgb(217, 119, 6)', prop: 'borderColor', campo: 'corBotao' },
   ];
 
+  // Campos novos da Fase 1 do painel de personalização — cada um vira uma
+  // CSS custom property em :root. Elementos migrados em index.html usam
+  // var(--nome, fallback); o fallback é o valor original hardcoded, então
+  // funciona mesmo antes do fetch de /config terminar.
+  var CAMPOS_CSS_VAR = {
+    corFundo: '--cor-fundo', corFundoSecundaria: '--cor-fundo-secundaria',
+    corPrimaria: '--cor-primaria', corSecundaria: '--cor-secundaria', corTexto: '--cor-texto',
+    botaoPrimarioFundo: '--botao-primario-fundo', botaoPrimarioTexto: '--botao-primario-texto', botaoPrimarioBorda: '--botao-primario-borda',
+    corCard: '--cor-card', cardCorBorda: '--card-cor-borda', cardCorTitulo: '--card-cor-titulo',
+    cardCorTextoSecundario: '--card-cor-texto-secundario', cardRaioBorda: '--card-raio-borda',
+    headerFundo: '--header-fundo', headerCorSaudacao: '--header-cor-saudacao', headerCorIconeUsuario: '--header-cor-icone-usuario',
+    headerCorLocalizacao: '--header-cor-localizacao', headerCorNotificacao: '--header-cor-notificacao',
+    navInferiorFundo: '--nav-inferior-fundo', navInferiorIconeNormal: '--nav-inferior-icone-normal', navInferiorIconeAtivo: '--nav-inferior-icone-ativo',
+    navInferiorTextoNormal: '--nav-inferior-texto-normal', navInferiorTextoAtivo: '--nav-inferior-texto-ativo',
+  };
+
+  function montarCssVarsRoot(branding) {
+    var linhas = [];
+    Object.keys(CAMPOS_CSS_VAR).forEach(function (campo) {
+      if (branding[campo]) linhas.push(CAMPOS_CSS_VAR[campo] + ':' + branding[campo] + ';');
+    });
+    return linhas.length ? ':root{' + linhas.join('') + '}' : '';
+  }
+
+  /** Usado pelo listener de preview (Task 5) — aplica as
+   * vars direto no documentElement, sem esperar um novo <style>. */
+  function aplicarCssVarsDireto(branding) {
+    var root = document.documentElement.style;
+    Object.keys(CAMPOS_CSS_VAR).forEach(function (campo) {
+      if (branding[campo]) root.setProperty(CAMPOS_CSS_VAR[campo], branding[campo]);
+    });
+  }
+
   // Mesma regra de apiBase usada em todos os outros arquivos (index.html,
   // Admin.dc.html etc.) — em dev o front roda numa porta separada (5000) da
   // API (3010), não dá pra usar caminho relativo.
@@ -86,7 +119,7 @@
   // especificidade, o que veio depois vence). background não sofria porque
   // o <style> estático nunca definia background, só color — sem concorrência.
   function montarCssBase(branding, features) {
-    var linhas = [];
+    var linhas = [montarCssVarsRoot(branding)];
     linhas.push('body{background:' + (branding.corFundo || '') + ' !important;color:' + (branding.corTexto || '') + ' !important}');
     if (branding.fonteTexto) {
       linhas.push("body{font-family:'" + branding.fonteTexto + "',system-ui,sans-serif !important}");
@@ -217,5 +250,23 @@
     if (!config || !config.branding) return;
     aplicarCssBase(config);
     iniciarPollDom(config);
+  });
+
+  // Live preview (painel super admin) — só aceita mensagens da origem exata
+  // do painel, nunca de qualquer postMessage genérico. Não persiste nada:
+  // só troca as CSS vars na hora, pro iframe de preview refletir o form.
+  var ORIGENS_PREVIEW_PERMITIDAS = isDevLocal
+    ? null // em dev aceita qualquer origem localhost (porta do super.html varia)
+    : [location.origin.replace(/^https:\/\/[^.]+\./, 'https://super.')];
+
+  function origemPermitida(origem) {
+    if (isDevLocal) return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origem);
+    return ORIGENS_PREVIEW_PERMITIDAS.indexOf(origem) !== -1;
+  }
+
+  window.addEventListener('message', function (event) {
+    if (!origemPermitida(event.origin)) return;
+    if (!event.data || event.data.type !== 'bf-preview-update' || !event.data.branding) return;
+    aplicarCssVarsDireto(event.data.branding);
   });
 })();

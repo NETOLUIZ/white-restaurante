@@ -237,6 +237,21 @@
         <!-- MARCA -->
         <sc-if value="{{ isAbaMarca }}" hint-placeholder-val="{{ false }}">
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+
+          <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
+            <button onClick="{{ goSubAbaIdentidade }}" style="{{ subAbaIdentidadeStyle }}">Identidade Visual</button>
+            <button onClick="{{ goSubAbaCoresBase }}" style="{{ subAbaCoresBaseStyle }}">Cores Base</button>
+            <button onClick="{{ goSubAbaBotoes }}" style="{{ subAbaBotoesStyle }}">Botões</button>
+            <button onClick="{{ goSubAbaCards }}" style="{{ subAbaCardsStyle }}">Cards e Blocos</button>
+            <button onClick="{{ goSubAbaNavegacao }}" style="{{ subAbaNavegacaoStyle }}">Navegação</button>
+          </div>
+
+          <div style="margin-bottom:20px;border-radius:14px;overflow:hidden;border:1px solid rgba(29,16,9,.1);height:520px;">
+            <iframe ref="{{ setPreviewFrame }}" src="{{ previewUrl }}" title="Preview da loja" style="width:100%;height:100%;border:none;" onLoad="{{ onPreviewFrameLoad }}"></iframe>
+          </div>
+
+          <!-- IDENTIDADE VISUAL -->
+          <sc-if value="{{ isSubAbaIdentidade }}" hint-placeholder-val="{{ true }}">
           <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
             <div style="width:64px;height:64px;border-radius:14px;overflow:hidden;background:#F6F1E7;border:1px solid rgba(29,16,9,.08);flex:none;display:flex;align-items:center;justify-content:center;">
               <sc-if value="{{ hasLogoPreview }}" hint-placeholder-val="{{ false }}"><img sc-camel-src="{{ logoPreviewSrc }}" alt="Logo" style="width:100%;height:100%;object-fit:contain;"/></sc-if>
@@ -247,18 +262,7 @@
               <button onClick="{{ enviarLogo }}" style="display:block;margin-top:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:10px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;">{{ enviarLogoLabel }}</button>
             </div>
           </div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
-            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Cor primária</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corPrimaria }};"></div><input type="text" value="{{ corPrimaria }}" onChange="{{ onCorPrimaria }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
-            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Cor secundária</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corSecundaria }};"></div><input type="text" value="{{ corSecundaria }}" onChange="{{ onCorSecundaria }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
-            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Cor do botão</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corBotao }};"></div><input type="text" value="{{ corBotao }}" onChange="{{ onCorBotao }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
-            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Texto do botão</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corTextoBotao }};"></div><input type="text" value="{{ corTextoBotao }}" onChange="{{ onCorTextoBotao }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
-            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corFundo }};"></div><input type="text" value="{{ corFundo }}" onChange="{{ onCorFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
-            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Texto</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corTexto }};"></div><input type="text" value="{{ corTexto }}" onChange="{{ onCorTexto }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
-            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Card</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corCard }};"></div><input type="text" value="{{ corCard }}" onChange="{{ onCorCard }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
-          </div>
-
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
             <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fonte dos títulos</label>
               <select value="{{ fonteTitulo }}" onChange="{{ onFonteTitulo }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;">
                 <sc-for list="{{ fontesOptions }}" as="f" hint-placeholder-count="8"><option value="{{ f }}">{{ f }}</option></sc-for>
@@ -270,13 +274,77 @@
               </select>
             </div>
           </div>
+          </sc-if>
+
+          <!-- CORES BASE -->
+          <sc-if value="{{ isSubAbaCoresBase }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo principal</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corFundo }};"></div><input type="text" value="{{ corFundo }}" onChange="{{ onCorFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo secundário</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corFundoSecundaria }};"></div><input type="text" value="{{ corFundoSecundaria }}" onChange="{{ onCorFundoSecundaria }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Primária</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corPrimaria }};"></div><input type="text" value="{{ corPrimaria }}" onChange="{{ onCorPrimaria }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Secundária</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corSecundaria }};"></div><input type="text" value="{{ corSecundaria }}" onChange="{{ onCorSecundaria }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Destaque</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corDestaque }};"></div><input type="text" value="{{ corDestaque }}" onChange="{{ onCorDestaque }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Sucesso</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corSucesso }};"></div><input type="text" value="{{ corSucesso }}" onChange="{{ onCorSucesso }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Alerta</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corAlerta }};"></div><input type="text" value="{{ corAlerta }}" onChange="{{ onCorAlerta }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Erro</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corErro }};"></div><input type="text" value="{{ corErro }}" onChange="{{ onCorErro }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Texto</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corTexto }};"></div><input type="text" value="{{ corTexto }}" onChange="{{ onCorTexto }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+          </div>
+          </sc-if>
+
+          <!-- BOTÕES -->
+          <sc-if value="{{ isSubAbaBotoes }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Primário — fundo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoPrimarioFundo }};"></div><input type="text" value="{{ botaoPrimarioFundo }}" onChange="{{ onBotaoPrimarioFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Primário — texto</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoPrimarioTexto }};"></div><input type="text" value="{{ botaoPrimarioTexto }}" onChange="{{ onBotaoPrimarioTexto }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Primário — borda</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoPrimarioBorda }};"></div><input type="text" value="{{ botaoPrimarioBorda }}" onChange="{{ onBotaoPrimarioBorda }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Secundário — fundo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoSecundarioFundo }};"></div><input type="text" value="{{ botaoSecundarioFundo }}" onChange="{{ onBotaoSecundarioFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Secundário — texto</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoSecundarioTexto }};"></div><input type="text" value="{{ botaoSecundarioTexto }}" onChange="{{ onBotaoSecundarioTexto }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Secundário — borda</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoSecundarioBorda }};"></div><input type="text" value="{{ botaoSecundarioBorda }}" onChange="{{ onBotaoSecundarioBorda }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Desabilitado — fundo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoDesabilitadoFundo }};"></div><input type="text" value="{{ botaoDesabilitadoFundo }}" onChange="{{ onBotaoDesabilitadoFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Desabilitado — texto</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoDesabilitadoTexto }};"></div><input type="text" value="{{ botaoDesabilitadoTexto }}" onChange="{{ onBotaoDesabilitadoTexto }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+          </div>
+          </sc-if>
+
+          <!-- CARDS E BLOCOS -->
+          <sc-if value="{{ isSubAbaCards }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corCard }};"></div><input type="text" value="{{ corCard }}" onChange="{{ onCorCard }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Borda</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ cardCorBorda }};"></div><input type="text" value="{{ cardCorBorda }}" onChange="{{ onCardCorBorda }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Título</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ cardCorTitulo }};"></div><input type="text" value="{{ cardCorTitulo }}" onChange="{{ onCardCorTitulo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Texto secundário</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ cardCorTextoSecundario }};"></div><input type="text" value="{{ cardCorTextoSecundario }}" onChange="{{ onCardCorTextoSecundario }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Hover/seleção</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ cardCorHover }};"></div><input type="text" value="{{ cardCorHover }}" onChange="{{ onCardCorHover }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+          </div>
+          <div style="margin-top:14px;"><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Raio da borda</label>
+            <input type="text" value="{{ cardRaioBorda }}" onChange="{{ onCardRaioBorda }}" placeholder="8px" style="width:160px;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;"/>
+          </div>
+          </sc-if>
+
+          <!-- NAVEGAÇÃO -->
+          <sc-if value="{{ isSubAbaNavegacao }}" hint-placeholder-val="{{ false }}">
+          <div style="font-weight:700;font-size:13px;color:#6B2E12;margin-bottom:8px;">Cabeçalho</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ headerFundo }};"></div><input type="text" value="{{ headerFundo }}" onChange="{{ onHeaderFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Saudação</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ headerCorSaudacao }};"></div><input type="text" value="{{ headerCorSaudacao }}" onChange="{{ onHeaderCorSaudacao }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Ícone do usuário</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ headerCorIconeUsuario }};"></div><input type="text" value="{{ headerCorIconeUsuario }}" onChange="{{ onHeaderCorIconeUsuario }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Localização</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ headerCorLocalizacao }};"></div><input type="text" value="{{ headerCorLocalizacao }}" onChange="{{ onHeaderCorLocalizacao }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Notificações</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ headerCorNotificacao }};"></div><input type="text" value="{{ headerCorNotificacao }}" onChange="{{ onHeaderCorNotificacao }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+          </div>
+          <div style="font-weight:700;font-size:13px;color:#6B2E12;margin-bottom:8px;">Barra inferior</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ navInferiorFundo }};"></div><input type="text" value="{{ navInferiorFundo }}" onChange="{{ onNavInferiorFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Ícone normal</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ navInferiorIconeNormal }};"></div><input type="text" value="{{ navInferiorIconeNormal }}" onChange="{{ onNavInferiorIconeNormal }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Ícone ativo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ navInferiorIconeAtivo }};"></div><input type="text" value="{{ navInferiorIconeAtivo }}" onChange="{{ onNavInferiorIconeAtivo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Texto normal</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ navInferiorTextoNormal }};"></div><input type="text" value="{{ navInferiorTextoNormal }}" onChange="{{ onNavInferiorTextoNormal }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+            <div><label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Texto ativo</label><div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ navInferiorTextoAtivo }};"></div><input type="text" value="{{ navInferiorTextoAtivo }}" onChange="{{ onNavInferiorTextoAtivo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div></div>
+          </div>
+          </sc-if>
 
           <sc-if value="{{ hasContrasteAviso }}" hint-placeholder-val="{{ false }}">
-            <p style="margin:0 0 14px;font-size:12.5px;font-weight:600;color:#B45309;background:#FFF3DC;border:1px solid #F2C078;border-radius:10px;padding:9px 12px;">⚠ Contraste baixo em: {{ contrasteAvisoLabel }} — ainda pode salvar, mas pode ficar difícil de ler.</p>
+            <p style="margin:14px 0 0;font-size:12.5px;font-weight:600;color:#B45309;background:#FFF3DC;border:1px solid #F2C078;border-radius:10px;padding:9px 12px;">⚠ Contraste baixo em: {{ contrasteAvisoLabel }} — ainda pode salvar, mas pode ficar difícil de ler.</p>
           </sc-if>
-          <sc-if value="{{ hasBrandingMsg }}" hint-placeholder-val="{{ false }}"><p style="margin:0 0 14px;font-size:13px;font-weight:600;color:{{ brandingMsgCor }};">{{ brandingMsg }}</p></sc-if>
+          <sc-if value="{{ hasBrandingMsg }}" hint-placeholder-val="{{ false }}"><p style="margin:14px 0 0;font-size:13px;font-weight:600;color:{{ brandingMsgCor }};">{{ brandingMsg }}</p></sc-if>
 
-          <button onClick="{{ salvarBranding }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:14px;cursor:pointer;">{{ salvarBrandingLabel }}</button>
+          <button onClick="{{ salvarBranding }}" style="margin-top:16px;background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:14px;cursor:pointer;">{{ salvarBrandingLabel }}</button>
         </div>
         </sc-if>
 
@@ -421,7 +489,7 @@ class Component extends DCLogic {
     novoTenantForm: null,
     salvandoNovoTenant: false, novoTenantErro: '',
 
-    tenantDetalheId: null, tenantAtual: null, abaDetalhe: 'geral',
+    tenantDetalheId: null, tenantAtual: null, abaDetalhe: 'geral', subAbaMarca: 'identidade',
     excluirTenantConfirmacao: '', excluindoTenant: false, excluirTenantErro: '',
     nomeEditavel: '', salvandoNome: false,
 
@@ -632,6 +700,12 @@ class Component extends DCLogic {
     this.setState({ abaDetalhe: 'marca' });
     this.carregarBranding();
   }
+  goSubAbaMarca(sub) { this.setState({ subAbaMarca: sub }); }
+  goSubAbaIdentidade() { this.goSubAbaMarca('identidade'); }
+  goSubAbaCoresBase() { this.goSubAbaMarca('coresBase'); }
+  goSubAbaBotoes() { this.goSubAbaMarca('botoes'); }
+  goSubAbaCards() { this.goSubAbaMarca('cards'); }
+  goSubAbaNavegacao() { this.goSubAbaMarca('navegacao'); }
   goAbaFeatures() {
     this.setState({ abaDetalhe: 'features' });
     this.carregarFeatures();
@@ -657,14 +731,49 @@ class Component extends DCLogic {
     const { branding, contraste } = await this.apiGet('/super/tenants/' + this.state.tenantDetalheId + '/branding');
     this.setState({ branding, contraste, brandingMsg: '', logoFile: null, logoPreviewLocal: null });
   }
-  onCorCampo(campo, e) { this.setState(s => ({ branding: { ...s.branding, [campo]: e.target.value } })); }
+  onCorCampo(campo, e) {
+    this.setState(s => ({ branding: { ...s.branding, [campo]: e.target.value } }));
+    setTimeout(() => this.enviarPreview(), 0);
+  }
+  enviarPreview() {
+    if (!this._previewFrame || !this._previewFrameReady || !this.state.branding || !this.state.tenantAtual) return;
+    var targetOrigin;
+    try { targetOrigin = new URL(this.urlLoja(this.state.tenantAtual.slug)).origin; } catch (e) { return; }
+    this._previewFrame.contentWindow.postMessage({ type: 'bf-preview-update', branding: this.state.branding }, targetOrigin);
+  }
   onCorPrimaria(e) { this.onCorCampo('corPrimaria', e); }
   onCorSecundaria(e) { this.onCorCampo('corSecundaria', e); }
-  onCorBotao(e) { this.onCorCampo('corBotao', e); }
-  onCorTextoBotao(e) { this.onCorCampo('corTextoBotao', e); }
   onCorFundo(e) { this.onCorCampo('corFundo', e); }
   onCorTexto(e) { this.onCorCampo('corTexto', e); }
   onCorCard(e) { this.onCorCampo('corCard', e); }
+  onCorFundoSecundaria(e) { this.onCorCampo('corFundoSecundaria', e); }
+  onCorDestaque(e) { this.onCorCampo('corDestaque', e); }
+  onCorSucesso(e) { this.onCorCampo('corSucesso', e); }
+  onCorAlerta(e) { this.onCorCampo('corAlerta', e); }
+  onCorErro(e) { this.onCorCampo('corErro', e); }
+  onBotaoPrimarioFundo(e) { this.onCorCampo('botaoPrimarioFundo', e); }
+  onBotaoPrimarioTexto(e) { this.onCorCampo('botaoPrimarioTexto', e); }
+  onBotaoPrimarioBorda(e) { this.onCorCampo('botaoPrimarioBorda', e); }
+  onBotaoSecundarioFundo(e) { this.onCorCampo('botaoSecundarioFundo', e); }
+  onBotaoSecundarioTexto(e) { this.onCorCampo('botaoSecundarioTexto', e); }
+  onBotaoSecundarioBorda(e) { this.onCorCampo('botaoSecundarioBorda', e); }
+  onBotaoDesabilitadoFundo(e) { this.onCorCampo('botaoDesabilitadoFundo', e); }
+  onBotaoDesabilitadoTexto(e) { this.onCorCampo('botaoDesabilitadoTexto', e); }
+  onCardCorBorda(e) { this.onCorCampo('cardCorBorda', e); }
+  onCardCorTitulo(e) { this.onCorCampo('cardCorTitulo', e); }
+  onCardCorTextoSecundario(e) { this.onCorCampo('cardCorTextoSecundario', e); }
+  onCardCorHover(e) { this.onCorCampo('cardCorHover', e); }
+  onCardRaioBorda(e) { this.setState(s => ({ branding: { ...s.branding, cardRaioBorda: e.target.value } })); setTimeout(() => this.enviarPreview(), 0); }
+  onHeaderFundo(e) { this.onCorCampo('headerFundo', e); }
+  onHeaderCorSaudacao(e) { this.onCorCampo('headerCorSaudacao', e); }
+  onHeaderCorIconeUsuario(e) { this.onCorCampo('headerCorIconeUsuario', e); }
+  onHeaderCorLocalizacao(e) { this.onCorCampo('headerCorLocalizacao', e); }
+  onHeaderCorNotificacao(e) { this.onCorCampo('headerCorNotificacao', e); }
+  onNavInferiorFundo(e) { this.onCorCampo('navInferiorFundo', e); }
+  onNavInferiorIconeNormal(e) { this.onCorCampo('navInferiorIconeNormal', e); }
+  onNavInferiorIconeAtivo(e) { this.onCorCampo('navInferiorIconeAtivo', e); }
+  onNavInferiorTextoNormal(e) { this.onCorCampo('navInferiorTextoNormal', e); }
+  onNavInferiorTextoAtivo(e) { this.onCorCampo('navInferiorTextoAtivo', e); }
   onFonteTitulo(e) { this.setState(s => ({ branding: { ...s.branding, fonteTitulo: e.target.value } })); }
   onFonteTexto(e) { this.setState(s => ({ branding: { ...s.branding, fonteTexto: e.target.value } })); }
 
@@ -674,8 +783,18 @@ class Component extends DCLogic {
     this.setState({ brandingSalvando: true, brandingMsg: '' });
     try {
       const { branding, contraste } = await this.apiSend('PATCH', '/super/tenants/' + id + '/branding', {
-        corPrimaria: b.corPrimaria, corSecundaria: b.corSecundaria, corBotao: b.corBotao, corTextoBotao: b.corTextoBotao,
-        corFundo: b.corFundo, corTexto: b.corTexto, corCard: b.corCard, fonteTitulo: b.fonteTitulo, fonteTexto: b.fonteTexto,
+        corPrimaria: b.corPrimaria, corSecundaria: b.corSecundaria, corFundo: b.corFundo, corFundoSecundaria: b.corFundoSecundaria,
+        corTexto: b.corTexto, corDestaque: b.corDestaque, corSucesso: b.corSucesso, corAlerta: b.corAlerta, corErro: b.corErro,
+        botaoPrimarioFundo: b.botaoPrimarioFundo, botaoPrimarioTexto: b.botaoPrimarioTexto, botaoPrimarioBorda: b.botaoPrimarioBorda,
+        botaoSecundarioFundo: b.botaoSecundarioFundo, botaoSecundarioTexto: b.botaoSecundarioTexto, botaoSecundarioBorda: b.botaoSecundarioBorda,
+        botaoDesabilitadoFundo: b.botaoDesabilitadoFundo, botaoDesabilitadoTexto: b.botaoDesabilitadoTexto,
+        corCard: b.corCard, cardCorBorda: b.cardCorBorda, cardCorTitulo: b.cardCorTitulo, cardCorTextoSecundario: b.cardCorTextoSecundario,
+        cardCorHover: b.cardCorHover, cardRaioBorda: b.cardRaioBorda,
+        headerFundo: b.headerFundo, headerCorSaudacao: b.headerCorSaudacao, headerCorIconeUsuario: b.headerCorIconeUsuario,
+        headerCorLocalizacao: b.headerCorLocalizacao, headerCorNotificacao: b.headerCorNotificacao,
+        navInferiorFundo: b.navInferiorFundo, navInferiorIconeNormal: b.navInferiorIconeNormal, navInferiorIconeAtivo: b.navInferiorIconeAtivo,
+        navInferiorTextoNormal: b.navInferiorTextoNormal, navInferiorTextoAtivo: b.navInferiorTextoAtivo,
+        fonteTitulo: b.fonteTitulo, fonteTexto: b.fonteTexto,
       });
       this.setState({ brandingSalvando: false, branding, contraste, brandingMsg: 'Marca salva!', brandingMsgOk: true });
     } catch (e) {
@@ -818,8 +937,13 @@ class Component extends DCLogic {
       ip: l.ip || '—',
     }));
 
+    const LABELS_CONTRASTE = {
+      botao: 'botão', texto: 'texto', botaoSecundario: 'botão secundário',
+      cardTitulo: 'título do card', cardTextoSecundario: 'texto secundário do card',
+      header: 'cabeçalho', navInferiorAtivo: 'nav inferior (ativo)', navInferiorNormal: 'nav inferior (normal)',
+    };
     const contrasteAvisoLabel = s.contraste && s.contraste.aviso && s.contraste.aviso.length
-      ? s.contraste.aviso.map(a => a === 'botao' ? 'botão' : 'texto').join(', ')
+      ? s.contraste.aviso.map(a => LABELS_CONTRASTE[a] || a).join(', ')
       : '';
 
     return {
@@ -871,9 +995,19 @@ class Component extends DCLogic {
       voltarTenants: () => this.voltarTenants(),
       goAbaGeral: () => this.goAbaGeral(), goAbaMarca: () => this.goAbaMarca(), goAbaFeatures: () => this.goAbaFeatures(), goAbaImpersonar: () => this.goAbaImpersonar(),
       abaGeral: abaStyle(s.abaDetalhe === 'geral'), abaMarca: abaStyle(s.abaDetalhe === 'marca'), abaFeatures: abaStyle(s.abaDetalhe === 'features'), abaImpersonar: abaStyle(s.abaDetalhe === 'impersonar'),
+      goSubAbaIdentidade: () => this.goSubAbaIdentidade(), goSubAbaCoresBase: () => this.goSubAbaCoresBase(),
+      goSubAbaBotoes: () => this.goSubAbaBotoes(), goSubAbaCards: () => this.goSubAbaCards(), goSubAbaNavegacao: () => this.goSubAbaNavegacao(),
+      isSubAbaIdentidade: s.subAbaMarca === 'identidade', isSubAbaCoresBase: s.subAbaMarca === 'coresBase',
+      isSubAbaBotoes: s.subAbaMarca === 'botoes', isSubAbaCards: s.subAbaMarca === 'cards', isSubAbaNavegacao: s.subAbaMarca === 'navegacao',
+      subAbaIdentidadeStyle: abaStyle(s.subAbaMarca === 'identidade'), subAbaCoresBaseStyle: abaStyle(s.subAbaMarca === 'coresBase'),
+      subAbaBotoesStyle: abaStyle(s.subAbaMarca === 'botoes'), subAbaCardsStyle: abaStyle(s.subAbaMarca === 'cards'),
+      subAbaNavegacaoStyle: abaStyle(s.subAbaMarca === 'navegacao'),
       isAbaGeral: s.abaDetalhe === 'geral', isAbaMarca: s.abaDetalhe === 'marca', isAbaFeatures: s.abaDetalhe === 'features', isAbaImpersonar: s.abaDetalhe === 'impersonar',
 
       tenantSlug: s.tenantAtual ? s.tenantAtual.slug : '',
+      previewUrl: s.tenantAtual ? this.urlLoja(s.tenantAtual.slug) : '',
+      setPreviewFrame: (el) => { this._previewFrame = el; },
+      onPreviewFrameLoad: () => { this._previewFrameReady = true; this.enviarPreview(); },
       tenantNome: s.tenantAtual ? s.tenantAtual.nome : '',
       nomeEditavel: s.nomeEditavel, onNomeEditavel: (e) => this.onNomeEditavel(e),
       salvarNome: () => this.salvarNome(), salvarNomeLabel: s.salvandoNome ? 'Salvando...' : 'Salvar',
@@ -901,14 +1035,55 @@ class Component extends DCLogic {
 
       corPrimaria: s.branding ? s.branding.corPrimaria : '#C8102E',
       corSecundaria: s.branding ? s.branding.corSecundaria : '#F5A623',
-      corBotao: s.branding ? s.branding.corBotao : '#C8102E',
-      corTextoBotao: s.branding ? s.branding.corTextoBotao : '#FFFFFF',
       corFundo: s.branding ? s.branding.corFundo : '#FFFFFF',
       corTexto: s.branding ? s.branding.corTexto : '#1A1A1A',
       corCard: s.branding ? s.branding.corCard : '#FFFFFF',
+      corFundoSecundaria: s.branding ? s.branding.corFundoSecundaria : '#F7F7F7',
+      corDestaque: s.branding ? s.branding.corDestaque : '#F5A623',
+      corSucesso: s.branding ? s.branding.corSucesso : '#16A34A',
+      corAlerta: s.branding ? s.branding.corAlerta : '#F59E0B',
+      corErro: s.branding ? s.branding.corErro : '#DC2626',
+      botaoPrimarioFundo: s.branding ? s.branding.botaoPrimarioFundo : '#C8102E',
+      botaoPrimarioTexto: s.branding ? s.branding.botaoPrimarioTexto : '#FFFFFF',
+      botaoPrimarioBorda: s.branding ? s.branding.botaoPrimarioBorda : '#C8102E',
+      botaoSecundarioFundo: s.branding ? s.branding.botaoSecundarioFundo : '#FFFFFF',
+      botaoSecundarioTexto: s.branding ? s.branding.botaoSecundarioTexto : '#C8102E',
+      botaoSecundarioBorda: s.branding ? s.branding.botaoSecundarioBorda : '#C8102E',
+      botaoDesabilitadoFundo: s.branding ? s.branding.botaoDesabilitadoFundo : '#E5E5E5',
+      botaoDesabilitadoTexto: s.branding ? s.branding.botaoDesabilitadoTexto : '#9CA3AF',
+      cardCorBorda: s.branding ? s.branding.cardCorBorda : '#E5E5E5',
+      cardCorTitulo: s.branding ? s.branding.cardCorTitulo : '#1A1A1A',
+      cardCorTextoSecundario: s.branding ? s.branding.cardCorTextoSecundario : '#6B7280',
+      cardCorHover: s.branding ? s.branding.cardCorHover : '#F5F5F5',
+      cardRaioBorda: s.branding ? s.branding.cardRaioBorda : '8px',
+      headerFundo: s.branding ? s.branding.headerFundo : '#FFFFFF',
+      headerCorSaudacao: s.branding ? s.branding.headerCorSaudacao : '#1A1A1A',
+      headerCorIconeUsuario: s.branding ? s.branding.headerCorIconeUsuario : '#1A1A1A',
+      headerCorLocalizacao: s.branding ? s.branding.headerCorLocalizacao : '#6B7280',
+      headerCorNotificacao: s.branding ? s.branding.headerCorNotificacao : '#C8102E',
+      navInferiorFundo: s.branding ? s.branding.navInferiorFundo : '#FFFFFF',
+      navInferiorIconeNormal: s.branding ? s.branding.navInferiorIconeNormal : '#9CA3AF',
+      navInferiorIconeAtivo: s.branding ? s.branding.navInferiorIconeAtivo : '#C8102E',
+      navInferiorTextoNormal: s.branding ? s.branding.navInferiorTextoNormal : '#9CA3AF',
+      navInferiorTextoAtivo: s.branding ? s.branding.navInferiorTextoAtivo : '#C8102E',
       onCorPrimaria: (e) => this.onCorPrimaria(e), onCorSecundaria: (e) => this.onCorSecundaria(e),
-      onCorBotao: (e) => this.onCorBotao(e), onCorTextoBotao: (e) => this.onCorTextoBotao(e),
       onCorFundo: (e) => this.onCorFundo(e), onCorTexto: (e) => this.onCorTexto(e), onCorCard: (e) => this.onCorCard(e),
+      onCorFundoSecundaria: (e) => this.onCorFundoSecundaria(e), onCorDestaque: (e) => this.onCorDestaque(e),
+      onCorSucesso: (e) => this.onCorSucesso(e), onCorAlerta: (e) => this.onCorAlerta(e), onCorErro: (e) => this.onCorErro(e),
+      onBotaoPrimarioFundo: (e) => this.onBotaoPrimarioFundo(e), onBotaoPrimarioTexto: (e) => this.onBotaoPrimarioTexto(e),
+      onBotaoPrimarioBorda: (e) => this.onBotaoPrimarioBorda(e),
+      onBotaoSecundarioFundo: (e) => this.onBotaoSecundarioFundo(e), onBotaoSecundarioTexto: (e) => this.onBotaoSecundarioTexto(e),
+      onBotaoSecundarioBorda: (e) => this.onBotaoSecundarioBorda(e),
+      onBotaoDesabilitadoFundo: (e) => this.onBotaoDesabilitadoFundo(e), onBotaoDesabilitadoTexto: (e) => this.onBotaoDesabilitadoTexto(e),
+      onCardCorBorda: (e) => this.onCardCorBorda(e), onCardCorTitulo: (e) => this.onCardCorTitulo(e),
+      onCardCorTextoSecundario: (e) => this.onCardCorTextoSecundario(e), onCardCorHover: (e) => this.onCardCorHover(e),
+      onCardRaioBorda: (e) => this.onCardRaioBorda(e),
+      onHeaderFundo: (e) => this.onHeaderFundo(e), onHeaderCorSaudacao: (e) => this.onHeaderCorSaudacao(e),
+      onHeaderCorIconeUsuario: (e) => this.onHeaderCorIconeUsuario(e), onHeaderCorLocalizacao: (e) => this.onHeaderCorLocalizacao(e),
+      onHeaderCorNotificacao: (e) => this.onHeaderCorNotificacao(e),
+      onNavInferiorFundo: (e) => this.onNavInferiorFundo(e), onNavInferiorIconeNormal: (e) => this.onNavInferiorIconeNormal(e),
+      onNavInferiorIconeAtivo: (e) => this.onNavInferiorIconeAtivo(e), onNavInferiorTextoNormal: (e) => this.onNavInferiorTextoNormal(e),
+      onNavInferiorTextoAtivo: (e) => this.onNavInferiorTextoAtivo(e),
       fonteTitulo: s.branding ? s.branding.fonteTitulo : 'Inter', onFonteTitulo: (e) => this.onFonteTitulo(e),
       fonteTexto: s.branding ? s.branding.fonteTexto : 'Inter', onFonteTexto: (e) => this.onFonteTexto(e),
       fontesOptions: this.fontesOptions,
