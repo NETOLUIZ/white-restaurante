@@ -480,7 +480,7 @@
     <label for="cad-cep" style="{{ labelStyle2 }}">CEP</label>
     <div style="position:relative;">
       <input id="cad-cep" value="{{ cadCep }}" onChange="{{ onCadCep }}" placeholder="00000-000" inputmode="numeric" maxlength="9" style="{{ cepInputStyle }}"/>
-      <sc-if value="{{ cepBuscando }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:13px;top:13px;width:17px;height:17px;border:2.5px solid rgba(181,22,28,.25);border-top-color:var(--cor-primaria, #B5161C);border-radius:50%;animation:bfRing .7s linear infinite;"></span></sc-if>
+      <sc-if value="{{ cepBuscando }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:13px;top:13px;width:17px;height:17px;border:2.5px solid rgba(181,22,28,.25);border-top-color:#B5161C;border-radius:50%;animation:bfRing .7s linear infinite;"></span></sc-if>
     </div>
     <sc-if value="{{ hasCepMsg }}" hint-placeholder-val="{{ false }}"><p style="{{ cepMsgStyle }}">{{ cepMsg }}</p></sc-if>
     <div style="height:12px;"></div>
@@ -501,7 +501,7 @@
     <!-- preview de localização (OpenStreetMap / Nominatim) — só visual, mostra o pino do endereço digitado -->
     <sc-if value="{{ cadastroGeocoding }}" hint-placeholder-val="{{ false }}">
       <div style="margin-top:14px;height:46px;border-radius:14px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;gap:9px;color:#8C8075;font-size:13px;">
-        <span style="width:15px;height:15px;border:2.5px solid rgba(181,22,28,.25);border-top-color:var(--cor-primaria, #B5161C);border-radius:50%;animation:bfRing .7s linear infinite;"></span>Localizando endereço no mapa...
+        <span style="width:15px;height:15px;border:2.5px solid rgba(181,22,28,.25);border-top-color:#B5161C;border-radius:50%;animation:bfRing .7s linear infinite;"></span>Localizando endereço no mapa...
       </div>
     </sc-if>
     <sc-if value="{{ hasCadastroMap }}" hint-placeholder-val="{{ false }}">
