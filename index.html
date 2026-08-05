@@ -95,15 +95,15 @@
     <sc-if value="{{ hamburgerOpen }}" hint-placeholder-val="{{ false }}">
     <div style="position:absolute;top:calc(100% + 10px);left:0;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:18px;box-shadow:0 10px 30px rgba(29,16,9,.14);padding:8px;min-width:170px;z-index:200;animation:bfSlideIn .18s cubic-bezier(.16,1,.3,1);">
       <button onClick="{{ goHome }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
         Início
       </button>
       <button onClick="{{ goMenu }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2Z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2h8a2 2 0 0 1 2 2v16l-3-2-3 2-3-2-3 2V4a2 2 0 0 1 2-2Z"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/></svg>
         {{ labelCardapio }}
       </button>
       <button onClick="{{ goConta }}" style="display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:11px 14px;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600;color:var(--cor-texto, #1D1009);text-align:left;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="8" r="4"/></svg>
         Conta
       </button>
     </div>
@@ -118,7 +118,7 @@
     <button onClick="{{ goConta }}" style="{{ topContaStyle }}">Conta</button>
   </div>
   </sc-if>
-  <button onClick="{{ goCart }}" aria-label="Carrinho" style="margin-left:auto;position:relative;display:flex;align-items:center;gap:9px;background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:14px;padding:10px 16px;font-weight:700;cursor:pointer;">
+  <button onClick="{{ goCart }}" aria-label="Carrinho" style="margin-left:auto;position:relative;display:flex;align-items:center;gap:9px;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:14px;padding:10px 16px;font-weight:700;cursor:pointer;">
     <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
     <span style="font-family:'DM Mono',monospace;font-size:13px;">{{ cartTotalFmt }}</span>
     <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-7px;min-width:21px;height:21px;padding:0 5px;border-radius:11px;background:var(--cor-primaria, #B5161C);color:#F2C078;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #C0271A;">{{ cartCount }}</span></sc-if>
@@ -153,7 +153,7 @@
     <div style="margin-top:16px;display:flex;align-items:center;gap:10px;background:var(--cor-fundo, #FFF6D6);border-radius:16px;padding:0 14px;height:50px;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="O que você tá com vontade?" aria-label="Buscar no cardápio" style="flex:1;border:none;background:none;font-size:15px;color:var(--cor-primaria, #B5161C);outline:none;"/>
-      <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goMenu }}" style="background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:10px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;">Ver</button></sc-if>
+      <sc-if value="{{ hasSearch }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goMenu }}" style="background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:10px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;">Ver</button></sc-if>
     </div>
   </div>
 
@@ -208,7 +208,7 @@
     <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="5">
       <button onClick="{{ cat.onClick }}" style="flex:none;display:flex;flex-direction:column;align-items:center;gap:9px;background:none;border:none;cursor:pointer;width:72px;">
         <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;overflow:hidden;border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);"><img src="{{ cat.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-4.5-4.5a2 2 0 0 0-2.8 0L5 19"/></svg></div></sc-if>
+        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-4.5-4.5a2 2 0 0 0-2.8 0L5 19"/></svg></div></sc-if>
         <span style="font-size:12px;font-weight:600;color:#C0271A;text-align:center;line-height:1.1;">{{ cat.label }}</span>
       </button>
     </sc-for>
@@ -217,7 +217,7 @@
   <!-- mais pedidos -->
   <div style="display:flex;align-items:baseline;justify-content:space-between;padding:26px 18px 12px;">
     <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;">Mais pedidos hoje</h2>
-    <button onClick="{{ goMenu }}" style="background:none;border:none;color:#D62828;font-weight:700;font-size:13px;cursor:pointer;padding:8px 6px;margin:-8px -6px;">Ver tudo</button>
+    <button onClick="{{ goMenu }}" style="background:none;border:none;color:var(--botao-primario-fundo, #D62828);font-weight:700;font-size:13px;cursor:pointer;padding:8px 6px;margin:-8px -6px;">Ver tudo</button>
   </div>
   <div style="{{ gridStyle }}">
     <sc-for list="{{ homeFeatured }}" as="p" hint-placeholder-count="4">
@@ -232,14 +232,14 @@
           <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15.5px;margin:0 0 3px;line-height:1.2;color:var(--card-cor-titulo, #B5161C);">{{ p.name }}</h3>
           <p style="{{ p.descStyle }}">{{ p.desc }}</p>
           <div style="margin-top:8px;display:flex;align-items:center;justify-content:space-between;">
-            <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;">{{ p.priceFmt }}</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:var(--botao-primario-fundo, #D62828);">{{ p.priceFmt }}</span>
             <div style="display:flex;align-items:center;gap:7px;">
               <sc-if value="{{ p.hasAdicionais }}" hint-placeholder-val="{{ false }}">
                 <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2"/><path d="M12 6h8"/><circle cx="16" cy="12" r="2"/><path d="M4 12h10"/><circle cx="8" cy="18" r="2"/><path d="M12 18h8"/></svg>
                 </button>
               </sc-if>
-              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:#D62828;border:none;color:var(--botao-primario-texto, #fff);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
+              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:var(--botao-primario-fundo, #D62828);border:none;color:var(--botao-primario-texto, #fff);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </button>
             </div>
@@ -287,7 +287,7 @@
             <div style="flex:1;min-width:0;">
               <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;margin:0 0 3px;">{{ m.nome }}</h3>
               <p style="margin:0;font-size:13px;color:#8C8075;">{{ m.subtitulo }}</p>
-              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;margin-top:6px;display:block;">{{ m.priceFmt }}</span>
+              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:var(--botao-primario-fundo, #D62828);margin-top:6px;display:block;">{{ m.priceFmt }}</span>
             </div>
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
           </div>
@@ -302,20 +302,20 @@
           <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#A01818;opacity:.75;letter-spacing:.06em;">{{ p.tileLabel }}</span></div></sc-if>
           <div style="{{ p.bodyStyle }}">
             <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px;">
-              <sc-if value="{{ p.hasTag }}" hint-placeholder-val="{{ false }}"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:#D62828;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:6px;padding:2px 6px;">{{ p.tag }}</span></sc-if>
+              <sc-if value="{{ p.hasTag }}" hint-placeholder-val="{{ false }}"><span style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--botao-primario-fundo, #D62828);background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:6px;padding:2px 6px;">{{ p.tag }}</span></sc-if>
               <span style="display:flex;align-items:center;gap:3px;"><svg width="13" height="13" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span style="font-family:'DM Mono',monospace;font-size:11px;color:#8C8075;">{{ p.rating }}</span></span>
             </div>
             <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16.5px;margin:0 0 3px;line-height:1.2;">{{ p.name }}</h3>
             <p style="{{ p.descStyle }}">{{ p.desc }}</p>
             <div style="margin-top:9px;display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:#D62828;">{{ p.priceFmt }}</span>
+              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:var(--botao-primario-fundo, #D62828);">{{ p.priceFmt }}</span>
               <div style="display:flex;align-items:center;gap:7px;">
               <sc-if value="{{ p.hasAdicionais }}" hint-placeholder-val="{{ false }}">
                 <button onClick="{{ p.onOpenAdicionais }}" aria-label="Escolher adicionais" style="width:40px;height:40px;border-radius:13px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;cursor:pointer;">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="8" cy="6" r="2"/><path d="M12 6h8"/><circle cx="16" cy="12" r="2"/><path d="M4 12h10"/><circle cx="8" cy="18" r="2"/><path d="M12 18h8"/></svg>
                 </button>
               </sc-if>
-              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:#D62828;border:none;color:var(--botao-primario-texto, #fff);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
+              <button onClick="{{ p.onAdd }}" aria-label="Adicionar ao carrinho" style="width:40px;height:40px;border-radius:13px;background:var(--botao-primario-fundo, #D62828);border:none;color:var(--botao-primario-texto, #fff);display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(214,40,40,.35);">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               </button>
               </div>
@@ -344,13 +344,13 @@
   <sc-if value="{{ isCartEmpty }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:46px 16px;gap:18px;">
       <div style="width:120px;height:120px;border-radius:50%;background:var(--cor-fundo-secundaria, #FFF3DC);border:2px dashed #F2C078;display:flex;align-items:center;justify-content:center;">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
       </div>
       <div>
         <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin:0 0 6px;">Tá vazio por aqui...</h2>
         <p style="margin:0;color:#8C8075;font-size:14px;max-width:260px;">O galeto tá esperando. Bora escolher?</p>
       </div>
-      <button onClick="{{ goMenu }}" style="background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:15px;padding:14px 26px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.32);">Ver o cardápio completo</button>
+      <button onClick="{{ goMenu }}" style="background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:15px;padding:14px 26px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.32);">Ver o cardápio completo</button>
     </div>
   </sc-if>
 
@@ -368,11 +368,11 @@
             <sc-if value="{{ it.isMarmitaCustom }}" hint-placeholder-val="{{ false }}"><p style="margin:3px 0 0;font-size:12px;color:#8C8075;">{{ it.marmitaDesc }}</p></sc-if>
             <sc-if value="{{ it.hasObs }}" hint-placeholder-val="{{ false }}"><p style="margin:3px 0 0;font-size:12px;color:#8C8075;font-style:italic;">"{{ it.obs }}"</p></sc-if>
             <div style="margin-top:10px;display:flex;align-items:center;justify-content:space-between;">
-              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:#D62828;">{{ it.lineFmt }}</span>
+              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:var(--botao-primario-fundo, #D62828);">{{ it.lineFmt }}</span>
               <div style="display:flex;align-items:center;gap:0;background:var(--cor-fundo-secundaria, #FFF3DC);border-radius:12px;padding:3px;">
                 <button onClick="{{ it.onDec }}" aria-label="Diminuir" style="width:32px;height:32px;border-radius:9px;border:none;background:#fff;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.08);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                 <span style="font-family:'DM Mono',monospace;font-weight:500;min-width:30px;text-align:center;font-size:15px;">{{ it.qty }}</span>
-                <button onClick="{{ it.onInc }}" aria-label="Aumentar" style="width:32px;height:32px;border-radius:9px;border:none;background:#D62828;color:var(--botao-primario-texto, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                <button onClick="{{ it.onInc }}" aria-label="Aumentar" style="width:32px;height:32px;border-radius:9px;border:none;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
               </div>
             </div>
           </div>
@@ -382,7 +382,7 @@
 
     <!-- coupon -->
     <div data-feature="cupom" style="margin-top:16px;display:flex;gap:10px;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:15px;padding:4px 4px 4px 14px;">
-      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1.4" fill="#D62828"/></svg>
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 13.42 20.6a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82Z"/><circle cx="7" cy="7" r="1.4" fill="var(--botao-primario-fundo, #D62828)"/></svg>
       <input value="{{ coupon }}" onChange="{{ onCoupon }}" placeholder="Cupom de desconto" aria-label="Cupom" style="flex:1;border:none;background:none;outline:none;font-size:14px;text-transform:uppercase;"/>
       <button onClick="{{ applyCoupon }}" style="background:#C0271A;color:#FFF3DC;border:none;border-radius:11px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Aplicar</button>
     </div>
@@ -394,9 +394,9 @@
       <div style="display:flex;justify-content:space-between;font-size:14px;color:#C0271A;margin-bottom:9px;"><span>Taxa de entrega</span><span style="font-family:'DM Mono',monospace;">{{ feeFmt }}</span></div>
       <sc-if value="{{ hasDiscount }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:14px;color:#2D9E60;margin-bottom:9px;"><span>Desconto</span><span style="font-family:'DM Mono',monospace;">-{{ discountFmt }}</span></div></sc-if>
       <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 12px;"></div>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:21px;color:#D62828;">{{ totalFmt }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:21px;color:var(--botao-primario-fundo, #D62828);">{{ totalFmt }}</span></div>
     </div>
-    <button onClick="{{ goCheckout }}" style="margin-top:16px;width:100%;background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Fechar pedido</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;opacity:.9;">{{ totalFmt }}</span></button>
+    <button onClick="{{ goCheckout }}" style="margin-top:16px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Fechar pedido</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;opacity:.9;">{{ totalFmt }}</span></button>
     <button onClick="{{ goMenu }}" style="margin-top:10px;width:100%;background:none;border:none;color:#C0271A;font-weight:700;font-size:14px;cursor:pointer;padding:8px;">Continuar comprando</button>
   </sc-if>
 </div>
@@ -420,19 +420,19 @@
           <div style="font-weight:700;font-size:15px;color:var(--cor-texto, #1D1009);">{{ usuarioNome }}</div>
           <div style="font-size:12px;color:#8C8075;">{{ usuarioContato }}</div>
         </div>
-        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:#D62828;font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Editar</button>
+        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:var(--botao-primario-fundo, #D62828);font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Editar</button>
       </div>
       <sc-if value="{{ temEndereco }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:12px;padding-top:12px;border-top:1px dashed rgba(29,16,9,.12);display:flex;gap:10px;align-items:flex-start;">
-          <span style="color:#D62828;flex:none;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+          <span style="color:var(--botao-primario-fundo, #D62828);flex:none;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
           <div style="font-size:13px;color:#6B2E12;line-height:1.4;"><strong>Endereço salvo: </strong>{{ usuarioEndereco }}</div>
         </div>
       </sc-if>
     </div>
   </sc-if>
   <sc-if value="{{ semUsuario }}" hint-placeholder-val="{{ true }}">
-    <button onClick="{{ goCadastro }}" style="margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px dashed #D62828;border-radius:18px;padding:16px;cursor:pointer;text-align:left;">
-      <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
+    <button onClick="{{ goCadastro }}" style="margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px dashed var(--botao-primario-fundo, #D62828);border-radius:18px;padding:16px;cursor:pointer;text-align:left;">
+      <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
       <span style="flex:1;min-width:0;">
         <span style="display:block;font-weight:700;font-size:14px;color:var(--cor-primaria, #B5161C);">Criar conta (opcional)</span>
         <span style="display:block;font-size:12px;color:#8C8075;margin-top:2px;">Salve seu endereço e peça de novo em 1 clique</span>
@@ -444,7 +444,7 @@
   <div style="margin-top:18px;display:flex;flex-direction:column;gap:2px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:18px;overflow:hidden;box-shadow:0 5px 14px rgba(29,16,9,.05);">
     <sc-for list="{{ contaRows }}" as="r" hint-placeholder-count="4">
       <button onClick="{{ r.onClick }}" style="display:flex;align-items:center;gap:14px;background:none;border:none;border-bottom:1px solid rgba(29,16,9,.05);padding:16px 16px;cursor:pointer;text-align:left;width:100%;">
-        <span style="width:38px;height:38px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;">{{ r.icon }}</span>
+        <span style="width:38px;height:38px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;">{{ r.icon }}</span>
         <span style="flex:1;font-weight:600;font-size:15px;color:var(--cor-primaria, #B5161C);">{{ r.label }}</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
@@ -513,7 +513,7 @@
     <div style="height:14px;"></div>
   </div>
   <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);">
-    <button onClick="{{ salvarCadastro }}" style="width:100%;background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);">Salvar cadastro</button>
+    <button onClick="{{ salvarCadastro }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);">Salvar cadastro</button>
   </div>
 </div>
 </sc-if>
@@ -562,7 +562,7 @@
           <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
           <span style="flex:1;">{{ o.nome }}</span>
           <sc-if value="{{ o.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border-radius:7px;padding:3px 8px;flex:none;">Esgotado</span></sc-if>
-          <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
+          <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
         </button>
       </sc-for>
     </div>
@@ -576,14 +576,14 @@
           <span onClick="{{ o.onFalar }}" role="button" aria-label="Ouvir nome" style="width:34px;height:34px;border-radius:10px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;display:flex;align-items:center;justify-content:center;flex:none;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></span>
           <span style="flex:1;">{{ o.nome }}</span>
           <sc-if value="{{ o.esgotado }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;color:#C0392B;background:#FBEAE8;border-radius:7px;padding:3px 8px;flex:none;">Esgotado</span></sc-if>
-          <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D62828" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
+          <sc-if value="{{ o.selecionado }}" hint-placeholder-val="{{ false }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="20 6 9 17 4 12"/></svg></sc-if>
         </button>
       </sc-for>
     </div>
     <div style="height:14px;"></div>
   </div>
   <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);">
-    <button onClick="{{ adicionarMarmitaAoCarrinho }}" style="width:100%;background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;">
+    <button onClick="{{ adicionarMarmitaAoCarrinho }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;">
       <span>Adicionar ao carrinho</span><span style="font-family:'DM Mono',monospace;font-size:18px;">{{ marmitaPriceFmt }}</span>
     </button>
   </div>
@@ -597,7 +597,7 @@
     <div style="{{ heroStyle }}">
       <div style="position:absolute;top:calc(14px + env(safe-area-inset-top));left:16px;right:16px;display:flex;justify-content:space-between;z-index:2;">
         <button onClick="{{ goBack }}" aria-label="Voltar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-        <button onClick="{{ toggleFav }}" aria-label="Favoritar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="21" height="21" viewBox="0 0 24 24" fill="{{ favFill }}" stroke="#D62828" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
+        <button onClick="{{ toggleFav }}" aria-label="Favoritar" style="width:42px;height:42px;border-radius:14px;background:rgba(255,249,238,.92);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 3px 10px rgba(0,0,0,.12);"><svg width="21" height="21" viewBox="0 0 24 24" fill="{{ favFill }}" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8Z"/></svg></button>
       </div>
       <sc-if value="{{ pHasFoto }}" hint-placeholder-val="{{ false }}"><img src="{{ pFotoSrc }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0;"/></sc-if>
       <sc-if value="{{ pSemFoto }}" hint-placeholder-val="{{ true }}"><span style="font-family:'DM Mono',monospace;font-size:11px;color:#A01818;letter-spacing:.1em;background:rgba(255,249,238,.85);padding:6px 12px;border-radius:20px;">FOTO DO PRATO</span></sc-if>
@@ -623,7 +623,7 @@
           <div style="display:flex;align-items:center;background:#fff;border:1px solid rgba(29,16,9,.1);border-radius:14px;padding:5px;">
             <button onClick="{{ decDetail }}" aria-label="Diminuir" style="width:42px;height:42px;border-radius:11px;border:none;background:var(--cor-fundo-secundaria, #FFF3DC);color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
             <span style="font-family:'DM Mono',monospace;font-weight:500;min-width:44px;text-align:center;font-size:19px;">{{ detailQty }}</span>
-            <button onClick="{{ incDetail }}" aria-label="Aumentar" style="width:42px;height:42px;border-radius:11px;border:none;background:#D62828;color:var(--botao-primario-texto, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+            <button onClick="{{ incDetail }}" aria-label="Aumentar" style="width:42px;height:42px;border-radius:11px;border:none;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
           </div>
           <span style="color:#8C8075;font-size:13px;">{{ pUnitFmt }}</span>
         </div>
@@ -645,7 +645,7 @@
     </div>
   </div>
   <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);box-shadow:0 -6px 18px rgba(29,16,9,.05);">
-    <button onClick="{{ addDetail }}" style="width:100%;background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 24px rgba(214,40,40,.32);">
+    <button onClick="{{ addDetail }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;box-shadow:0 10px 24px rgba(214,40,40,.32);">
       <span style="display:flex;align-items:center;gap:9px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>Adicionar</span>
       <span style="font-family:'DM Mono',monospace;font-size:18px;">{{ detailTotalFmt }}</span>
     </button>
@@ -670,16 +670,16 @@
     <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:18px 0 8px;color:#C0271A;">Endereço de entrega</h2>
       <div style="display:flex;gap:12px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
+        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
         <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">{{ enderecoTitulo }}</div><div style="font-size:13px;color:#8C8075;">{{ enderecoSub }}</div></div>
-        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:#D62828;font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Trocar</button>
+        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:var(--botao-primario-fundo, #D62828);font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Trocar</button>
       </div>
     </sc-if>
 
     <sc-if value="{{ isPedidoRetirada }}" hint-placeholder-val="{{ false }}">
       <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:18px 0 8px;color:#C0271A;">Retirar no local</h2>
       <div style="display:flex;gap:12px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg></span>
+        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg></span>
         <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">Bel do Frango</div><div style="font-size:13px;color:#8C8075;">{{ enderecoLoja }}</div></div>
       </div>
     </sc-if>
@@ -692,7 +692,7 @@
         <span style="{{ pixRadio }}"></span>
       </button>
       <button onClick="{{ setCard }}" aria-pressed="{{ cardPressed }}" style="{{ cardStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
         <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Cartão na entrega</span><span style="font-size:12px;color:#8C8075;">Crédito ou débito</span></span>
         <span style="{{ cardRadio }}"></span>
       </button>
@@ -724,7 +724,7 @@
       <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 10px;"></div>
       <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#8C8075;margin-bottom:6px;"><span>Taxa de entrega</span><span style="font-family:'DM Mono',monospace;">{{ feeFmt }}</span></div></sc-if>
       <sc-if value="{{ hasDiscount }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#2D9E60;margin-bottom:6px;"><span>Desconto</span><span style="font-family:'DM Mono',monospace;">-{{ discountFmt }}</span></div></sc-if>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:20px;color:#D62828;">{{ totalFmt }}</span></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:20px;color:var(--botao-primario-fundo, #D62828);">{{ totalFmt }}</span></div>
     </div>
   </div>
   <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);">
@@ -754,7 +754,7 @@
     <div style="padding:0 18px;margin-top:-24px;position:relative;">
       <div style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:22px;padding:18px;box-shadow:0 10px 28px rgba(29,16,9,.1);">
         <div style="display:flex;align-items:center;gap:8px;">
-          <span style="display:flex;align-items:center;gap:6px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#D62828;border-radius:9px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>{{ etaText }}</span>
+          <span style="display:flex;align-items:center;gap:6px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);border-radius:9px;padding:5px 10px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>{{ etaText }}</span>
           <span style="font-size:12px;color:#8C8075;">Pedido {{ orderId }}</span>
         </div>
         <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:12px 0 18px;">{{ statusTitle }}</h1>
@@ -785,7 +785,7 @@
         <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:15px;">{{ entregadorNome }}</div><div style="font-size:12px;color:#8C8075;">Seu entregador</div></div>
       </div>
       </sc-if>
-      <button onClick="{{ goMenu }}" style="margin-top:14px;width:100%;background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);">Continuar comprando</button>
+      <button onClick="{{ goMenu }}" style="margin-top:14px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);">Continuar comprando</button>
       <button onClick="{{ noop }}" style="margin:10px 0 22px;width:100%;background:none;border:1px solid rgba(29,16,9,.14);border-radius:14px;padding:14px;font-weight:700;font-size:14px;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Preciso de ajuda</button>
     </div>
   </div>
@@ -806,7 +806,7 @@
   <button id="bf-cart-target" onClick="{{ goCart }}" style="{{ navCartStyle }}">
     <span style="position:relative;">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-      <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-9px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:#D62828;color:var(--botao-primario-texto, #fff);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;">{{ cartCount }}</span></sc-if>
+      <sc-if value="{{ hasCart }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:-7px;right:-9px;min-width:18px;height:18px;padding:0 4px;border-radius:9px;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid #fff;">{{ cartCount }}</span></sc-if>
     </span>
     <span style="font-size:11px;font-weight:600;color:{{ navCartTextStyle.color }};">Carrinho</span>
   </button>
@@ -831,7 +831,7 @@
         <div style="display:flex;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid rgba(29,16,9,.06);">
           <div style="flex:1;min-width:0;">
             <div style="font-weight:700;font-size:14.5px;">{{ a.nome }}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:13px;color:#D62828;margin-top:2px;">{{ a.precoFmt }}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--botao-primario-fundo, #D62828);margin-top:2px;">{{ a.precoFmt }}</div>
           </div>
           <div style="display:flex;align-items:center;gap:10px;flex:none;">
             <button onClick="{{ a.onDec }}" aria-label="Diminuir" style="width:32px;height:32px;border-radius:9px;background:#fff;border:1px solid rgba(29,16,9,.12);color:#6B2E12;font-weight:700;font-size:17px;cursor:pointer;">−</button>
@@ -842,7 +842,7 @@
       </sc-for>
     </div>
     <div style="padding:14px 20px calc(16px + env(safe-area-inset-bottom));border-top:1px solid rgba(29,16,9,.07);">
-      <button onClick="{{ confirmarAdicionaisModal }}" style="width:100%;background:#D62828;color:var(--botao-primario-texto, #fff);border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);display:flex;align-items:center;justify-content:space-between;padding-left:20px;padding-right:20px;box-sizing:border-box;">
+      <button onClick="{{ confirmarAdicionaisModal }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);display:flex;align-items:center;justify-content:space-between;padding-left:20px;padding-right:20px;box-sizing:border-box;">
         <span>Adicionar ao carrinho</span><span style="font-family:'DM Mono',monospace;font-size:16px;">{{ adicionaisModalTotalFmt }}</span>
       </button>
     </div>
@@ -1778,7 +1778,7 @@ class Component extends DCLogic {
       const active = s.horarioRetirada === h;
       return { label:h, onClick:() => this.selecionarHorarioRetirada(h),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'9px 14px', fontWeight:700, fontSize:'13px',
-          background: active ? '#D62828' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#fff' : 'var(--cor-primaria, #B5161C)' } };
+          background: active ? 'var(--botao-primario-fundo, #D62828)' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: active ? '#fff' : 'var(--cor-primaria, #B5161C)' } };
     });
 
     const cartLines = T.lines.map(({ p, v }) => {
@@ -1799,9 +1799,9 @@ class Component extends DCLogic {
       border: on ? '2px solid var(--botao-primario-borda, #D62828)' : '1px solid var(--card-cor-borda, rgba(29,16,9,.1))',
       boxShadow: on ? '0 6px 16px rgba(214,40,40,.16)' : '0 3px 10px rgba(29,16,9,.04)' });
     const radio = (on) => ({ width:'22px', height:'22px', borderRadius:'50%', flex:'none',
-      border: on ? '7px solid #D62828' : '2px solid #C9BBA8', background:'#fff', boxSizing:'border-box' });
+      border: on ? '7px solid var(--botao-primario-borda, #D62828)' : '2px solid #C9BBA8', background:'#fff', boxSizing:'border-box' });
     const tipoPedidoBtnStyle = (on) => ({ flex:1, border:'none', cursor:'pointer', borderRadius:'12px', padding:'11px', fontWeight:700, fontSize:'13.5px',
-      background: on ? '#D62828' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: on ? '#fff' : 'var(--cor-primaria, #B5161C)' });
+      background: on ? 'var(--botao-primario-fundo, #D62828)' : 'var(--cor-fundo-secundaria, #FFF3DC)', color: on ? '#fff' : 'var(--cor-primaria, #B5161C)' });
 
     const stepsDef = [
       { label:'Pedido confirmado', sub:'Recebemos seu pedido' },
@@ -1811,7 +1811,7 @@ class Component extends DCLogic {
     ];
     const orderSteps = stepsDef.map((st, i) => {
       const done = i < s.orderStep, active = i === s.orderStep, last = i === stepsDef.length - 1;
-      const color = done ? '#2D9E60' : active ? '#D62828' : '#E5D9C5';
+      const color = done ? '#2D9E60' : active ? 'var(--botao-primario-fundo, #D62828)' : '#E5D9C5';
       return {
         label:st.label, sub:st.sub, done, active, line:!last,
         dotStyle:{ width:'30px', height:'30px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', flex:'none', background:color, boxShadow: active ? '0 0 0 5px rgba(214,40,40,.18)' : 'none' },
@@ -2003,7 +2003,7 @@ class Component extends DCLogic {
         this.go('cart');
       },
       toggleFav:() => this.setState(st => ({ fav: { ...st.fav, [sp.id]: !st.fav[sp.id] } })),
-      favFill: s.fav[sp.id] ? '#D62828' : 'none',
+      favFill: s.fav[sp.id] ? 'var(--botao-primario-fundo, #D62828)' : 'none',
 
       pixStyle:payBtn(s.payment === 'pix'), cardStyle:payBtn(s.payment === 'card'), dinheiroStyle:payBtn(s.payment === 'money'),
       pixPressed: s.payment === 'pix', cardPressed: s.payment === 'card', dinheiroPressed: s.payment === 'money',
