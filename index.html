@@ -396,8 +396,8 @@
       <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 12px;"></div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:21px;color:var(--botao-primario-fundo, #D62828);">{{ totalFmt }}</span></div>
     </div>
-    <button onClick="{{ goCheckout }}" style="margin-top:16px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Fechar pedido</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;opacity:.9;">{{ totalFmt }}</span></button>
-    <button onClick="{{ goMenu }}" style="margin-top:10px;width:100%;background:none;border:none;color:#C0271A;font-weight:700;font-size:14px;cursor:pointer;padding:8px;">Continuar comprando</button>
+    <button onClick="{{ goCheckout }}" style="margin-top:16px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-space-between;gap:8px;"><span>Fechar pedido</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;opacity:.9;">{{ totalFmt }}</span></button>
+    <button onClick="{{ goMenu }}" style="margin-top:10px;width:100%;background:var(--botao-secundario-fundo, transparent);border:1px solid var(--botao-secundario-borda, transparent);color:var(--botao-secundario-texto, var(--cor-primaria, #C0271A));border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;padding:10px;">Continuar comprando</button>
   </sc-if>
 </div>
 </sc-if>
@@ -413,25 +413,25 @@
 
   <!-- Cadastro é opcional: sem ele o cliente continua pedindo como visitante. Com ele, o endereço fica salvo para o checkout. -->
   <sc-if value="{{ temUsuario }}" hint-placeholder-val="{{ false }}">
-    <div style="margin-top:16px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:18px;padding:16px;box-shadow:0 5px 14px rgba(29,16,9,.05);">
+    <div style="margin-top:16px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.06));border-radius:var(--card-raio-borda, 18px);padding:16px;box-shadow:0 5px 14px rgba(29,16,9,.05);">
       <div style="display:flex;align-items:center;gap:12px;">
         <div style="width:46px;height:46px;border-radius:50%;background:#FBE3DF;color:var(--cor-primaria, #B5161C);display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;flex:none;">{{ usuarioIniciais }}</div>
         <div style="flex:1;min-width:0;">
-          <div style="font-weight:700;font-size:15px;color:var(--cor-texto, #1D1009);">{{ usuarioNome }}</div>
-          <div style="font-size:12px;color:#8C8075;">{{ usuarioContato }}</div>
+          <div style="font-weight:700;font-size:15px;color:var(--card-cor-titulo, var(--cor-texto, #1D1009));">{{ usuarioNome }}</div>
+          <div style="font-size:12px;color:var(--card-cor-texto-secundario, #8C8075);">{{ usuarioContato }}</div>
         </div>
-        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:var(--botao-primario-fundo, #D62828);font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Editar</button>
+        <button onClick="{{ goCadastro }}" style="background:var(--botao-secundario-fundo, transparent);border:1px solid var(--botao-secundario-borda, transparent);color:var(--botao-secundario-texto, var(--botao-primario-fundo, #D62828));font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:6px 10px;border-radius:8px;">Editar</button>
       </div>
       <sc-if value="{{ temEndereco }}" hint-placeholder-val="{{ false }}">
         <div style="margin-top:12px;padding-top:12px;border-top:1px dashed rgba(29,16,9,.12);display:flex;gap:10px;align-items:flex-start;">
           <span style="color:var(--botao-primario-fundo, #D62828);flex:none;margin-top:1px;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-          <div style="font-size:13px;color:#6B2E12;line-height:1.4;"><strong>Endereço salvo: </strong>{{ usuarioEndereco }}</div>
+          <div style="font-size:13px;color:var(--card-cor-texto-secundario, #6B2E12);line-height:1.4;"><strong>Endereço salvo: </strong>{{ usuarioEndereco }}</div>
         </div>
       </sc-if>
     </div>
   </sc-if>
   <sc-if value="{{ semUsuario }}" hint-placeholder-val="{{ true }}">
-    <button onClick="{{ goCadastro }}" style="margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;background:#fff;border:1.5px dashed var(--botao-primario-fundo, #D62828);border-radius:18px;padding:16px;cursor:pointer;text-align:left;">
+    <button onClick="{{ goCadastro }}" style="margin-top:16px;width:100%;display:flex;align-items:center;gap:12px;background:var(--botao-secundario-fundo, #fff);border:1.5px dashed var(--botao-secundario-borda, var(--botao-primario-fundo, #D62828));border-radius:18px;padding:16px;cursor:pointer;text-align:left;">
       <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="16" y1="11" x2="22" y2="11"/></svg></span>
       <span style="flex:1;min-width:0;">
         <span style="display:block;font-weight:700;font-size:14px;color:var(--cor-primaria, #B5161C);">Criar conta (opcional)</span>
@@ -786,7 +786,7 @@
       </div>
       </sc-if>
       <button onClick="{{ goMenu }}" style="margin-top:14px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 20px rgba(214,40,40,.3);">Continuar comprando</button>
-      <button onClick="{{ noop }}" style="margin:10px 0 22px;width:100%;background:none;border:1px solid rgba(29,16,9,.14);border-radius:14px;padding:14px;font-weight:700;font-size:14px;color:#C0271A;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Preciso de ajuda</button>
+      <button onClick="{{ noop }}" style="margin:10px 0 22px;width:100%;background:var(--botao-secundario-fundo, transparent);border:1px solid var(--botao-secundario-borda, rgba(29,16,9,.14));border-radius:14px;padding:14px;font-weight:700;font-size:14px;color:var(--botao-secundario-texto, var(--cor-primaria, #C0271A));cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>Preciso de ajuda</button>
     </div>
   </div>
 </div>

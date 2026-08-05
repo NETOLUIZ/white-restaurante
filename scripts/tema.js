@@ -60,9 +60,12 @@
   var CAMPOS_CSS_VAR = {
     corFundo: '--cor-fundo', corFundoSecundaria: '--cor-fundo-secundaria',
     corPrimaria: '--cor-primaria', corSecundaria: '--cor-secundaria', corTexto: '--cor-texto',
+    corDestaque: '--cor-destaque', corSucesso: '--cor-sucesso', corAlerta: '--cor-alerta', corErro: '--cor-erro',
     botaoPrimarioFundo: '--botao-primario-fundo', botaoPrimarioTexto: '--botao-primario-texto', botaoPrimarioBorda: '--botao-primario-borda',
+    botaoSecundarioFundo: '--botao-secundario-fundo', botaoSecundarioTexto: '--botao-secundario-texto', botaoSecundarioBorda: '--botao-secundario-borda',
+    botaoDesabilitadoFundo: '--botao-desabilitado-fundo', botaoDesabilitadoTexto: '--botao-desabilitado-texto',
     corCard: '--cor-card', cardCorBorda: '--card-cor-borda', cardCorTitulo: '--card-cor-titulo',
-    cardCorTextoSecundario: '--card-cor-texto-secundario', cardRaioBorda: '--card-raio-borda',
+    cardCorTextoSecundario: '--card-cor-texto-secundario', cardCorHover: '--card-cor-hover', cardRaioBorda: '--card-raio-borda',
     headerFundo: '--header-fundo', headerCorSaudacao: '--header-cor-saudacao', headerCorIconeUsuario: '--header-cor-icone-usuario',
     headerCorLocalizacao: '--header-cor-localizacao', headerCorNotificacao: '--header-cor-notificacao',
     navInferiorFundo: '--nav-inferior-fundo', navInferiorIconeNormal: '--nav-inferior-icone-normal', navInferiorIconeAtivo: '--nav-inferior-icone-ativo',
