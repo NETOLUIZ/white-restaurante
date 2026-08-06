@@ -1544,20 +1544,33 @@ class Component extends DCLogic {
     if (s.pedidoTipo === 'retirada') {
       return { taxa: 0, bairroObj: null };
     }
+    const bairros = s.bairros || [];
     const cadBairro = (s.cadastro && s.cadastro.bairro)
       || (s.usuario && s.usuario.endereco && s.usuario.endereco.bairro) || '';
     const nomeNorm = cadBairro.trim().toLowerCase();
 
-    if (nomeNorm && s.bairros && s.bairros.length > 0) {
-      const bMatch = s.bairros.find(b => b.ativo !== false && b.nome && b.nome.trim().toLowerCase() === nomeNorm);
+    if (nomeNorm && bairros.length > 0) {
+      let bMatch = bairros.find(b => b.ativo !== false && b.nome && b.nome.trim().toLowerCase() === nomeNorm);
+      if (!bMatch) {
+        bMatch = bairros.find(b => b.ativo !== false && b.nome && (
+          nomeNorm.includes(b.nome.trim().toLowerCase()) ||
+          b.nome.trim().toLowerCase().includes(nomeNorm)
+        ));
+      }
       if (bMatch) {
         return { taxa: Number(bMatch.taxaEntrega || 0), bairroObj: bMatch };
       }
     }
 
     const bSel = s.bairroSelecionado;
-    if (bSel && !bSel.outro && bSel.taxaEntrega != null) {
-      return { taxa: Number(bSel.taxaEntrega || 0), bairroObj: bSel };
+    if (bSel && !bSel.outro) {
+      const bAtualizado = bairros.find(b => b.id === bSel.id);
+      if (bAtualizado) {
+        return { taxa: Number(bAtualizado.taxaEntrega || 0), bairroObj: bAtualizado };
+      }
+      if (bSel.taxaEntrega != null) {
+        return { taxa: Number(bSel.taxaEntrega || 0), bairroObj: bSel };
+      }
     }
 
     return { taxa: Number(this.fee || 0), bairroObj: null };
