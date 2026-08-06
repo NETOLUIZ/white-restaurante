@@ -1183,6 +1183,33 @@ class Component extends DCLogic {
   mapCategoria(c){
     return { id:c.id, label:c.nome, foto: c.foto ? this.apiBase.replace('/api', '') + '/uploads/' + c.foto : null };
   }
+  abrirCtaBanner(b){
+    if (b.ctaTipo === 'PRODUTO' && b.produtoId) {
+      this.openProduct(b.produtoId);
+      return;
+    }
+    const cats = this.state.cats || [];
+    const bannerTexto = ((b.selo || '') + ' ' + (b.titulo || '') + ' ' + (b.descricao || '')).toLowerCase();
+    let targetCat = null;
+    if (bannerTexto.includes('combo')) {
+      targetCat = cats.find(c => (c.label || '').toLowerCase().includes('combo'));
+    } else if (bannerTexto.includes('marmita')) {
+      targetCat = cats.find(c => (c.label || '').toLowerCase().includes('marmita'));
+    } else if (bannerTexto.includes('promoc') || bannerTexto.includes('oferta')) {
+      targetCat = cats.find(c => /promo|oferta/i.test(c.label || ''));
+    }
+
+    if (!targetCat && cats.length) {
+      targetCat = cats.find(c => (c.label || '').toLowerCase().includes('combo')) || cats[0];
+    }
+
+    if (targetCat) {
+      this.setState({ screen: 'menu', selectedCat: targetCat.id, search: '', selectedSubcat: null });
+    } else {
+      this.go('menu');
+    }
+  }
+
   // Banner não tem campo de gradiente/ícone no backend — usa a foto (com overlay pra legibilidade)
   // quando existir, senão cai num gradiente de reserva (cicla pelos 3 abaixo).
   mapBanner(b, i){
@@ -1195,7 +1222,7 @@ class Component extends DCLogic {
     return {
       bg: fotoUrl ? "linear-gradient(rgba(20,8,5,.45),rgba(20,8,5,.45)), url('" + fotoUrl + "') center/cover no-repeat" : FALLBACK_BG[i % FALLBACK_BG.length],
       eyebrow:b.selo, title:b.titulo, sub:b.descricao, cta:b.ctaLabel,
-      onCta: (b.ctaTipo === 'PRODUTO' && b.produtoId) ? () => this.openProduct(b.produtoId) : () => this.go('menu')
+      onCta: () => this.abrirCtaBanner(b)
     };
   }
 
