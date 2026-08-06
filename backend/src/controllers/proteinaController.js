@@ -1,7 +1,12 @@
 /** Lista proteínas ativas (esgotadas continuam aparecendo, mas marcadas) — usado pela tela "Monte sua marmita". */
 async function listarPublico(req, res) {
   try {
-    const proteinas = await req.prisma.proteina.findMany({ where: { ativo: true }, orderBy: { nome: 'asc' } });
+    let proteinas;
+    try {
+      proteinas = await req.prisma.proteina.findMany({ where: { ativo: true }, orderBy: { nome: 'asc' } });
+    } catch (dbErr) {
+      proteinas = await req.prisma.proteina.findMany({ select: { id: true, nome: true, ativo: true, esgotado: true }, where: { ativo: true }, orderBy: { nome: 'asc' } });
+    }
     res.json(proteinas);
   } catch (err) {
     console.error('Erro ao listar proteínas:', err);
@@ -12,7 +17,12 @@ async function listarPublico(req, res) {
 /** Lista todas as proteínas (inclusive inativas) — painel admin. */
 async function listarAdmin(req, res) {
   try {
-    const proteinas = await req.prisma.proteina.findMany({ orderBy: { nome: 'asc' } });
+    let proteinas;
+    try {
+      proteinas = await req.prisma.proteina.findMany({ orderBy: { nome: 'asc' } });
+    } catch (dbErr) {
+      proteinas = await req.prisma.proteina.findMany({ select: { id: true, nome: true, ativo: true, esgotado: true }, orderBy: { nome: 'asc' } });
+    }
     res.json(proteinas);
   } catch (err) {
     console.error('Erro ao listar proteínas (admin):', err);

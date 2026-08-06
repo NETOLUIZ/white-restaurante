@@ -1094,7 +1094,16 @@ class Component extends DCLogic {
   }
 
   async carregarTudo(){
-    await Promise.all([this.carregarCategorias(), this.carregarSubcategorias(), this.carregarProdutos(), this.carregarBanners(), this.carregarMarmitaConfig(), this.carregarConfiguracao(), this.carregarBairros(), this.carregarFeatures()]);
+    await Promise.all([
+      this.carregarCategorias().catch(e => console.error('Categorias err:', e)),
+      this.carregarSubcategorias().catch(e => console.error('Subcategorias err:', e)),
+      this.carregarProdutos().catch(e => console.error('Produtos err:', e)),
+      this.carregarBanners().catch(e => console.error('Banners err:', e)),
+      this.carregarMarmitaConfig().catch(e => console.error('Marmitas err:', e)),
+      this.carregarConfiguracao().catch(e => console.error('Config err:', e)),
+      this.carregarBairros().catch(e => console.error('Bairros err:', e)),
+      this.carregarFeatures().catch(e => console.error('Features err:', e))
+    ]);
     // "Marmitas" é uma categoria real (sem produtos nela — abre o construtor de marmita,
     // ver isMarmitasTab), mas se a feature "Monte sua Marmita" estiver desligada pro
     // tenant ela some da lista (ver menuTabs/categories); corrige aqui pra não deixar o
