@@ -74,6 +74,7 @@ services:
       - ./scripts:/usr/share/nginx/html/scripts:ro
       - ./styles:/usr/share/nginx/html/styles:ro
       - ./assets:/usr/share/nginx/html/assets:ro
+      - ./favicon.ico:/usr/share/nginx/html/favicon.ico:ro
 
 volumes:
   pg_data:
