@@ -138,13 +138,13 @@
   <div style="position:relative;width:100%;background:var(--header-fundo, #F2B705);border-radius:0 0 28px 28px;overflow:hidden;box-shadow:0 8px 24px rgba(122,18,9,0.12);margin-bottom:16px;">
     <!-- Capa / Banner da Loja -->
     <div style="position:relative;width:100%;height:140px;background:linear-gradient(135deg, #7A1209 0%, #B5161C 50%, #420803 100%);overflow:hidden;">
-      <img src="assets/marmita.webp" alt="Banner da Loja" style="width:100%;height:100%;object-fit:cover;opacity:.28;filter:blur(2px);transform:scale(1.1);"/>
+      <img src="{{ capaSrc }}" alt="Banner da Loja" style="width:100%;height:100%;object-fit:cover;opacity:.45;transform:scale(1.05);"/>
       <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(122,18,9,0.7) 100%);"></div>
     </div>
 
     <!-- Logo Marca da Loja (Círculo Centralizado com máscara circular perfeita) -->
     <div style="position:relative;display:flex;justify-content:center;margin-top:-48px;z-index:4;">
-      <div style="width:96px;height:96px;border-radius:50%;background:#FFF3DC;border:4px solid #F2B705;box-shadow:0 8px 24px rgba(0,0,0,0.22);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0;transition:transform .2s ease;">
+      <div style="width:96px;height:96px;border-radius:50%;background:#FFF3DC;border:4px solid #F2C078;box-shadow:0 8px 24px rgba(0,0,0,0.22);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0;transition:transform .2s ease;">
         <img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
       </div>
     </div>
@@ -156,7 +156,7 @@
       <!-- Section 2: Endereço da Loja -->
       <div style="display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;color:#8A1C12;font-weight:600;">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-        <span>Rua Principal, 1000 • Centro</span>
+        <span>{{ enderecoLoja }}</span>
         <span style="background:rgba(122,18,9,0.15);padding:2px 7px;border-radius:10px;font-size:11px;font-weight:700;color:#7A1209;">⭐ 4.9</span>
       </div>
     </div>
@@ -2131,6 +2131,7 @@ class Component extends DCLogic {
     return {
       rootStyle, shellStyle, gridStyle, pageWrap, categoriesRowStyle,
       isSplash: s.screen === 'splash', splashSrc: localStorage.getItem('bf_custom_splash') || 'assets/logo tranparente.png', isHome, isMenu, isCart, isConta, isMainTab,
+      capaSrc: localStorage.getItem('bf_custom_capa') || 'assets/marmita.webp',
       hasSearchHome, semSearchHome, searchResultsHome, homeFeatured,
       isProduct: s.screen === 'product', isCheckout: s.screen === 'checkout', isTracking: s.screen === 'tracking', isCadastro, isMarmita,
       isBairroScreen,

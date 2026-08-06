@@ -457,6 +457,42 @@
       <sc-if value="{{ isBanners }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;max-width:880px;">
         <!-- Card de Splash Screen -->
+        <!-- Foto de Capa do Cabeçalho / Banner Superior -->
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;margin-bottom:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+            <div>
+              <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0;color:#1D1009;">Foto de Capa da Loja (Banner Superior do App)</h3>
+              <p style="margin:4px 0 0;font-size:13px;color:#8C8075;">Imagem de fundo exibida no topo do aplicativo, atrás da logo marca centralizada.</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:12px;">
+              <sc-if value="{{ hasCapaPreview }}" hint-placeholder-val="{{ false }}">
+                <div style="width:72px;height:48px;border-radius:12px;overflow:hidden;border:1px solid rgba(29,16,9,.12);flex:none;">
+                  <img sc-camel-src="{{ capaPreviewSrc }}" alt="Capa Preview" style="width:100%;height:100%;object-fit:cover;"/>
+                </div>
+              </sc-if>
+              <input ref="{{ setCapaInput }}" type="file" accept="image/*" onChange="{{ onCapaSelected }}" style="display:none;"/>
+              <button onClick="{{ triggerCapaUpload }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:12px;padding:11px 16px;font-weight:700;font-size:13.5px;cursor:pointer;display:flex;align-items:center;gap:7px;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Alterar Foto de Capa</button>
+              <sc-if value="{{ hasCapaPreview }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ removerCapaFoto }}" style="background:none;border:none;color:#C0392B;font-size:12.5px;font-weight:600;cursor:pointer;padding:4px 2px;">Restaurar padrão</button>
+              </sc-if>
+            </div>
+          </div>
+        </div>
+
+        <!-- Endereço da Loja Exibido no App -->
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;margin-bottom:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0 0 4px;color:#1D1009;">Endereço da Loja (Exibido na Home e Checkout)</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Aparece no cabeçalho da página inicial e para os clientes no checkout ao selecionar Retirar no local.</p>
+          <div style="display:flex;gap:10px;align-items:flex-end;">
+            <div style="flex:1;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Endereço Completo</label>
+              <input value="{{ enderecoLojaInput }}" onChange="{{ onEnderecoLojaInput }}" placeholder="Ex: Rua Principal, 1000 • Centro" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;outline:none;"/>
+            </div>
+            <button onClick="{{ salvarEnderecoLoja }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar Endereço</button>
+          </div>
+        </div>
+
+        <!-- Foto / GIF da Tela Splash (Abertura) -->
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;margin-bottom:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
           <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
             <div>
@@ -1506,6 +1542,7 @@ class Component extends DCLogic {
     importResumo:null,
     bannerDraft:null,
     splashSrc: localStorage.getItem('bf_custom_splash') || null,
+    capaSrc: localStorage.getItem('bf_custom_capa') || null,
     selectedTable:null,
     pwd:{ atual:'', nova:'', conf:'' },
     pwdMsg:'', pwdOk:false,
@@ -2094,6 +2131,30 @@ class Component extends DCLogic {
     localStorage.removeItem('bf_custom_splash');
     this.setState({ splashSrc: null });
     this.showToast('Splash restaurada para o padrão!');
+  }
+  setCapaInput(el) { this._capaInput = el; }
+  triggerCapaUpload() { if (this._capaInput) this._capaInput.click(); }
+  onCapaSelected(e) {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      const dataUrl = evt.target.result;
+      try {
+        localStorage.setItem('bf_custom_capa', dataUrl);
+        this.setState({ capaSrc: dataUrl });
+        this.showToast('Foto de Capa da Loja atualizada!');
+      } catch (err) {
+        this.showToast('Erro ao salvar imagem de Capa');
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = '';
+  }
+  removerCapaFoto() {
+    localStorage.removeItem('bf_custom_capa');
+    this.setState({ capaSrc: null });
+    this.showToast('Capa da loja restaurada para o padrão!');
   }
   novoEntregador(){ this.setState({ entregadorDraft: { id:null, nome:'', email:'', senha:'' } }); }
   editEntregador(e){ this.setState({ entregadorDraft: { id:e.id, nome:e.nome, email:e.email, senha:'' } }); }
@@ -3820,6 +3881,12 @@ class Component extends DCLogic {
       saveProduct:() => this.saveProduct(), deleteProduct:() => this.deleteProduct(),
 
       bannerRows, newBanner:() => this.newBanner(),
+      hasCapaPreview: !!s.capaSrc,
+      capaPreviewSrc: s.capaSrc || 'assets/marmita.webp',
+      setCapaInput: (el) => this.setCapaInput(el),
+      triggerCapaUpload: () => this.triggerCapaUpload(),
+      onCapaSelected: (e) => this.onCapaSelected(e),
+      removerCapaFoto: () => this.removerCapaFoto(),
       hasSplashPreview: !!s.splashSrc,
       splashPreviewSrc: s.splashSrc || 'assets/output.gif',
       setSplashInput: (el) => this.setSplashInput(el),
