@@ -37,6 +37,7 @@ const PRODUTOS = [
   { categoriaNome: 'Galetos', nome: 'Galeto Inteiro na Brasa', descricaoCurta: 'Frango galeto temperado na brasa, suculento e dourado por fora.', preco: 49.9, avaliacao: 4.9, tag: 'Mais pedido', destaque: true, estoque: 18 },
   { categoriaNome: 'Galetos', nome: 'Meio Galeto na Brasa', descricaoCurta: 'Meia porção do nosso galeto assado lentamente.', preco: 28.9, avaliacao: 4.8, destaque: true, estoque: 22 },
   { categoriaNome: 'Galetos', nome: 'Coxa e Sobrecoxa (4 un.)', descricaoCurta: 'Quatro peças assadas no ponto, marinadas na casa.', preco: 32.9, avaliacao: 4.7, estoque: 9 },
+  { categoriaNome: 'Marmitas', nome: 'Marmita Executiva Especial', descricaoCurta: 'Escolha até 3 proteínas exclusivas + acompanhamentos à vontade.', preco: 39.9, avaliacao: 4.9, tag: '3 Proteínas', destaque: true, estoque: 30 },
   { categoriaNome: 'Porções', nome: 'Frango a Passarinho', descricaoCurta: 'Pedacinhos crocantes com alho e salsinha. Serve 2.', preco: 34.9, avaliacao: 4.8, tag: 'Crocante', destaque: true, estoque: 14 },
   { categoriaNome: 'Porções', nome: 'Porção Polenta Frita', descricaoCurta: 'Bastões de polenta crocantes. Serve 2.', preco: 19.9, avaliacao: 4.6, estoque: 16 },
   { categoriaNome: 'Porções', nome: 'Porção Mandioca Frita', descricaoCurta: 'Mandioca sequinha com toque de sal grosso.', preco: 18.9, avaliacao: 4.5, estoque: 4 },
@@ -56,7 +57,14 @@ const CUPONS = [
 ];
 
 // "Monte sua marmita" — mesmo catálogo padrão usado no protótipo estático (localStorage bf_marmita_config).
-const PROTEINAS = ['Frango Grelhado', 'Carne Moída', 'Frango à Parmegiana', 'Linguiça Acebolada'];
+const PROTEINAS = [
+  { nome: 'Frango Grelhado', tipo: 'padrao' },
+  { nome: 'Carne Moída', tipo: 'padrao' },
+  { nome: 'Frango à Parmegiana', tipo: 'padrao' },
+  { nome: 'Linguiça Acebolada', tipo: 'padrao' },
+  { nome: 'Picanha Fatiada na Brasa', tipo: 'executiva' },
+  { nome: 'Filé de Galeto Glaceado', tipo: 'executiva' },
+];
 const COMPLEMENTOS = ['Arroz', 'Feijão Tropeiro', 'Farofa', 'Vinagrete', 'Mandioca Frita', 'Salada'];
 // slug preserva a string que o frontend (index.html) manda no checkout — nunca muda,
 // mesmo com o id do TamanhoMarmita tendo virado serial (Fase 1 multitenant).
@@ -196,9 +204,11 @@ async function main() {
     console.log(`${MESAS.length} mesas do salão criadas`);
   }
 
-  for (const nome of PROTEINAS) {
+  for (const item of PROTEINAS) {
+    const nome = typeof item === 'string' ? item : item.nome;
+    const tipo = typeof item === 'string' ? 'padrao' : (item.tipo || 'padrao');
     const existente = await prisma.proteina.findFirst({ where: { tenantId, nome } });
-    if (!existente) await prisma.proteina.create({ data: { tenantId, nome } });
+    if (!existente) await prisma.proteina.create({ data: { tenantId, nome, tipo } });
   }
   console.log(`${PROTEINAS.length} proteínas criadas/já existentes`);
 
