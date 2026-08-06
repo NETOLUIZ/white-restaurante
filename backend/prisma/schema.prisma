@@ -119,6 +119,7 @@ model Configuracao {
   horarioFuncionamento Json?
   /// Endereço completo da loja/estabelecimento exibido nas retiradas no local.
   enderecoLoja         String?  @default("Rua Central, 100 — Centro")
+  capaUrl              String?
   updatedAt            DateTime @updatedAt
 }
 

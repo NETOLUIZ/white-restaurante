@@ -138,8 +138,8 @@
   <div style="position:relative;width:100%;background:var(--header-fundo, #F2B705);border-radius:0 0 28px 28px;overflow:hidden;box-shadow:0 8px 24px rgba(122,18,9,0.12);margin-bottom:16px;">
     <!-- Capa / Banner da Loja -->
     <div style="position:relative;width:100%;height:140px;background:linear-gradient(135deg, #7A1209 0%, #B5161C 50%, #420803 100%);overflow:hidden;">
-      <img src="{{ capaSrc }}" alt="Banner da Loja" style="width:100%;height:100%;object-fit:cover;opacity:.45;transform:scale(1.05);"/>
-      <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.1) 0%, rgba(122,18,9,0.7) 100%);"></div>
+      <img src="{{ capaSrc }}" alt="Banner da Loja" style="width:100%;height:100%;object-fit:cover;opacity:.85;transform:scale(1.02);"/>
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(122,18,9,0.35) 100%);"></div>
     </div>
 
     <!-- Logo Marca da Loja (Círculo Centralizado com máscara circular perfeita) -->
@@ -1264,6 +1264,7 @@ class Component extends DCLogic {
     const config = await this.apiGet('/configuracao');
     this.fee = config.taxaEntrega;
     if (config.enderecoLoja) this.RESTAURANT_ENDERECO = config.enderecoLoja;
+    if (config.capaUrl) this.setState({ capaSrc: config.capaUrl });
     // abertoAgora vem calculado do servidor (ver configuracaoController.js) — nunca do
     // relógio do navegador, pra não depender do fuso/hora do aparelho do cliente.
     this.setState({ galetoHorarios: config.galetoHorarios || [], lojaAberta: config.abertoAgora !== false }); // fee é campo de classe — setState aqui só pra reavaliar cartTotals()

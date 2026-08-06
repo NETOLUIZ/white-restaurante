@@ -2013,6 +2013,7 @@ class Component extends DCLogic {
     this.setState({
       taxaEntregaInput: String(config.taxaEntrega).replace('.', ','),
       enderecoLojaInput: config.enderecoLoja || 'Rua Central, 100 — Centro',
+      capaSrc: config.capaUrl || localStorage.getItem('bf_custom_capa'),
       galetoHorarioInicioInput: config.galetoHorarioInicio,
       galetoHorarioFimInput: config.galetoHorarioFim,
       horarioFuncionamentoDraft: this.horarioParaDraft(config.horarioFuncionamento),
@@ -2176,12 +2177,13 @@ class Component extends DCLogic {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = (evt) => {
+    reader.onload = async (evt) => {
       const dataUrl = evt.target.result;
       try {
         localStorage.setItem('bf_custom_capa', dataUrl);
         this.setState({ capaSrc: dataUrl });
-        this.showToast('Foto de Capa da Loja atualizada!');
+        await this.apiSend('PUT', '/admin/configuracao', { capaUrl: dataUrl });
+        this.showToast('Foto de Capa da Loja atualizada para todos os dispositivos!');
       } catch (err) {
         this.showToast('Erro ao salvar imagem de Capa');
       }
@@ -2189,10 +2191,13 @@ class Component extends DCLogic {
     reader.readAsDataURL(file);
     e.target.value = '';
   }
-  removerCapaFoto() {
+  async removerCapaFoto() {
     localStorage.removeItem('bf_custom_capa');
     this.setState({ capaSrc: null });
-    this.showToast('Capa da loja restaurada para o padrão!');
+    try {
+      await this.apiSend('PUT', '/admin/configuracao', { capaUrl: '' });
+      this.showToast('Capa da loja restaurada para o padrão!');
+    } catch (err) {}
   }
   novoEntregador(){ this.setState({ entregadorDraft: { id:null, nome:'', email:'', senha:'' } }); }
   editEntregador(e){ this.setState({ entregadorDraft: { id:e.id, nome:e.nome, email:e.email, senha:'' } }); }

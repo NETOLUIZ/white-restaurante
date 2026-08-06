@@ -67,6 +67,9 @@ async function atualizar(req, res) {
     if (req.body.enderecoLoja !== undefined) {
       data.enderecoLoja = String(req.body.enderecoLoja).trim();
     }
+    if (req.body.capaUrl !== undefined) {
+      data.capaUrl = req.body.capaUrl ? String(req.body.capaUrl) : null;
+    }
     if (req.body.galetoHorarioInicio !== undefined || req.body.galetoHorarioFim !== undefined) {
       const inicio = req.body.galetoHorarioInicio;
       const fim = req.body.galetoHorarioFim;
