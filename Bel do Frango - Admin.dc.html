@@ -2165,7 +2165,7 @@ class Component extends DCLogic {
         const cvs = document.createElement('canvas');
         cvs.width = w; cvs.height = h;
         cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-        const dataUrl = cvs.toDataURL('image/jpeg', 0.85);
+        const dataUrl = cvs.toDataURL('image/webp', 0.85);
         try {
           localStorage.setItem('bf_custom_splash', dataUrl);
           this.setState({ splashSrc: dataUrl });
@@ -2202,7 +2202,7 @@ class Component extends DCLogic {
         const cvs = document.createElement('canvas');
         cvs.width = w; cvs.height = h;
         cvs.getContext('2d').drawImage(img, 0, 0, w, h);
-        const dataUrl = cvs.toDataURL('image/jpeg', 0.85);
+        const dataUrl = cvs.toDataURL('image/webp', 0.85);
         try {
           localStorage.setItem('bf_custom_capa', dataUrl);
           this.setState({ capaSrc: dataUrl });
