@@ -713,6 +713,23 @@
           </div>
           <span style="color:#8C8075;font-size:13px;">{{ pUnitFmt }}</span>
         </div>
+      <sc-if value="{{ hasProductAdicionais }}" hint-placeholder-val="{{ false }}">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Adicionais / Opções</h2>
+        <div style="display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:16px;padding:12px 14px;">
+          <sc-for list="{{ productAdicionaisOptions }}" as="ad" hint-placeholder-count="3">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid rgba(29,16,9,.05);">
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:14px;color:var(--cor-texto, #1D1009);">{{ ad.nome }}</div>
+                <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--botao-primario-fundo, #D62828);margin-top:2px;">{{ ad.precoFmt }}</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:8px;flex:none;">
+                <button onClick="{{ ad.onDec }}" aria-label="Diminuir" style="width:32px;height:32px;border-radius:9px;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;color:#B45309;font-weight:700;font-size:16px;cursor:pointer;">−</button>
+                <span style="font-family:'DM Mono',monospace;font-weight:600;font-size:14px;min-width:18px;text-align:center;">{{ ad.qty }}</span>
+                <button onClick="{{ ad.onInc }}" aria-label="Aumentar" style="width:32px;height:32px;border-radius:9px;background:var(--botao-primario-fundo, #D62828);border:none;color:#fff;font-weight:700;font-size:16px;cursor:pointer;">+</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
       </sc-if>
 
       <sc-if value="{{ isGaletoProduto }}" hint-placeholder-val="{{ false }}">
@@ -1414,13 +1431,50 @@ class Component extends DCLogic {
     if (h < 15) return 'Hora do almoço! O galeto tá na brasa';
     return 'Boa tarde! Tá com fome?';
   }
+  calcularTotalItemComAdicionais(produto, selMap) {
+    if (!produto) return 0;
+    selMap = selMap || {};
+    const adicionais = produto.adicionais || [];
+    let somaAdicionaisPagos = 0;
+    let qtdAdicionaisSemPreco = 0;
+
+    for (const a of adicionais) {
+      const qtd = selMap[a.id] || 0;
+      if (qtd > 0) {
+        const pExtra = Number(a.preco || 0);
+        if (pExtra > 0) {
+          somaAdicionaisPagos += pExtra * qtd;
+        } else {
+          qtdAdicionaisSemPreco += qtd;
+        }
+      }
+    }
+
+    const basePrice = Number(produto.price || 0);
+    const valorBaseOuSemPreco = qtdAdicionaisSemPreco > 0
+      ? (qtdAdicionaisSemPreco * basePrice)
+      : basePrice;
+
+    return valorBaseOuSemPreco + somaAdicionaisPagos;
+  }
+
   openProduct(id){
     const produto = this.prod(id);
     // Produto por peso já abre sugerindo meio quilo — o cliente ajusta digitando.
     const detailQty = (produto && produto.vendidoPorPeso) ? 500 : 1;
-    this.setState({ screen:'product', selectedId:id, detailQty, detailObs:'', horarioRetirada:null });
+    this.setState({ screen:'product', selectedId:id, detailQty, detailObs:'', horarioRetirada:null, detailAdicionaisSel:{} });
   }
   selecionarHorarioRetirada(h){ this.setState({ horarioRetirada:h }); }
+
+  ajustarDetailAdicional(adicionalId, delta){
+    this.setState(s => {
+      const sel = { ...(s.detailAdicionaisSel || {}) };
+      const cur = sel[adicionalId] || 0;
+      const n = Math.max(0, Math.min(10, cur + delta));
+      if (n === 0) delete sel[adicionalId]; else sel[adicionalId] = n;
+      return { detailAdicionaisSel: sel };
+    });
+  }
 
   // ---- popup de adicionais (botão extra no card do produto) ----
   abrirAdicionaisModal(produtoId){ this.setState({ adicionaisModal:{ produtoId, sel:{} } }); }
@@ -1440,15 +1494,13 @@ class Component extends DCLogic {
     const produto = this.prod(m.produtoId); if (!produto) return;
     const itensSel = (produto.adicionais || [])
       .filter((a) => m.sel[a.id] > 0)
-      .map((a) => ({ id:a.id, nome:a.nome, preco:a.preco, qtd:m.sel[a.id] }));
+      .map((a) => ({ id:a.id, nome:a.nome, preco: Number(a.preco || 0) > 0 ? Number(a.preco) : Number(produto.price || 0), qtd:m.sel[a.id] }));
     if (itensSel.length === 0) { this.showToast('Escolha ao menos um adicional'); return; }
-    const totalAdicionais = itensSel.reduce((soma, a) => soma + a.preco * a.qtd, 0);
-    // Produto sintético (mesmo padrão da marmita montada) — cria uma linha própria no
-    // carrinho pra não misturar com o mesmo produto pedido sem adicionais.
+    const totalItemUnidade = this.calcularTotalItemComAdicionais(produto, m.sel);
     const id = 'prod-' + produto.id + '-ad-' + Date.now();
     const nomesAd = itensSel.map((a) => (a.qtd > 1 ? a.qtd + 'x ' : '') + a.nome).join(', ');
     this.setState(st => ({ products: [...st.products, {
-      ...produto, id, name: produto.name, desc: 'Com ' + nomesAd, price: produto.price + totalAdicionais
+      ...produto, id, name: produto.name, desc: 'Com ' + nomesAd, price: totalItemUnidade
     }] }));
     this.addToCart(id, 1, null, null, { produtoId: produto.id, itens: itensSel });
     this.showToast(produto.name + ' adicionado ao carrinho');
@@ -1826,11 +1878,15 @@ class Component extends DCLogic {
     // ---- popup de adicionais (aberto pelo botão extra no card do produto) ----
     const am = s.adicionaisModal;
     const amProduto = am ? this.prod(am.produtoId) : null;
-    const adicionaisModalItens = amProduto ? amProduto.adicionais.map((a) => ({
-      nome:a.nome, precoFmt:this.fmt(a.preco), qty: am.sel[a.id] || 0,
-      onInc:() => this.ajustarAdicionalModal(a.id, 1), onDec:() => this.ajustarAdicionalModal(a.id, -1)
-    })) : [];
-    const adicionaisModalTotal = amProduto ? amProduto.adicionais.reduce((soma, a) => soma + a.preco * (am.sel[a.id] || 0), 0) : 0;
+    const adicionaisModalItens = amProduto ? amProduto.adicionais.map((a) => {
+      const pExtra = Number(a.preco || 0);
+      const precoEf = pExtra > 0 ? pExtra : Number(amProduto.price || 0);
+      return {
+        nome:a.nome, precoFmt: pExtra > 0 ? ('+ ' + this.fmt(pExtra)) : this.fmt(precoEf), qty: am.sel[a.id] || 0,
+        onInc:() => this.ajustarAdicionalModal(a.id, 1), onDec:() => this.ajustarAdicionalModal(a.id, -1)
+      };
+    }) : [];
+    const adicionaisModalTotal = amProduto ? this.calcularTotalItemComAdicionais(amProduto, am.sel) : 0;
 
     const rootStyle = {
       minHeight:'100vh', display:'flex',
@@ -2003,7 +2059,27 @@ class Component extends DCLogic {
     });
 
     const sp = this.prod(s.selectedId) || s.products[0] || { id:null, cat:null, name:'', desc:'', price:0, rating:'', tag:'', foto:null };
-    const detailTotal = sp.vendidoPorPeso ? (sp.price * s.detailQty) / 1000 : sp.price * s.detailQty;
+    const detailAdSelMap = s.detailAdicionaisSel || {};
+    const hasProductAdicionais = (sp.adicionais || []).length > 0;
+    const productAdicionaisOptions = (sp.adicionais || []).map(a => {
+      const pExtra = Number(a.preco || 0);
+      const precoEf = pExtra > 0 ? pExtra : Number(sp.price || 0);
+      const precoFmt = pExtra > 0 ? ('+ ' + this.fmt(pExtra)) : this.fmt(precoEf);
+      const qty = detailAdSelMap[a.id] || 0;
+      return {
+        id: a.id,
+        nome: a.nome,
+        precoFmt,
+        qty,
+        onInc: () => this.ajustarDetailAdicional(a.id, 1),
+        onDec: () => this.ajustarDetailAdicional(a.id, -1)
+      };
+    });
+
+    const unitPriceComAd = this.calcularTotalItemComAdicionais(sp, detailAdSelMap);
+    const detailTotal = sp.vendidoPorPeso
+      ? ((sp.price * s.detailQty) / 1000 + (unitPriceComAd - Number(sp.price || 0)))
+      : (unitPriceComAd * s.detailQty);
     const spFoto = sp.foto;
 
     // Horário de retirada — só pra categoria Galetos (janela definida pelo admin em /api/configuracao).
@@ -2257,6 +2333,7 @@ class Component extends DCLogic {
       pHasFoto: !!spFoto, pSemFoto: !spFoto, pFotoSrc: spFoto || '',
       detailQty:s.detailQty, detailObs:s.detailObs, detailTotalFmt:this.fmt(detailTotal),
       porPesoDetail: !!sp.vendidoPorPeso, naoPorPesoDetail: !sp.vendidoPorPeso,
+      hasProductAdicionais, productAdicionaisOptions,
       heroStyle:{ position:'relative', height:'260px', background:'linear-gradient(135deg,#FFE9C2 0%,#F2C078 60%,#E89A3C 120%)', display:'flex', alignItems:'flex-end', justifyContent:'center', paddingBottom:'18px' },
       incDetail:() => this.setState(st => ({ detailQty: st.detailQty + 1 })),
       decDetail:() => this.setState(st => ({ detailQty: Math.max(1, st.detailQty - 1) })),
@@ -2269,8 +2346,25 @@ class Component extends DCLogic {
         const obsComHorario = (isGaletoProduto && s.horarioRetirada)
           ? 'Retirar às ' + s.horarioRetirada + (s.detailObs ? ' — ' + s.detailObs : '')
           : s.detailObs;
+
+        const selMap = s.detailAdicionaisSel || {};
+        const itensSel = (sp.adicionais || [])
+          .filter(a => selMap[a.id] > 0)
+          .map(a => ({ id: a.id, nome: a.nome, preco: Number(a.preco || 0) > 0 ? Number(a.preco) : Number(sp.price || 0), qtd: selMap[a.id] }));
+
         this.voarParaCarrinho(e.currentTarget, spFoto);
-        this.addToCart(sp.id, s.detailQty, obsComHorario);
+
+        if (itensSel.length > 0) {
+          const totalItemUnidade = this.calcularTotalItemComAdicionais(sp, selMap);
+          const idSintetico = 'prod-' + sp.id + '-ad-' + Date.now();
+          const nomesAd = itensSel.map(a => (a.qtd > 1 ? a.qtd + 'x ' : '') + a.nome).join(', ');
+          this.setState(st => ({ products: [...st.products, {
+            ...sp, id: idSintetico, name: sp.name, desc: 'Com ' + nomesAd, price: totalItemUnidade
+          }] }));
+          this.addToCart(idSintetico, s.detailQty, obsComHorario, null, { produtoId: sp.id, itens: itensSel });
+        } else {
+          this.addToCart(sp.id, s.detailQty, obsComHorario);
+        }
         this.go('cart');
       },
       toggleFav:() => this.setState(st => ({ fav: { ...st.fav, [sp.id]: !st.fav[sp.id] } })),
