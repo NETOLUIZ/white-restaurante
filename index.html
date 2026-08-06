@@ -2079,7 +2079,7 @@ class Component extends DCLogic {
     const semSearchHome = q.length === 0;
     let menuRaw;
     if (q) menuRaw = s.products.filter(p => (p.name + ' ' + (p.desc || '')).toLowerCase().includes(q));
-    else menuRaw = s.products.filter(p => p.cat === s.selectedCat && (s.selectedSubcat == null || p.subcat === s.selectedSubcat));
+    else menuRaw = s.products.filter(p => String(p.cat) === String(s.selectedCat) && (s.selectedSubcat == null || String(p.subcat) === String(s.selectedSubcat)));
     const menuList = menuRaw.map(enrich);
 
     // ---- monte sua marmita: cards de tamanho (Cardápio) + opções da tela de montagem ----
@@ -2273,7 +2273,7 @@ class Component extends DCLogic {
     return {
       rootStyle, shellStyle, gridStyle, pageWrap, categoriesRowStyle,
       isSplash: s.screen === 'splash', splashSrc: localStorage.getItem('bf_custom_splash') || 'assets/logo tranparente.png', isHome, isMenu, isCart, isConta, isMainTab,
-      capaSrc: localStorage.getItem('bf_custom_capa') || 'assets/marmita.webp',
+      capaSrc: s.capaSrc || localStorage.getItem('bf_custom_capa') || 'assets/marmita.webp',
       hasSearchHome, semSearchHome, searchResultsHome, homeFeatured,
       isProduct: s.screen === 'product', isCheckout: s.screen === 'checkout', isTracking: s.screen === 'tracking', isCadastro, isMarmita,
       isBairroScreen,
