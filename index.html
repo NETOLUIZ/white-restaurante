@@ -190,7 +190,7 @@
       <div style="width:1px;height:14px;background:rgba(122,18,9,0.2);"></div>
       <div style="display:flex;align-items:center;gap:6px;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-        <span>Taxa: R$ 5,00</span>
+        <span>Taxa: {{ taxaHeaderFmt }}</span>
       </div>
     </div>
 
@@ -2359,6 +2359,7 @@ class Component extends DCLogic {
 
       cartLines, hasCart: T.count > 0, isCartEmpty: T.count === 0, cartCount: T.count,
       subtotalFmt:this.fmt(T.subtotal), feeFmt: T.fee === 0 ? 'Grátis' : this.fmt(T.fee),
+      taxaHeaderFmt: this.resolverBairroEEntrega().taxa === 0 ? 'Grátis' : this.fmt(this.resolverBairroEEntrega().taxa),
       discountFmt:this.fmt(T.discount), hasDiscount: T.discount > 0,
       totalFmt:this.fmt(T.total), cartTotalFmt:this.fmt(T.total),
 
