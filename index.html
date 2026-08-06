@@ -396,7 +396,7 @@
       <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 12px;"></div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:21px;color:var(--botao-primario-fundo, #D62828);">{{ totalFmt }}</span></div>
     </div>
-    <button onClick="{{ goCheckout }}" style="margin-top:16px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-space-between;gap:8px;"><span>Fechar pedido</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;opacity:.9;">{{ totalFmt }}</span></button>
+    <button onClick="{{ goCheckout }}" style="margin-top:16px;width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.32);display:flex;align-items:center;justify-content:space-between;gap:8px;"><span>Finalizar compra</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;opacity:.9;">{{ totalFmt }}</span></button>
     <button onClick="{{ goMenu }}" style="margin-top:10px;width:100%;background:var(--botao-secundario-fundo, transparent);border:1px solid var(--botao-secundario-borda, transparent);color:var(--botao-secundario-texto, var(--cor-primaria, #C0271A));border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;padding:10px;">Continuar comprando</button>
   </sc-if>
 </div>
@@ -654,84 +654,174 @@
 </sc-if>
 
 <!-- ===================== FLOW: CHECKOUT ===================== -->
+<!-- ===================== FLOW: CHECKOUT ===================== -->
 <sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Checkout" style="height:100%;display:flex;flex-direction:column;background:var(--cor-fundo, #FFF6D6);animation:bfUp .24s ease-out;">
-  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;">
-    <button onClick="{{ goCart }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:0;flex:1;">Finalizar pedido</h1>
+  
+  <!-- Header with step progress indicator -->
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 18px 12px;background:var(--cor-fundo, #FFF6D6);flex:none;border-bottom:1px solid rgba(29,16,9,.06);">
+    <button onClick="{{ isCheckoutStep2 ? goCheckoutStep1 : goCart }}" aria-label="Voltar" style="width:40px;height:40px;border-radius:13px;background:#fff;border:1px solid rgba(29,16,9,.08);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--cor-primaria, #B5161C)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div style="flex:1;">
+      <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;margin:0;">{{ checkoutStepTitle }}</h1>
+      <div style="font-size:12px;color:#8C8075;font-weight:600;margin-top:1px;">{{ checkoutStepSubtitle }}</div>
+    </div>
     <div style="width:36px;height:36px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
   </div>
-  <div style="flex:1;overflow-y:auto;padding:8px 18px 18px;">
-    <div style="display:flex;gap:8px;margin:12px 0 4px;">
-      <button onClick="{{ setTipoEntrega }}" style="{{ tipoEntregaStyle }}">Entrega</button>
-      <button onClick="{{ setTipoRetirada }}" style="{{ tipoRetiradaStyle }}">Retirada no local</button>
-    </div>
 
-    <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}">
-      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:18px 0 8px;color:#C0271A;">Endereço de entrega</h2>
-      <div style="display:flex;gap:12px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg></span>
-        <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">{{ enderecoTitulo }}</div><div style="font-size:13px;color:#8C8075;">{{ enderecoSub }}</div></div>
-        <button onClick="{{ goCadastro }}" style="background:none;border:none;color:var(--botao-primario-fundo, #D62828);font-weight:700;font-size:13px;cursor:pointer;flex:none;padding:8px 6px;margin:-8px -6px;">Trocar</button>
-      </div>
-    </sc-if>
-
-    <sc-if value="{{ isPedidoRetirada }}" hint-placeholder-val="{{ false }}">
-      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:18px 0 8px;color:#C0271A;">Retirar no local</h2>
-      <div style="display:flex;gap:12px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;align-items:center;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <span style="width:40px;height:40px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg></span>
-        <div style="flex:1;min-width:0;"><div style="font-weight:700;font-size:14px;">Bel do Frango</div><div style="font-size:13px;color:#8C8075;">{{ enderecoLoja }}</div></div>
-      </div>
-    </sc-if>
-
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Forma de pagamento</h2>
-    <div style="display:flex;flex-direction:column;gap:10px;">
-      <button onClick="{{ setPix }}" aria-pressed="{{ pixPressed }}" style="{{ pixStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#2D9E60;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3z"/><path d="M20 14v3M14 20h6M20 20v.01"/></svg></span>
-        <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Pix</span><span style="font-size:12px;color:#2D9E60;font-weight:600;">Aprovação na hora • recomendado</span></span>
-        <span style="{{ pixRadio }}"></span>
-      </button>
-      <button onClick="{{ setCard }}" aria-pressed="{{ cardPressed }}" style="{{ cardStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
-        <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Cartão na entrega</span><span style="font-size:12px;color:#8C8075;">Crédito ou débito</span></span>
-        <span style="{{ cardRadio }}"></span>
-      </button>
-      <button onClick="{{ setDinheiro }}" aria-pressed="{{ dinheiroPressed }}" style="{{ dinheiroStyle }}">
-        <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#A8730B;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></span>
-        <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Dinheiro na entrega</span><span style="font-size:12px;color:#8C8075;">Pague em espécie ao entregador</span></span>
-        <span style="{{ dinheiroRadio }}"></span>
-      </button>
-    </div>
-
-    <sc-if value="{{ isDinheiroSelecionado }}" hint-placeholder-val="{{ false }}">
-      <div style="margin-top:10px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-        <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Precisa de troco para quanto? (opcional)</label>
-        <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="Ex: 100,00" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;color:var(--cor-texto, #1D1009);outline:none;"/>
-        <sc-if value="{{ hasTroco }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;">
-            <span style="font-weight:700;font-size:13px;color:{{ trocoColor }}">{{ trocoLabel }}</span>
-            <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:{{ trocoColor }}">{{ trocoFmt }}</span>
-          </div>
-        </sc-if>
-      </div>
-    </sc-if>
-
-    <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Resumo do pedido</h2>
-    <div style="background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.06));border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
-      <sc-for list="{{ cartLines }}" as="it" hint-placeholder-count="2">
-        <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;"><span style="color:var(--cor-primaria, #B5161C);">{{ it.qty }}× {{ it.name }}</span><span style="font-family:'DM Mono',monospace;color:#C0271A;">{{ it.lineFmt }}</span></div>
-      </sc-for>
-      <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 10px;"></div>
-      <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#8C8075;margin-bottom:6px;"><span>Taxa de entrega</span><span style="font-family:'DM Mono',monospace;">{{ feeFmt }}</span></div></sc-if>
-      <sc-if value="{{ hasDiscount }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#2D9E60;margin-bottom:6px;"><span>Desconto</span><span style="font-family:'DM Mono',monospace;">-{{ discountFmt }}</span></div></sc-if>
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:20px;color:var(--botao-primario-fundo, #D62828);">{{ totalFmt }}</span></div>
-    </div>
+  <!-- Stepper Bar (Etapa 1: Entrega -> Etapa 2: Pagamento) -->
+  <div style="display:flex;gap:6px;padding:10px 18px;background:rgba(29,16,9,.03);border-bottom:1px solid rgba(29,16,9,.05);">
+    <button onClick="{{ goCheckoutStep1 }}" style="{{ step1BadgeStyle }}">1. Entrega / Retirada</button>
+    <button onClick="{{ goCheckoutStep2 }}" style="{{ step2BadgeStyle }}">2. Pagamento</button>
   </div>
+
+  <div style="flex:1;overflow-y:auto;padding:12px 18px 18px;">
+    
+    <!-- ================ ETAPA 1: ENTREGA OU RETIRADA ================ -->
+    <sc-if value="{{ isCheckoutStep1 }}" hint-placeholder-val="{{ true }}">
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:10px 0 10px;color:var(--cor-primaria, #B5161C);">Escolha como deseja receber</h2>
+      <div style="display:flex;gap:10px;margin-bottom:16px;">
+        <button onClick="{{ setTipoEntrega }}" style="{{ tipoEntregaStyle }}">
+          <span style="display:block;font-size:14px;font-weight:700;">🛵 Receber no endereço</span>
+          <span style="display:block;font-size:11.5px;opacity:.85;margin-top:2px;">Entrega via motoboy</span>
+        </button>
+        <button onClick="{{ setTipoRetirada }}" style="{{ tipoRetiradaStyle }}">
+          <span style="display:block;font-size:14px;font-weight:700;">🏬 Retirar no local</span>
+          <span style="display:block;font-size:11.5px;opacity:.85;margin-top:2px;">Sem taxa de entrega</span>
+        </button>
+      </div>
+
+      <!-- OPÇÃO 1: RECEBER NO SEU ENDEREÇO -->
+      <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}">
+        <div style="background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:18px;padding:16px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0 0 12px;color:var(--cor-texto, #1D1009);">Endereço de entrega</h3>
+          
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <label style="{{ labelStyle2 }}">CEP (opcional - busca automática)</label>
+              <input value="{{ cadCep }}" onChange="{{ onCadCep }}" placeholder="00000-000" inputmode="numeric" style="{{ cepInputStyle }}"/>
+              <sc-if value="{{ hasCepMsg }}" hint-placeholder-val="{{ false }}"><p style="{{ cepMsgStyle }}">{{ cepMsg }}</p></sc-if>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <div style="flex:2;">
+                <label style="{{ labelStyle2 }}">Rua / Logradouro *</label>
+                <input value="{{ cadRua }}" onChange="{{ onCadRua }}" placeholder="Ex: Av. Brasil" style="{{ inputStyle2 }}"/>
+              </div>
+              <div style="flex:1;">
+                <label style="{{ labelStyle2 }}">Número *</label>
+                <input value="{{ cadNumero }}" onChange="{{ onCadNumero }}" placeholder="123" style="{{ inputStyle2 }}"/>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px;">
+              <div style="flex:1;">
+                <label style="{{ labelStyle2 }}">Bairro *</label>
+                <input value="{{ cadBairro }}" onChange="{{ onCadBairro }}" placeholder="Centro" style="{{ inputStyle2 }}"/>
+              </div>
+              <div style="flex:1;">
+                <label style="{{ labelStyle2 }}">Complemento</label>
+                <input value="{{ cadComplemento }}" onChange="{{ onCadComplemento }}" placeholder="Apto 101" style="{{ inputStyle2 }}"/>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;padding-top:14px;border-top:1px dashed rgba(29,16,9,.12);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+              <span style="color:#6B2E12;font-weight:600;display:flex;align-items:center;gap:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>Taxa de entrega</span>
+              <span style="font-family:'DM Mono',monospace;font-weight:700;color:var(--cor-primaria, #B5161C);">{{ feeFmt }}</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+              <span style="color:#6B2E12;font-weight:600;display:flex;align-items:center;gap:6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Tempo estimado de espera</span>
+              <span style="font-weight:700;color:#2D9E60;">30 a 45 min</span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- OPÇÃO 2: RETIRAR NO ESTABELECIMENTO -->
+      <sc-if value="{{ isPedidoRetirada }}" hint-placeholder-val="{{ false }}">
+        <div style="background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:18px;padding:16px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0 0 12px;color:var(--cor-texto, #1D1009);">Endereço de retirada</h3>
+          <div style="display:flex;gap:12px;align-items:flex-start;">
+            <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l1-5h16l1 5"/><path d="M4 9v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9"/><path d="M9 9v11"/><path d="M3 9h18"/></svg></span>
+            <div style="flex:1;min-width:0;">
+              <div style="font-weight:700;font-size:15px;color:var(--cor-texto, #1D1009);">Bel do Frango</div>
+              <div style="font-size:13px;color:#8C8075;margin-top:2px;">{{ enderecoLoja }}</div>
+            </div>
+          </div>
+          <div style="margin-top:16px;padding-top:14px;border-top:1px dashed rgba(29,16,9,.12);display:flex;flex-direction:column;gap:8px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+              <span style="color:#6B2E12;font-weight:600;">Taxa de entrega</span>
+              <span style="font-weight:700;color:#2D9E60;">Grátis (R$ 0,00)</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:13.5px;">
+              <span style="color:#6B2E12;font-weight:600;">Tempo estimado de espera</span>
+              <span style="font-weight:700;color:#2D9E60;">15 a 25 min</span>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <!-- ================ ETAPA 2: PAGAMENTO & RESUMO ================ -->
+    <sc-if value="{{ isCheckoutStep2 }}" hint-placeholder-val="{{ false }}">
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:10px 0 8px;color:#C0271A;">Forma de pagamento</h2>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onClick="{{ setPix }}" aria-pressed="{{ pixPressed }}" style="{{ pixStyle }}">
+          <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#2D9E60;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3z"/><path d="M20 14v3M14 20h6M20 20v.01"/></svg></span>
+          <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Pix</span><span style="font-size:12px;color:#2D9E60;font-weight:600;">Aprovação na hora • recomendado</span></span>
+          <span style="{{ pixRadio }}"></span>
+        </button>
+        <button onClick="{{ setCard }}" aria-pressed="{{ cardPressed }}" style="{{ cardStyle }}">
+          <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:var(--botao-primario-fundo, #D62828);display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+          <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Cartão na entrega</span><span style="font-size:12px;color:#8C8075;">Crédito ou débito</span></span>
+          <span style="{{ cardRadio }}"></span>
+        </button>
+        <button onClick="{{ setDinheiro }}" aria-pressed="{{ dinheiroPressed }}" style="{{ dinheiroStyle }}">
+          <span style="width:42px;height:42px;border-radius:12px;background:var(--cor-fundo-secundaria, #FFF3DC);color:#A8730B;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.2"/><path d="M6 12h.01"/><path d="M18 12h.01"/></svg></span>
+          <span style="flex:1;text-align:left;"><span style="font-weight:700;font-size:15px;display:block;">Dinheiro na entrega</span><span style="font-size:12px;color:#8C8075;">Pague em espécie ao entregador</span></span>
+          <span style="{{ dinheiroRadio }}"></span>
+        </button>
+      </div>
+
+      <sc-if value="{{ isDinheiroSelecionado }}" hint-placeholder-val="{{ false }}">
+        <div style="margin-top:10px;background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Precisa de troco para quanto? (opcional)</label>
+          <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="Ex: 100,00" inputmode="decimal" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:12px;padding:12px 14px;font-size:14px;color:var(--cor-texto, #1D1009);outline:none;"/>
+          <sc-if value="{{ hasTroco }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:10px;">
+              <span style="font-weight:700;font-size:13px;color:{{ trocoColor }}">{{ trocoLabel }}</span>
+              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:16px;color:{{ trocoColor }}">{{ trocoFmt }}</span>
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:22px 0 8px;color:#C0271A;">Resumo do pedido</h2>
+      <div style="background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.06));border-radius:16px;padding:14px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
+        <sc-for list="{{ cartLines }}" as="it" hint-placeholder-count="2">
+          <div style="display:flex;justify-content:space-between;font-size:14px;margin-bottom:8px;"><span style="color:var(--cor-primaria, #B5161C);">{{ it.qty }}× {{ it.name }}</span><span style="font-family:'DM Mono',monospace;color:#C0271A;">{{ it.lineFmt }}</span></div>
+        </sc-for>
+        <div style="height:1px;background:rgba(29,16,9,.08);margin:6px 0 10px;"></div>
+        <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#8C8075;margin-bottom:6px;"><span>Taxa de entrega</span><span style="font-family:'DM Mono',monospace;">{{ feeFmt }}</span></div></sc-if>
+        <sc-if value="{{ hasDiscount }}" hint-placeholder-val="{{ false }}"><div style="display:flex;justify-content:space-between;font-size:13px;color:#2D9E60;margin-bottom:6px;"><span>Desconto</span><span style="font-family:'DM Mono',monospace;">-{{ discountFmt }}</span></div></sc-if>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:4px;"><span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;">Total</span><span style="font-family:'DM Mono',monospace;font-weight:500;font-size:20px;color:var(--botao-primario-fundo, #D62828);">{{ totalFmt }}</span></div>
+      </div>
+    </sc-if>
+  </div>
+
+  <!-- Bottom Action Bar -->
   <div style="padding:14px 18px calc(14px + env(safe-area-inset-bottom));background:var(--cor-fundo, #FFF6D6);border-top:1px solid rgba(29,16,9,.06);">
-    <button onClick="{{ placeOrder }}" style="width:100%;background:#2D9E60;color:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(45,158,96,.3);display:flex;align-items:center;justify-content:center;gap:10px;">
-      <sc-if value="{{ placing }}" hint-placeholder-val="{{ false }}"><span style="width:19px;height:19px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:bfRing .7s linear infinite;"></span></sc-if>
-      {{ confirmLabel }}
-    </button>
+    <sc-if value="{{ isCheckoutStep1 }}" hint-placeholder-val="{{ true }}">
+      <button onClick="{{ goCheckoutStep2 }}" style="width:100%;background:var(--botao-primario-fundo, #D62828);color:var(--botao-primario-texto, #fff);border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.3);display:flex;align-items:center;justify-content:center;gap:8px;">
+        <span>Ir para o pagamento</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </sc-if>
+    <sc-if value="{{ isCheckoutStep2 }}" hint-placeholder-val="{{ false }}">
+      <button onClick="{{ placeOrder }}" style="width:100%;background:#2D9E60;color:#fff;border:none;border-radius:16px;padding:16px;font-weight:700;font-size:16px;cursor:pointer;box-shadow:0 10px 24px rgba(45,158,96,.3);display:flex;align-items:center;justify-content:center;gap:10px;">
+        <sc-if value="{{ placing }}" hint-placeholder-val="{{ false }}"><span style="width:19px;height:19px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:bfRing .7s linear infinite;"></span></sc-if>
+        {{ confirmLabel }}
+      </button>
+    </sc-if>
   </div>
 </div>
 </sc-if>
@@ -958,6 +1048,7 @@ class Component extends DCLogic {
     cadastroLatLng: null, // [lat, lon] do endereço geocodificado (Nominatim/OpenStreetMap) — só preview visual, não é enviado a lugar nenhum
     cadastroGeocoding: false,
     toast: '',
+    checkoutStep: 1, // 1 = Dados de Entrega / Retirada, 2 = Pagamento & Resumo
 
     features: {}, // vem de /api/config — { marmita, mesas, entregador, empresa, cupom } (chave ausente = tratado como ativo)
     tipoTenant: 'RESTAURANTE', // vem de /api/config — decide "Cardápio" (restaurante) vs "Produtos" (mercantil)
@@ -1422,6 +1513,34 @@ class Component extends DCLogic {
       });
       setTimeout(() => voador.remove(), 650);
     } catch (e) { /* cosmético — nunca deve impedir o item de ser adicionado */ }
+  }
+
+  goCheckoutStep2() {
+    const c = this.state.cadastro;
+    if (this.state.pedidoTipo === 'entrega') {
+      if (!c.rua || !c.rua.trim()) {
+        this.showToast('Informe a rua para entrega');
+        return;
+      }
+      if (!c.numero || !c.numero.trim()) {
+        this.showToast('Informe o número do endereço');
+        return;
+      }
+      if (!c.bairro || !c.bairro.trim()) {
+        this.showToast('Informe o bairro para a entrega');
+        return;
+      }
+    }
+    if (c.rua) {
+      const u = this.state.usuario || { nome: 'Cliente', email: '', telefone: '' };
+      const novoUsuario = {
+        ...u,
+        endereco: { ...(u.endereco || {}), rua: c.rua, numero: c.numero, bairro: c.bairro, cep: c.cep, complemento: c.complemento }
+      };
+      this.setState({ usuario: novoUsuario });
+      try { localStorage.setItem('bf_usuario', JSON.stringify(novoUsuario)); } catch (err) {}
+    }
+    this.setState({ checkoutStep: 2 });
   }
 
   // ---- cadastro (opcional) ----
@@ -1914,7 +2033,41 @@ class Component extends DCLogic {
       goMenu:() => { this.setState({ hamburgerOpen:false }); this.go('menu'); },
       goCart:() => this.go('cart'),
       goConta:() => { this.setState({ hamburgerOpen:false }); this.go('conta'); },
-      goCheckout:() => this.go('checkout'), goBack:() => this.go('menu'),
+      goCheckout:() => {
+        const u = this.state.usuario;
+        const e = (u && u.endereco) || {};
+        this.setState(s => ({
+          screen:'checkout',
+          checkoutStep: 1,
+          cadastro: {
+            ...s.cadastro,
+            rua: e.rua || s.cadastro.rua,
+            numero: e.numero || s.cadastro.numero,
+            bairro: e.bairro || s.cadastro.bairro,
+            cep: e.cep || s.cadastro.cep,
+            complemento: e.complemento || s.cadastro.complemento
+          }
+        }));
+      },
+      goBack:() => this.go('menu'),
+      isCheckoutStep1: (s.checkoutStep || 1) === 1,
+      isCheckoutStep2: s.checkoutStep === 2,
+      goCheckoutStep1: () => this.setState({ checkoutStep: 1 }),
+      goCheckoutStep2: () => this.goCheckoutStep2(),
+      checkoutStepTitle: (s.checkoutStep || 1) === 2 ? 'Etapa 2: Pagamento' : 'Etapa 1: Dados de entrega',
+      checkoutStepSubtitle: (s.checkoutStep || 1) === 2 ? 'Escolha a forma de pagamento' : 'Defina o local de entrega ou retirada',
+      step1BadgeStyle: {
+        flex: 1, border: 'none', cursor: 'pointer', borderRadius: '10px', padding: '8px 12px',
+        fontWeight: 700, fontSize: '12.5px',
+        background: (s.checkoutStep || 1) === 1 ? 'var(--botao-primario-fundo, #D62828)' : 'rgba(29,16,9,.08)',
+        color: (s.checkoutStep || 1) === 1 ? '#fff' : '#6B2E12'
+      },
+      step2BadgeStyle: {
+        flex: 1, border: 'none', cursor: 'pointer', borderRadius: '10px', padding: '8px 12px',
+        fontWeight: 700, fontSize: '12.5px',
+        background: s.checkoutStep === 2 ? 'var(--botao-primario-fundo, #D62828)' : 'rgba(29,16,9,.08)',
+        color: s.checkoutStep === 2 ? '#fff' : '#6B2E12'
+      },
       goMarmitasTab:() => this.setState({ screen:'menu', selectedCat:marmitaCatId, search:'' }),
       noop:() => {}, setMain:(el) => { this._main = el; },
       onBell:() => this.showToast('Nenhuma notificação nova por aqui'),
