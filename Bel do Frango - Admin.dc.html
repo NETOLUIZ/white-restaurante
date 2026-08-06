@@ -829,14 +829,22 @@
       <sc-if value="{{ isCaixaEntregadores }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;">
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-          <div style="display:grid;grid-template-columns:2fr 1fr 120px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
-            <span>Nome</span><span>Saldo</span><span></span>
+          <div style="display:grid;grid-template-columns:2fr 1.2fr 300px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+            <span>Entregador</span><span>Saldo a Acertar (Dinheiro)</span><span style="text-align:right;">Ações de Caixa</span>
           </div>
           <sc-for list="{{ caixaEntregadorRows }}" as="ce" hint-placeholder-count="3">
-            <div style="display:grid;grid-template-columns:2fr 1fr 120px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+            <div style="display:grid;grid-template-columns:2fr 1.2fr 300px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
               <div style="font-weight:700;font-size:14px;">{{ ce.nome }}</div>
-              <div style="font-family:'DM Mono',monospace;font-weight:700;font-size:15px;color:#D97706;">{{ ce.saldoFmt }}</div>
-              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ ce.onZerar }}" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:9px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;">Zerar</button></div>
+              <div style="font-family:'DM Mono',monospace;font-weight:700;font-size:15px;color:{{ ce.saldoCor }};">{{ ce.saldoFmt }}</div>
+              <div style="display:flex;justify-content:flex-end;gap:8px;">
+                <sc-if value="{{ ce.hasSaldo }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ ce.onSangria }}" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:10px;padding:8px 12px;font-weight:700;font-size:12.5px;cursor:pointer;">🩸 Sangria Parcial</button>
+                  <button onClick="{{ ce.onZerar }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;box-shadow:0 3px 8px rgba(45,158,96,.25);">💵 Zerar Saldo</button>
+                </sc-if>
+                <sc-if value="{{ ce.noSaldo }}" hint-placeholder-val="{{ false }}">
+                  <span style="background:#F6F1E7;color:#8C8075;border:1px solid rgba(29,16,9,.1);border-radius:10px;padding:8px 14px;font-weight:600;font-size:12.5px;">✓ Tudo Quitado</span>
+                </sc-if>
+              </div>
             </div>
           </sc-for>
           <sc-if value="{{ caixaEntregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
@@ -1937,13 +1945,40 @@ class Component extends DCLogic {
     const lista = await this.apiGet('/admin/entregadores/saldos');
     this.setState({ caixaEntregadores: lista });
   }
-  async zerarSaldoEntregador(id){
-    if (!confirm('Zerar o saldo desse entregador? Essa ação não pode ser desfeita.')) return;
+  async sangriaEntregador(id, nome, saldoAtual){
+    if (Number(saldoAtual || 0) <= 0) {
+      this.showToast('Este entregador já não possui saldo pendente.');
+      return;
+    }
+    const valStr = prompt('Sangria de caixa do entregador ' + (nome || '') + ':\nSaldo acumulado em dinheiro: ' + this.fmt(saldoAtual) + '\n\nDigite o valor a recolher/abater (R$):', '');
+    if (!valStr) return;
+    const valor = parseFloat(valStr.replace(',', '.'));
+    if (!valor || isNaN(valor) || valor <= 0) {
+      this.showToast('Digite um valor numérico válido maior que zero.');
+      return;
+    }
+    if (valor > saldoAtual) {
+      this.showToast('O valor da sangria não pode ser maior do que o saldo atual (' + this.fmt(saldoAtual) + ').');
+      return;
+    }
+    try {
+      await this.apiSend('POST', '/admin/entregadores/' + id + '/sangria', { valor });
+      await this.carregarCaixaEntregadores();
+      this.showToast('Sangria de ' + this.fmt(valor) + ' registrada com sucesso!');
+    } catch (e) { this.showToast(e.message || 'Erro ao registrar sangria'); }
+  }
+  async zerarSaldoEntregador(id, nome, saldo){
+    if (Number(saldo || 0) <= 0) {
+      this.showToast('Este entregador já não possui saldo pendente.');
+      return;
+    }
+    const valorFmt = this.fmt(saldo);
+    if (!confirm('Confirmar o acerto total de ' + valorFmt + ' em dinheiro do entregador ' + (nome || '') + '?')) return;
     try {
       await this.apiSend('POST', '/admin/entregadores/' + id + '/zerar-saldo', {});
       await this.carregarCaixaEntregadores();
-      this.showToast('Saldo zerado');
-    } catch (e) { this.showToast(e.message || 'Erro ao zerar saldo'); }
+      this.showToast('Recebimento total de ' + valorFmt + ' confirmado com sucesso!');
+    } catch (e) { this.showToast(e.message || 'Erro ao confirmar recebimento'); }
   }
   async carregarGarcons(){
     const lista = await this.apiGet('/admin/garcons');
@@ -3691,11 +3726,18 @@ class Component extends DCLogic {
         onEdit:() => this.editEntregador(e)
       })),
       caixaEntregadoresEmpty: s.caixaEntregadores.length === 0,
-      caixaEntregadorRows: s.caixaEntregadores.map(ce => ({
-        nome: ce.nome,
-        saldoFmt: this.fmt(ce.saldo),
-        onZerar:() => this.zerarSaldoEntregador(ce.id)
-      })),
+      caixaEntregadorRows: s.caixaEntregadores.map(ce => {
+        const hasSaldo = Number(ce.saldo || 0) > 0;
+        return {
+          nome: ce.nome,
+          saldoFmt: this.fmt(ce.saldo),
+          saldoCor: hasSaldo ? '#D97706' : '#2D9E60',
+          hasSaldo,
+          noSaldo: !hasSaldo,
+          onSangria: () => this.sangriaEntregador(ce.id, ce.nome, ce.saldo),
+          onZerar: () => this.zerarSaldoEntregador(ce.id, ce.nome, ce.saldo)
+        };
+      }),
 
       novoGarcom:() => this.novoGarcom(),
       isGarcomDraft: !!s.garcomDraft,

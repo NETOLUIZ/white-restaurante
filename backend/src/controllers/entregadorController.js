@@ -116,16 +116,29 @@ async function meuSaldo(req, res) {
       where: { id: req.entregador.id },
       select: { saldoZeradoEm: true, createdAt: true },
     });
+    const desde = entregador.saldoZeradoEm || entregador.createdAt;
     const resultado = await req.prisma.pedido.aggregate({
       where: {
         entregadorId: req.entregador.id,
         formaPagamento: 'DINHEIRO',
         statusEntrega: 'ENTREGUE',
-        entregueEm: { gt: entregador.saldoZeradoEm || entregador.createdAt },
+        entregueEm: { gt: desde },
       },
       _sum: { total: true },
     });
-    res.json({ saldo: resultado._sum.total || 0 });
+    const sangrias = await req.prisma.sangriaEntregador.aggregate({
+      where: {
+        entregadorId: req.entregador.id,
+        createdAt: { gt: desde },
+      },
+      _sum: { valor: true },
+    });
+
+    const totalPedidos = resultado._sum.total || 0;
+    const totalSangrias = sangrias._sum.valor || 0;
+    const saldo = Math.max(0, totalPedidos - totalSangrias);
+
+    res.json({ saldo });
   } catch (err) {
     console.error('Erro ao calcular saldo do entregador:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
@@ -141,21 +154,56 @@ async function listarSaldos(req, res) {
     });
     const saldos = await Promise.all(
       entregadores.map(async (e) => {
+        const desde = e.saldoZeradoEm || e.createdAt;
         const resultado = await req.prisma.pedido.aggregate({
           where: {
             entregadorId: e.id,
             formaPagamento: 'DINHEIRO',
             statusEntrega: 'ENTREGUE',
-            entregueEm: { gt: e.saldoZeradoEm || e.createdAt },
+            entregueEm: { gt: desde },
           },
           _sum: { total: true },
         });
-        return { id: e.id, nome: e.nome, ativo: e.ativo, saldo: resultado._sum.total || 0 };
+        const sangrias = await req.prisma.sangriaEntregador.aggregate({
+          where: {
+            entregadorId: e.id,
+            createdAt: { gt: desde },
+          },
+          _sum: { valor: true },
+        });
+
+        const totalPedidos = resultado._sum.total || 0;
+        const totalSangrias = sangrias._sum.valor || 0;
+        const saldo = Math.max(0, totalPedidos - totalSangrias);
+
+        return { id: e.id, nome: e.nome, ativo: e.ativo, saldo };
       }),
     );
     res.json(saldos);
   } catch (err) {
     console.error('Erro ao listar saldos dos entregadores:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+/** Registra uma sangria parcial no saldo do entregador — painel admin. */
+async function registrarSangria(req, res) {
+  try {
+    const id = parseInt(req.params.id, 10);
+    const valor = parseFloat(req.body.valor);
+    if (!valor || isNaN(valor) || valor <= 0) {
+      return res.status(400).json({ erro: 'Informe um valor válido para a sangria' });
+    }
+    await req.prisma.sangriaEntregador.create({
+      data: {
+        tenantId: req.tenant.id,
+        entregadorId: id,
+        valor,
+      },
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao registrar sangria do entregador:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
   }
 }
@@ -172,4 +220,4 @@ async function zerarSaldo(req, res) {
   }
 }
 
-module.exports = { listarAdmin, criar, atualizar, meusPedidos, meuSaldo, listarSaldos, zerarSaldo };
+module.exports = { listarAdmin, criar, atualizar, meusPedidos, meuSaldo, listarSaldos, registrarSangria, zerarSaldo };

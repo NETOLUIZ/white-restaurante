@@ -94,6 +94,7 @@ router.get('/entregadores', entregadorController.listarAdmin);
 router.post('/entregadores', entregadorController.criar);
 router.put('/entregadores/:id', entregadorController.atualizar);
 router.get('/entregadores/saldos', entregadorController.listarSaldos);
+router.post('/entregadores/:id/sangria', entregadorController.registrarSangria);
 router.post('/entregadores/:id/zerar-saldo', entregadorController.zerarSaldo);
 
 router.get('/garcons', garcomAdminController.listarAdmin);
