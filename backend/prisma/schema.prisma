@@ -116,6 +116,8 @@ model Configuracao {
   /// nesse dia). null = sem restrição cadastrada (loja sempre aberta, mesmo
   /// comportamento de antes deste campo existir — ver utils/horarioFuncionamento.js).
   horarioFuncionamento Json?
+  /// Endereço completo da loja/estabelecimento exibido nas retiradas no local.
+  enderecoLoja         String?  @default("Rua Central, 100 — Centro")
   updatedAt            DateTime @updatedAt
 }
 
@@ -446,6 +448,8 @@ model Proteina {
   nome        String
   ativo       Boolean              @default(true)
   esgotado    Boolean              @default(false)
+  /// "padrao" | "executiva" — proteínas executivas só aparecem ao montar a Marmita Executiva.
+  tipo        String               @default("padrao")
   itensUsados ItemPedidoProteina[]
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt

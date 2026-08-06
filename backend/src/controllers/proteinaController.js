@@ -23,11 +23,13 @@ async function listarAdmin(req, res) {
 /** Cria uma proteína nova — painel admin. */
 async function criar(req, res) {
   try {
-    const { nome } = req.body;
+    const { nome, tipo } = req.body;
     if (!nome || !String(nome).trim()) {
       return res.status(400).json({ erro: 'Informe o nome da proteína' });
     }
-    const proteina = await req.prisma.proteina.create({ data: { nome: String(nome).trim() } });
+    const proteina = await req.prisma.proteina.create({
+      data: { nome: String(nome).trim(), tipo: tipo === 'executiva' ? 'executiva' : 'padrao' }
+    });
     res.status(201).json(proteina);
   } catch (err) {
     console.error('Erro ao criar proteína:', err);
@@ -35,15 +37,16 @@ async function criar(req, res) {
   }
 }
 
-/** Atualiza nome/ativo/esgotado de uma proteína — painel admin. */
+/** Atualiza nome/ativo/esgotado/tipo de uma proteína — painel admin. */
 async function atualizar(req, res) {
   try {
     const id = parseInt(req.params.id, 10);
-    const { nome, ativo, esgotado } = req.body;
+    const { nome, ativo, esgotado, tipo } = req.body;
     const data = {};
     if (nome !== undefined) data.nome = String(nome).trim();
     if (ativo !== undefined) data.ativo = Boolean(ativo);
     if (esgotado !== undefined) data.esgotado = Boolean(esgotado);
+    if (tipo !== undefined) data.tipo = tipo === 'executiva' ? 'executiva' : 'padrao';
     const proteina = await req.prisma.proteina.update({ where: { id }, data });
     res.json(proteina);
   } catch (err) {

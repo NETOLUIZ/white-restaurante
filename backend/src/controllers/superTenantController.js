@@ -96,6 +96,7 @@ async function criar(req, res) {
           data: [
             { tenantId: tenant.id, slug: 'pequena', nome: 'Marmita Pequena', qtdProteinas: 1, preco: 24.9 },
             { tenantId: tenant.id, slug: 'grande', nome: 'Marmita Grande', qtdProteinas: 2, preco: 32.9 },
+            { tenantId: tenant.id, slug: 'executiva', nome: 'Marmita Executiva', qtdProteinas: 3, preco: 39.9 },
           ],
         });
       }

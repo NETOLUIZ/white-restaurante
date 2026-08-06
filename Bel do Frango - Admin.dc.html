@@ -383,7 +383,8 @@
             <div style="flex:1;min-width:150px;">
               <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Tipo</label>
               <select value="{{ marmitaAddTipo }}" onChange="{{ onMarmitaAddTipo }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:14px;outline:none;box-sizing:border-box;">
-                <option value="proteinas">Proteína</option>
+                <option value="proteinas">Proteína (Comum)</option>
+                <option value="proteinas_executivas">Proteína Executiva</option>
                 <option value="complementos">Complemento</option>
               </select>
             </div>
@@ -578,6 +579,18 @@
       <!-- ---------- CAIXA ---------- -->
       <sc-if value="{{ isCaixa }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;max-width:760px;">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Endereço da Loja / Estabelecimento</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Exibido para os clientes quando escolhem "Retirar no local" no checkout.</p>
+          <div style="display:flex;gap:10px;align-items:flex-end;">
+            <div style="flex:1;">
+              <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Endereço Completo</label>
+              <input value="{{ enderecoLojaInput }}" onChange="{{ onEnderecoLojaInput }}" placeholder="Ex: Rua Central, 100 — Centro" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;outline:none;"/>
+            </div>
+            <button onClick="{{ salvarEnderecoLoja }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;">Salvar</button>
+          </div>
+        </div>
+
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
           <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Taxa de entrega padrão</h3>
           <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Usada quando o cliente escolhe "Outro bairro" ou nenhum bairro está cadastrado abaixo (não se aplica a mesa/retirada).</p>
@@ -1924,10 +1937,21 @@ class Component extends DCLogic {
     }
     this.setState({
       taxaEntregaInput: String(config.taxaEntrega).replace('.', ','),
+      enderecoLojaInput: config.enderecoLoja || 'Rua Central, 100 — Centro',
       galetoHorarioInicioInput: config.galetoHorarioInicio,
       galetoHorarioFimInput: config.galetoHorarioFim,
       horarioFuncionamentoDraft: this.horarioParaDraft(config.horarioFuncionamento),
     });
+  }
+  onEnderecoLojaInput(e){ this.setState({ enderecoLojaInput: e.target.value }); }
+  async salvarEnderecoLoja(){
+    const end = String(this.state.enderecoLojaInput || '').trim();
+    if (!end) { this.showToast('Informe o endereço da loja'); return; }
+    try {
+      const config = await this.apiSend('PUT', '/admin/configuracao', { enderecoLoja: end });
+      this.setState({ enderecoLojaInput: config.enderecoLoja || end });
+      this.showToast('Endereço da loja atualizado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar endereço'); }
   }
   /** Converte o formato da API ({dia:[{inicio,fim}]}) pro formato editável da tela (1 objeto fixo por dia, sempre com turno1/turno2). */
   horarioParaDraft(horarioFuncionamento){
@@ -2505,12 +2529,15 @@ class Component extends DCLogic {
   async adicionarItemCardapio(){
     const nome = this.state.marmitaAddNome.trim();
     if (!nome) { this.showToast('Informe o nome do item'); return; }
-    const tipo = this.state.marmitaAddTipo; // 'proteinas' | 'complementos'
+    const rawTipo = this.state.marmitaAddTipo; // 'proteinas' | 'proteinas_executivas' | 'complementos'
+    const isExecutiva = rawTipo === 'proteinas_executivas';
+    const tipo = (rawTipo === 'proteinas' || isExecutiva) ? 'proteinas' : 'complementos';
     const path = tipo === 'proteinas' ? '/admin/proteinas' : '/admin/complementos';
     try {
-      const item = await this.apiSend('POST', path, { nome });
+      const payload = isExecutiva ? { nome, tipo: 'executiva' } : { nome, tipo: 'padrao' };
+      const item = await this.apiSend('POST', path, payload);
       this.setState(s => ({ [tipo]: [...s[tipo], item], marmitaAddNome:'' }));
-      this.showToast(tipo === 'proteinas' ? 'Proteína adicionada' : 'Complemento adicionado');
+      this.showToast(isExecutiva ? 'Proteína Executiva adicionada' : tipo === 'proteinas' ? 'Proteína adicionada' : 'Complemento adicionado');
     } catch (e) { this.showToast(e.message || 'Erro ao salvar'); }
   }
   editarMarmitaItem(tipo, it){ this.setState({ marmitaEdit:{ tipo, id:it.id, nome:it.nome } }); }
@@ -3056,6 +3083,8 @@ class Component extends DCLogic {
       abrirCaixa:() => this.abrirCaixa(), fecharCaixa:() => this.fecharCaixa(),
       taxaEntregaInput: this.state.taxaEntregaInput, onTaxaEntregaInput:(e) => this.onTaxaEntregaInput(e),
       salvarTaxaEntrega:() => this.salvarTaxaEntrega(),
+      enderecoLojaInput: this.state.enderecoLojaInput || '', onEnderecoLojaInput:(e) => this.onEnderecoLojaInput(e),
+      salvarEnderecoLoja:() => this.salvarEnderecoLoja(),
       galetoHorarioInicioInput: this.state.galetoHorarioInicioInput, onGaletoHorarioInicioInput:(e) => this.onGaletoHorarioInicioInput(e),
       galetoHorarioFimInput: this.state.galetoHorarioFimInput, onGaletoHorarioFimInput:(e) => this.onGaletoHorarioFimInput(e),
       salvarGaletoHorarios:() => this.salvarGaletoHorarios(),
@@ -3355,8 +3384,9 @@ class Component extends DCLogic {
     const marmitaRow = (tipo) => (it) => {
       const isEditing = !!(mEdit && mEdit.tipo === tipo && mEdit.id === it.id);
       const meta = marmitaStatusMeta(it);
+      const isExecutiva = tipo === 'proteinas' && (it.tipo === 'executiva' || it.executiva);
       return {
-        nome:it.nome, isEditing, isNotEditing: !isEditing,
+        nome: it.nome + (isExecutiva ? ' ★ (Executiva)' : ''), isEditing, isNotEditing: !isEditing,
         editNome: isEditing ? mEdit.nome : it.nome,
         onEditNomeChange:(e) => this.onMarmitaEditNome(e),
         statusLabel:meta.l,
@@ -3404,9 +3434,9 @@ class Component extends DCLogic {
     });
     const bairrosEmpty = s.bairros.length === 0;
 
-    const marmitaSizeInputs = ['pequena','grande'].map(id => {
-      const sz = s.marmitaSizes[id] || { id, nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas: id === 'grande' ? 2 : 1, price:0 };
-      const pCount = sz.proteinas || (id === 'grande' ? 2 : 1);
+    const marmitaSizeInputs = ['pequena','grande','executiva'].map(id => {
+      const sz = s.marmitaSizes[id] || { id, nome: id === 'pequena' ? 'Marmita Pequena' : id === 'grande' ? 'Marmita Grande' : 'Marmita Executiva', proteinas: id === 'pequena' ? 1 : id === 'grande' ? 2 : 3, price:0 };
+      const pCount = sz.proteinas || (id === 'pequena' ? 1 : id === 'grande' ? 2 : 3);
       const pText = pCount === 1 ? '1 proteína (mistura)' : pCount + ' proteínas (misturas)';
       return { id: sz.id || id, nome:sz.nome, proteinasLabel: pText + ' + complementos à vontade',
         price:String(sz.price ?? 0), onPrice:this.onMarmitaSizePreco(sz.id || id) };

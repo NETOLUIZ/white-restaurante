@@ -1148,6 +1148,7 @@ class Component extends DCLogic {
   async carregarConfiguracao(){
     const config = await this.apiGet('/configuracao');
     this.fee = config.taxaEntrega;
+    if (config.enderecoLoja) this.RESTAURANT_ENDERECO = config.enderecoLoja;
     // abertoAgora vem calculado do servidor (ver configuracaoController.js) — nunca do
     // relógio do navegador, pra não depender do fuso/hora do aparelho do cliente.
     this.setState({ galetoHorarios: config.galetoHorarios || [], lojaAberta: config.abertoAgora !== false }); // fee é campo de classe — setState aqui só pra reavaliar cartTotals()
@@ -1858,10 +1859,10 @@ class Component extends DCLogic {
     // ambos undefined) caia aqui por acidente (undefined === undefined) — só entra na
     // aba de montar marmita quando a categoria "Marmitas" realmente existe.
     const isMarmitasTab = marmitaCatId != null && s.selectedCat === marmitaCatId && !q && marmitaAtiva;
-    const marmitaSizeDefault = (id) => ({ nome: id === 'pequena' ? 'Marmita Pequena' : 'Marmita Grande', proteinas: id === 'grande' ? 2 : 1, price: id === 'grande' ? 32.9 : 24.9 });
-    const marmitaSizeCards = ['pequena','grande'].map(id => {
+    const marmitaSizeDefault = (id) => ({ nome: id === 'pequena' ? 'Marmita Pequena' : id === 'grande' ? 'Marmita Grande' : 'Marmita Executiva', proteinas: id === 'pequena' ? 1 : id === 'grande' ? 2 : 3, price: id === 'pequena' ? 24.9 : id === 'grande' ? 32.9 : 39.9 });
+    const marmitaSizeCards = ['pequena','grande','executiva'].map(id => {
       const sz = mc.marmitaSizes[id] || marmitaSizeDefault(id);
-      const qtdP = sz.proteinas || (id === 'grande' ? 2 : 1);
+      const qtdP = sz.proteinas || (id === 'pequena' ? 1 : id === 'grande' ? 2 : 3);
       return { id, nome:sz.nome,
         subtitulo: (qtdP === 1 ? '1 proteína (mistura)' : qtdP + ' proteínas (misturas)') + ' + complementos à vontade',
         priceFmt:this.fmt(sz.price), onOpen:() => this.abrirMarmita(id) };
@@ -1874,9 +1875,16 @@ class Component extends DCLogic {
       cursor: esgotado ? 'not-allowed' : 'pointer', opacity: esgotado ? .55 : 1,
       fontWeight:600, fontSize:'14px', color:'var(--cor-texto, #1D1009)'
     });
-    const marmitaProteinaOptions = mc.proteinas.filter(p => p.ativo).map(p => {
+    const isMarmitaExecutiva = s.marmitaSizeId === 'executiva';
+    const marmitaProteinaOptions = mc.proteinas.filter(p => {
+      if (!p.ativo) return false;
+      if (p.tipo === 'executiva' || p.executiva) {
+        return isMarmitaExecutiva; // Proteína executiva SÓ aparece para o cliente na Marmita Executiva!
+      }
+      return true;
+    }).map(p => {
       const selecionado = s.marmitaSelProteinas.includes(p.id);
-      return { nome:p.nome, esgotado:p.esgotado, selecionado, style:optBtnStyle(selecionado, p.esgotado),
+      return { nome: p.nome + (p.tipo === 'executiva' || p.executiva ? ' ★ Executiva' : ''), esgotado:p.esgotado, selecionado, style:optBtnStyle(selecionado, p.esgotado),
         onClick: p.esgotado ? () => {} : () => this.toggleMarmitaProteina(p.id),
         onFalar:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.falar(p.nome + (p.esgotado ? '. Esgotado' : '')); } };
     });

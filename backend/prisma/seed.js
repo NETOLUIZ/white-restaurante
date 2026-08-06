@@ -63,6 +63,7 @@ const COMPLEMENTOS = ['Arroz', 'Feijão Tropeiro', 'Farofa', 'Vinagrete', 'Mandi
 const TAMANHOS_MARMITA = [
   { slug: 'pequena', nome: 'Marmita Pequena', qtdProteinas: 1, preco: 24.9 },
   { slug: 'grande', nome: 'Marmita Grande', qtdProteinas: 2, preco: 32.9 },
+  { slug: 'executiva', nome: 'Marmita Executiva', qtdProteinas: 3, preco: 39.9 },
 ];
 
 async function main() {

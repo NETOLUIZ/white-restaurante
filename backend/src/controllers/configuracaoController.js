@@ -64,6 +64,9 @@ async function atualizar(req, res) {
       }
       data.taxaEntrega = taxaEntrega;
     }
+    if (req.body.enderecoLoja !== undefined) {
+      data.enderecoLoja = String(req.body.enderecoLoja).trim();
+    }
     if (req.body.galetoHorarioInicio !== undefined || req.body.galetoHorarioFim !== undefined) {
       const inicio = req.body.galetoHorarioInicio;
       const fim = req.body.galetoHorarioFim;
