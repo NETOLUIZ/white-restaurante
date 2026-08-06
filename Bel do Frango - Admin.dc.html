@@ -2167,11 +2167,12 @@ class Component extends DCLogic {
         cvs.getContext('2d').drawImage(img, 0, 0, w, h);
         const dataUrl = cvs.toDataURL('image/webp', 0.85);
         try {
+          localStorage.removeItem('bf_custom_splash');
           localStorage.setItem('bf_custom_splash', dataUrl);
           this.setState({ splashSrc: dataUrl });
           this.showToast('Foto da Splash atualizada!');
         } catch (err) {
-          this.showToast('Erro ao salvar imagem da Splash');
+          this.showToast('Erro Splash: ' + (err.message || 'muito grande'));
         }
       };
       img.src = evt.target.result;
@@ -2204,12 +2205,13 @@ class Component extends DCLogic {
         cvs.getContext('2d').drawImage(img, 0, 0, w, h);
         const dataUrl = cvs.toDataURL('image/webp', 0.85);
         try {
+          localStorage.removeItem('bf_custom_capa');
           localStorage.setItem('bf_custom_capa', dataUrl);
           this.setState({ capaSrc: dataUrl });
           await this.apiSend('PUT', '/admin/configuracao', { capaUrl: dataUrl });
           this.showToast('Foto de Capa da Loja atualizada para todos os dispositivos!');
         } catch (err) {
-          this.showToast('Erro ao salvar imagem de Capa (foto muito grande)');
+          this.showToast('Erro Capa: ' + (err.message || 'foto muito grande'));
         }
       };
       img.src = evt.target.result;
