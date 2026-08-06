@@ -121,7 +121,7 @@ app.use(
   }),
 );
 
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 
 // Fotos de produto enviadas pelo admin (multer salva em disco, nunca base64 no

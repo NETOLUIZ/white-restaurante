@@ -1191,16 +1191,22 @@ class Component extends DCLogic {
     const cats = this.state.cats || [];
     const bannerTexto = ((b.selo || '') + ' ' + (b.titulo || '') + ' ' + (b.descricao || '')).toLowerCase();
     let targetCat = null;
-    if (bannerTexto.includes('combo')) {
+    if (bannerTexto.includes('combo') && !targetCat) {
       targetCat = cats.find(c => (c.label || '').toLowerCase().includes('combo'));
-    } else if (bannerTexto.includes('marmita')) {
+    }
+    if (bannerTexto.includes('marmita') && !targetCat) {
       targetCat = cats.find(c => (c.label || '').toLowerCase().includes('marmita'));
-    } else if (bannerTexto.includes('promoc') || bannerTexto.includes('oferta')) {
+    }
+    if ((bannerTexto.includes('promoc') || bannerTexto.includes('oferta')) && !targetCat) {
       targetCat = cats.find(c => /promo|oferta/i.test(c.label || ''));
     }
 
+    if (!targetCat) {
+      targetCat = cats.find(c => /combo|promo|oferta/i.test(c.label || ''));
+    }
+
     if (!targetCat && cats.length) {
-      targetCat = cats.find(c => (c.label || '').toLowerCase().includes('combo')) || cats[0];
+      targetCat = cats[0];
     }
 
     if (targetCat) {
