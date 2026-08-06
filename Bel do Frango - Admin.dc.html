@@ -2154,14 +2154,27 @@ class Component extends DCLogic {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const dataUrl = evt.target.result;
-      try {
-        localStorage.setItem('bf_custom_splash', dataUrl);
-        this.setState({ splashSrc: dataUrl });
-        this.showToast('Foto da Splash atualizada!');
-      } catch (err) {
-        this.showToast('Erro ao salvar imagem da Splash');
-      }
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        const maxW = 1080, maxH = 1920;
+        if (w > maxW || h > maxH) {
+          const ratio = Math.min(maxW / w, maxH / h);
+          w = Math.round(w * ratio); h = Math.round(h * ratio);
+        }
+        const cvs = document.createElement('canvas');
+        cvs.width = w; cvs.height = h;
+        cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = cvs.toDataURL('image/jpeg', 0.85);
+        try {
+          localStorage.setItem('bf_custom_splash', dataUrl);
+          this.setState({ splashSrc: dataUrl });
+          this.showToast('Foto da Splash atualizada!');
+        } catch (err) {
+          this.showToast('Erro ao salvar imagem da Splash');
+        }
+      };
+      img.src = evt.target.result;
     };
     reader.readAsDataURL(file);
     e.target.value = '';
@@ -2177,16 +2190,29 @@ class Component extends DCLogic {
     const file = e.target.files && e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
-    reader.onload = async (evt) => {
-      const dataUrl = evt.target.result;
-      try {
-        localStorage.setItem('bf_custom_capa', dataUrl);
-        this.setState({ capaSrc: dataUrl });
-        await this.apiSend('PUT', '/admin/configuracao', { capaUrl: dataUrl });
-        this.showToast('Foto de Capa da Loja atualizada para todos os dispositivos!');
-      } catch (err) {
-        this.showToast('Erro ao salvar imagem de Capa');
-      }
+    reader.onload = (evt) => {
+      const img = new Image();
+      img.onload = async () => {
+        let w = img.width, h = img.height;
+        const maxW = 1200, maxH = 1200;
+        if (w > maxW || h > maxH) {
+          const ratio = Math.min(maxW / w, maxH / h);
+          w = Math.round(w * ratio); h = Math.round(h * ratio);
+        }
+        const cvs = document.createElement('canvas');
+        cvs.width = w; cvs.height = h;
+        cvs.getContext('2d').drawImage(img, 0, 0, w, h);
+        const dataUrl = cvs.toDataURL('image/jpeg', 0.85);
+        try {
+          localStorage.setItem('bf_custom_capa', dataUrl);
+          this.setState({ capaSrc: dataUrl });
+          await this.apiSend('PUT', '/admin/configuracao', { capaUrl: dataUrl });
+          this.showToast('Foto de Capa da Loja atualizada para todos os dispositivos!');
+        } catch (err) {
+          this.showToast('Erro ao salvar imagem de Capa (foto muito grande)');
+        }
+      };
+      img.src = evt.target.result;
     };
     reader.readAsDataURL(file);
     e.target.value = '';
