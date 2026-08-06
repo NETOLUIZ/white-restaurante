@@ -21,6 +21,7 @@ const ALIASES = {
   '/sistema': '/Bel do Frango - Sistema.dc.html',
   '/entregador': '/entregador.html',
   '/garcom': '/garcom.html',
+  '/atendente': '/atendente.html',
   '/empresa': '/empresa.html',
   '/super': '/super.html',
 };
