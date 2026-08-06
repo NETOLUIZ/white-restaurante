@@ -1539,6 +1539,30 @@ class Component extends DCLogic {
     }
   }
 
+  resolverBairroEEntrega() {
+    const s = this.state;
+    if (s.pedidoTipo === 'retirada') {
+      return { taxa: 0, bairroObj: null };
+    }
+    const cadBairro = (s.cadastro && s.cadastro.bairro)
+      || (s.usuario && s.usuario.endereco && s.usuario.endereco.bairro) || '';
+    const nomeNorm = cadBairro.trim().toLowerCase();
+
+    if (nomeNorm && s.bairros && s.bairros.length > 0) {
+      const bMatch = s.bairros.find(b => b.ativo !== false && b.nome && b.nome.trim().toLowerCase() === nomeNorm);
+      if (bMatch) {
+        return { taxa: Number(bMatch.taxaEntrega || 0), bairroObj: bMatch };
+      }
+    }
+
+    const bSel = s.bairroSelecionado;
+    if (bSel && !bSel.outro && bSel.taxaEntrega != null) {
+      return { taxa: Number(bSel.taxaEntrega || 0), bairroObj: bSel };
+    }
+
+    return { taxa: Number(this.fee || 0), bairroObj: null };
+  }
+
   placeOrder(){
     if (this.state.placing) return;
     const s = this.state;
@@ -1577,7 +1601,9 @@ class Component extends DCLogic {
       if (valorRecebidoNum > 0) payload.valorTrocoPara = valorRecebidoNum;
     }
     if (s.couponApplied && s.coupon) payload.cupomCodigo = s.coupon.trim().toUpperCase();
-    if (s.pedidoTipo !== 'retirada' && s.bairroSelecionado && !s.bairroSelecionado.outro) payload.bairroId = s.bairroSelecionado.id;
+    
+    const { bairroObj } = this.resolverBairroEEntrega();
+    if (s.pedidoTipo !== 'retirada' && bairroObj && bairroObj.id) payload.bairroId = bairroObj.id;
 
     this.setState({ placing:true });
     fetch(this.apiBase + '/pedidos', { method:'POST', headers:{ 'Content-Type':'application/json', ...this.headersExtras }, body: JSON.stringify(payload) })
@@ -1851,8 +1877,7 @@ class Component extends DCLogic {
     const subtotal = lines.reduce((a, x) => a + (x.p.vendidoPorPeso ? (x.p.price * x.v.qty) / 1000 : x.p.price * x.v.qty), 0);
     // Item por peso conta como 1 "item" (não as gramas) — evita um badge tipo "500" no carrinho pra 500g de um produto só.
     const count = lines.reduce((a, x) => a + (x.p.vendidoPorPeso ? 1 : x.v.qty), 0);
-    const bairro = this.state.bairroSelecionado;
-    const taxaBairro = (bairro && !bairro.outro) ? bairro.taxaEntrega : this.fee;
+    const { taxa: taxaBairro } = this.resolverBairroEEntrega();
     let fee = (subtotal > 0 && this.state.pedidoTipo !== 'retirada') ? taxaBairro : 0;
     let discount = 0;
     const code = (this.state.coupon || '').trim().toUpperCase();
