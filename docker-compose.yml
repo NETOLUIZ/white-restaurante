@@ -12,6 +12,14 @@ services:
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
+    # Teto de CPU/memória — sem isso, um flood de requisições (ou um bug de
+    # memória) neste projeto pode consumir os recursos da VPS inteira e
+    # derrubar os OUTROS projetos hospedados no mesmo host (não é hipotético:
+    # esta VPS já roda vários). restart:unless-stopped garante que um OOM
+    # aqui dentro só reinicia ESTE container, não derruba o processo errado
+    # lá fora.
+    mem_limit: 512m
+    cpus: 1.0
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -27,11 +35,18 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      # connection_limit/pool_timeout: sem teto, um pico de pedidos simultâneos
+      # abre conexão sem limite até o Postgres recusar (max_connections). Com
+      # teto, o pool do Prisma falha rápido (erro tratado no controller) em
+      # vez de todo mundo — inclusive requisições saudáveis — ficar pendurado
+      # esperando uma conexão livre.
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?connection_limit=10&pool_timeout=10
       PORT: 3010
       JWT_SECRET: ${JWT_SECRET}
       NODE_ENV: ${NODE_ENV:-production}
@@ -54,6 +69,8 @@ services:
   nginx:
     image: nginx:alpine
     restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.5
     depends_on:
       - backend
     ports:
