@@ -415,17 +415,19 @@ class Component extends DCLogic {
   }
 
   async carregarCardapio(){
-    const [categorias, produtos, marmitasTamanhos, proteinas, complementos] = await Promise.all([
+    const [categorias, produtos, marmitasTamanhos, proteinas, complementos, config] = await Promise.all([
       this.apiGet('/categorias'), 
       this.apiGet('/produtos'),
       this.apiGet('/marmita-tamanhos').catch(() => []),
       this.apiGet('/proteinas').catch(() => []),
-      this.apiGet('/complementos').catch(() => [])
+      this.apiGet('/complementos').catch(() => []),
+      this.apiGet('/configuracao').catch(() => ({}))
     ]);
     this.setState(s => ({ 
       categorias, 
       produtos, 
       marmitas: { tamanhos: marmitasTamanhos, proteinas, complementos },
+      config,
       selectedCat: s.selectedCat == null ? (categorias[0] && categorias[0].id) : s.selectedCat 
     }));
   }
@@ -538,8 +540,9 @@ class Component extends DCLogic {
       '<div class="lin"><span>' + this.escapeHtml(it.quantidade) + 'x ' + this.escapeHtml(it.nome) + '</span><span>' + this.fmt(it.quantidade * it.precoUnitario) + '</span></div>'
     ).join('');
     const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    const nomeFantasia = (this.state.config && this.state.config.nomeEmpresa) ? this.state.config.nomeEmpresa : 'BEL DO FRANGO';
     const html =
-      '<div class="c b tit">BEL DO FRANGO</div>' +
+      '<div class="c b tit">' + this.escapeHtml(nomeFantasia).toUpperCase() + '</div>' +
       '<div class="c b">PEDIDO ' + this.escapeHtml(codigo) + ' — BALCÃO</div>' +
       SEP + itensHtml + SEP +
       '<div class="lin b"><span>TOTAL</span><span>' + this.fmt(total) + '</span></div>' +

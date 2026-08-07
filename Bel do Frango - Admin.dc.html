@@ -1661,8 +1661,9 @@ class Component extends DCLogic {
       '<div class="lin"><span>' + this.escapeHtml(it.quantidade) + 'x ' + this.escapeHtml(it.nome) + '</span><span>' + this.fmt(it.quantidade * it.precoUnitario) + '</span></div>'
     ).join('');
     const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    const nomeFantasia = (this.state.configuracao && this.state.configuracao.nomeEmpresa) ? this.state.configuracao.nomeEmpresa : 'BEL DO FRANGO';
     const html =
-      '<div class="c b tit">BEL DO FRANGO</div>' +
+      '<div class="c b tit">' + this.escapeHtml(nomeFantasia).toUpperCase() + '</div>' +
       '<div class="c">Mesa ' + this.escapeHtml(mesa.numero) + (mesa.clienteNome ? ' — ' + this.escapeHtml(mesa.clienteNome) : '') + '</div>' +
       SEP + itensHtml + SEP +
       '<div class="lin b">TOTAL <span>' + this.fmt(mesa.total) + '</span></div>' +
@@ -1691,8 +1692,9 @@ class Component extends DCLogic {
       : '';
     const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
     const tipoLabel = (p.tipo || 'ENTREGA').toUpperCase();
+    const nomeFantasia = (this.state.configuracao && this.state.configuracao.nomeEmpresa) ? this.state.configuracao.nomeEmpresa : 'BEL DO FRANGO';
     const html =
-      '<div class="c b tit">BEL DO FRANGO</div>' +
+      '<div class="c b tit">' + this.escapeHtml(nomeFantasia).toUpperCase() + '</div>' +
       '<div class="c b">PEDIDO ' + this.escapeHtml(p.id) + ' — ' + this.escapeHtml(tipoLabel) + '</div>' +
       SEP +
       '<div><span class="b">Cliente:</span> ' + this.escapeHtml(p.cliente || 'Cliente') + '</div>' +
