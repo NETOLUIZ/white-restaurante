@@ -466,9 +466,9 @@
 
 <!-- NOVO PEDIDO (cardápio + carrinho) -->
 <sc-if value="{{ isPedido }}" hint-placeholder-val="{{ false }}">
-<div style="max-width:1080px;margin:0 auto;animation:atUp .25s ease-out;">
-  <div style="background:#D62828;color:#fff;border-radius:0 0 26px 26px;padding:calc(18px + env(safe-area-inset-top)) 20px 20px;margin:0 0 18px;display:flex;align-items:center;gap:12px;">
-    <div style="width:42px;height:42px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);"/></div>
+<div style="width:100%;animation:atUp .25s ease-out;">
+  <div style="background:#D62828;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 14px rgba(214,40,40,.2);">
+    <div style="width:38px;height:38px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);"/></div>
     <div style="flex:1;min-width:0;">
       <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">Olá, {{ nomeAtendente }}</div>
       <div style="font-size:12px;color:rgba(255,255,255,.8);">Novo pedido de balcão (retirada)</div>
@@ -477,105 +477,126 @@
     <button onClick="{{ logout }}" aria-label="Sair" style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.16);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
   </div>
 
-  <div style="display:flex;gap:20px;align-items:flex-start;padding:0 16px 40px;">
-    <!-- ESQUERDA: pedido atual -->
-    <div style="width:320px;flex:none;position:sticky;top:16px;background:#fff;border-radius:18px;padding:18px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
-      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 12px;">Pedido atual</h3>
-
-      <sc-if value="{{ carrinhoVazio }}" hint-placeholder-val="{{ true }}">
-        <p style="margin:0;font-size:13.5px;color:#8C8075;">Nenhum item ainda. Toque em "+" no cardápio pra adicionar.</p>
-      </sc-if>
-
-      <sc-if value="{{ hasCarrinho }}" hint-placeholder-val="{{ false }}">
-        <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:14px;">
-          <sc-for list="{{ carrinhoItens }}" as="it" hint-placeholder-count="2">
-            <div style="display:flex;align-items:center;gap:8px;">
-              <div style="flex:1;min-width:0;">
-                <div style="font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.nome }}</div>
-                <div style="font-size:12px;color:#8C8075;">{{ it.qty }} × {{ it.precoFmt }}</div>
+  <div class="pos-layout-3col">
+    <!-- COLUNA 1 (20%): categorias, sempre visíveis -->
+    <div class="pos-col-1">
+      <div class="pos-card-box">
+        <div class="pos-box-title">CATEGORIAS</div>
+        <div class="pos-nav-list">
+          <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6">
+            <button type="button" onClick="{{ c.onClick }}" class="{{ c.navClass }}">
+              <div class="pos-nav-text">
+                <div class="pos-nav-title">{{ c.label }}</div>
+                <div class="pos-nav-sub">{{ c.subLabel }}</div>
               </div>
-              <span style="font-family:'DM Mono',monospace;font-size:13px;color:#6B2E12;flex:none;">{{ it.subtotalFmt }}</span>
-              <button onClick="{{ it.onRemover }}" aria-label="Remover item" style="width:26px;height:26px;border-radius:8px;background:#FBEAE8;border:1px solid #F0CFCB;color:#C0392B;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
-            </div>
+            </button>
           </sc-for>
         </div>
-
-        <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:1px dashed rgba(29,16,9,.14);margin-bottom:16px;">
-          <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;">Total</span>
-          <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:19px;color:#D97706;">{{ carrinhoTotalFmt }}</span>
-        </div>
-
-        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Pagamento</h3>
-        <div style="display:flex;gap:8px;">
-          <sc-for list="{{ pagamentoOpcoes }}" as="pg" hint-placeholder-count="3">
-            <button onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.label }}</button>
-          </sc-for>
-        </div>
-        <sc-if value="{{ isDinheiro }}" hint-placeholder-val="{{ false }}">
-          <div style="margin-top:14px;padding-top:14px;border-top:1px dashed rgba(29,16,9,.12);">
-            <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Valor recebido do cliente</label>
-            <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="0,00" inputmode="decimal" style="{{ inputStyle }}"/>
-            <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;">
-              <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;color:{{ trocoColor }}">{{ trocoLabel }}</span>
-              <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:18px;color:{{ trocoColor }}">{{ trocoFmt }}</span>
-            </div>
-          </div>
-        </sc-if>
-
-        <button onClick="{{ finalizarPedido }}" style="margin-top:18px;width:100%;background:#2D9E60;color:#fff;border:none;border-radius:14px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(45,158,96,.3);">{{ finalizarLabel }}</button>
-      </sc-if>
-    </div>
-
-    <!-- DIREITA: cardápio -->
-    <div style="flex:1;min-width:280px;">
-      <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:14px;padding:0 14px;height:46px;box-shadow:0 4px 14px rgba(29,16,9,.04);margin-bottom:12px;">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input value="{{ buscaProduto }}" onChange="{{ onBuscaProduto }}" placeholder="Buscar produto no cardápio..." aria-label="Buscar produto" style="flex:1;height:100%;border:none;background:none;font-size:14px;color:#1D1009;outline:none;"/>
-      </div>
-
-      <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;">
-        <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="5">
-          <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
-        </sc-for>
       </div>
 
       <sc-if value="{{ hasMarmitas }}" hint-placeholder-val="{{ true }}">
-        <div style="margin-bottom:18px;">
-          <button onClick="{{ abrirMontarMarmita }}" style="width:100%;background:linear-gradient(135deg, #E8820E 0%, #B01818 100%);color:#fff;border:none;border-radius:14px;padding:16px;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(176,24,24,.3);display:flex;align-items:center;justify-content:center;gap:10px;">
+        <div style="margin-top:12px;">
+          <button onClick="{{ abrirMontarMarmita }}" style="width:100%;background:linear-gradient(135deg, #E8820E 0%, #B01818 100%);color:#fff;border:none;border-radius:12px;padding:14px 10px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 8px 20px rgba(176,24,24,.28);display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><line x1="12" y1="22" x2="12" y2="12"/><line x1="12" y1="12" x2="21.04" y2="6.78"/><line x1="2.96" y1="6.78" x2="12" y2="12"/></svg>
             Monte sua Marmita
           </button>
         </div>
       </sc-if>
+    </div>
 
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;">
+    <!-- COLUNA 2 (50%): cardápio em cards -->
+    <div class="pos-col-2">
+      <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:14px;padding:0 14px;height:46px;box-shadow:0 4px 14px rgba(29,16,9,.04);margin-bottom:14px;flex:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input value="{{ buscaProduto }}" onChange="{{ onBuscaProduto }}" placeholder="Buscar produto no cardápio..." aria-label="Buscar produto" style="flex:1;height:100%;border:none;background:none;font-size:14px;color:#1D1009;outline:none;"/>
+      </div>
+
+      <div class="pos-cards-grid-auto">
         <sc-for list="{{ produtosLista }}" as="p" hint-placeholder-count="6">
-          <div class="bf-prod-card" onClick="{{ p.onCardClick }}" style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:8px;overflow:hidden;box-shadow:0 6px 18px rgba(29,16,9,.05);cursor:{{ p.cardCursor }};">
-            <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:96px;"><img sc-camel-src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-            <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:96px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);display:flex;align-items:center;justify-content:center;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.7;">foto</span></div></sc-if>
-            <div style="padding:10px;">
-              <div style="font-weight:700;font-size:13.5px;line-height:1.25;margin-bottom:6px;min-height:34px;">{{ p.nome }}</div>
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">
-                <span style="font-family:'DM Mono',monospace;font-size:13px;color:#D97706;">{{ p.priceFmt }}</span>
+          <div class="{{ p.cardClass }}" onClick="{{ p.onCardClick }}" style="flex-direction:column;align-items:stretch;padding:0;overflow:hidden;cursor:{{ p.cardCursor }};">
+            <sc-if value="{{ p.isSelecionado }}">
+              <div class="pos-check-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              </div>
+            </sc-if>
+            <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:110px;flex:none;"><img sc-camel-src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+            <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:110px;flex:none;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);display:flex;align-items:center;justify-content:center;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.7;">foto</span></div></sc-if>
+            <div style="padding:12px;">
+              <div class="pos-card-title" style="min-height:36px;">{{ p.nome }}</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px;">
+                <span class="pos-card-price">{{ p.priceFmt }}</span>
                 <sc-if value="{{ p.porPeso }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;align-items:center;gap:4px;">
-                    <input value="{{ p.gramasValue }}" onChange="{{ p.onGramasChange }}" inputmode="numeric" placeholder="g" style="width:48px;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:5px 6px;font-size:12px;text-align:center;outline:none;"/>
+                    <input value="{{ p.gramasValue }}" onChange="{{ p.onGramasChange }}" inputmode="numeric" placeholder="g" class="pos-input pos-input-sm" style="width:52px;text-align:center;"/>
                     <span style="font-size:10px;color:#8C8075;">g</span>
                   </div>
                 </sc-if>
                 <sc-if value="{{ p.naoPorPeso }}" hint-placeholder-val="{{ true }}">
                   <div style="display:flex;align-items:center;gap:5px;">
                     <sc-if value="{{ p.hasQty }}" hint-placeholder-val="{{ false }}">
-                      <button onClick="{{ p.onDec }}" aria-label="Diminuir" style="width:26px;height:26px;border-radius:8px;border:1px solid rgba(29,16,9,.12);background:#fff;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                      <button onClick="{{ p.onDec }}" aria-label="Diminuir" class="pos-stepper-btn" style="width:26px;height:26px;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                       <span style="font-family:'DM Mono',monospace;min-width:16px;text-align:center;font-size:13px;">{{ p.qty }}</span>
                     </sc-if>
-                    <button onClick="{{ p.onAdd }}" aria-label="Adicionar" style="width:26px;height:26px;border-radius:8px;background:#D97706;color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+                    <button onClick="{{ p.onAdd }}" aria-label="Adicionar" style="width:26px;height:26px;border-radius:8px;background:var(--pos-primary);color:#fff;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
                   </div>
                 </sc-if>
               </div>
             </div>
           </div>
         </sc-for>
+      </div>
+    </div>
+
+    <!-- COLUNA 3 (30%): resumo do pedido, sempre fixo -->
+    <div class="pos-col-3">
+      <div class="pos-summary-card">
+        <div class="pos-box-title">PEDIDO ATUAL</div>
+
+        <sc-if value="{{ carrinhoVazio }}" hint-placeholder-val="{{ true }}">
+          <p style="margin:0;font-size:13.5px;color:var(--pos-text-muted);">Nenhum item ainda. Toque em "+" no cardápio pra adicionar.</p>
+        </sc-if>
+
+        <sc-if value="{{ hasCarrinho }}" hint-placeholder-val="{{ false }}">
+          <div class="pos-section-block" style="flex:1;overflow-y:auto;">
+            <sc-for list="{{ carrinhoItens }}" as="it" hint-placeholder-count="2">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:9px;">
+                <div style="flex:1;min-width:0;">
+                  <div style="font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.nome }}</div>
+                  <div style="font-size:12px;color:var(--pos-text-muted);">{{ it.qty }} × {{ it.precoFmt }}</div>
+                </div>
+                <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pos-text);flex:none;">{{ it.subtotalFmt }}</span>
+                <button onClick="{{ it.onRemover }}" aria-label="Remover item" style="width:26px;height:26px;border-radius:8px;background:#FBEAE8;border:1px solid #F0CFCB;color:var(--pos-error);cursor:pointer;display:flex;align-items:center;justify-content:center;flex:none;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+              </div>
+            </sc-for>
+          </div>
+
+          <div class="pos-section-block">
+            <div class="pos-box-title" style="margin-bottom:6px;">FORMA DE PAGAMENTO</div>
+            <div class="pos-pay-grid">
+              <sc-for list="{{ pagamentoOpcoes }}" as="pg" hint-placeholder-count="3">
+                <button type="button" onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.label }}</button>
+              </sc-for>
+            </div>
+            <sc-if value="{{ isDinheiro }}" hint-placeholder-val="{{ false }}">
+              <div class="pos-cash-box">
+                <label class="pos-cash-label">Valor recebido do cliente</label>
+                <input value="{{ valorRecebido }}" onChange="{{ onValorRecebido }}" placeholder="0,00" inputmode="decimal" class="pos-input"/>
+                <div class="pos-troco-row pos-flex-between">
+                  <span class="pos-troco-title" style="color:{{ trocoColor }}">{{ trocoLabel }}</span>
+                  <span class="pos-troco-amount" style="color:{{ trocoColor }}">{{ trocoFmt }}</span>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </sc-if>
+
+        <div class="pos-bottom-block">
+          <div class="pos-total-row pos-flex-between">
+            <span class="pos-total-label">Total</span>
+            <span class="pos-total-price">{{ carrinhoTotalFmt }}</span>
+          </div>
+          <button onClick="{{ finalizarPedido }}" disabled="{{ carrinhoVazio }}" class="pos-btn-checkout">{{ finalizarLabel }}</button>
+        </div>
       </div>
     </div>
   </div>
@@ -1331,7 +1352,10 @@ class Component extends DCLogic {
 
     const catChips = s.categorias.map((c) => {
       const on = s.selectedCat === c.id;
+      const qtdItens = s.produtos.filter((p) => p.categoriaId === c.id).length;
       return { label:c.nome, onClick:() => this.setState({ selectedCat:c.id }),
+        navClass: 'pos-nav-item' + (on ? ' active' : ''),
+        subLabel: qtdItens + (qtdItens === 1 ? ' item' : ' itens'),
         style:{ flex:'none', border:'none', cursor:'pointer', borderRadius:'10px', padding:'8px 14px', fontWeight:700, fontSize:'12.5px',
           background: on ? '#7A1209' : '#FFF0C2', color: on ? '#FFF6D6' : '#7A1209' } };
     });
@@ -1348,6 +1372,7 @@ class Component extends DCLogic {
         nome:p.nome, priceFmt:this.fmt(p.preco) + (p.vendidoPorPeso ? '/kg' : ''), qty:String(qty), hasQty: qty > 0,
         porPeso, naoPorPeso: !porPeso, gramasValue: qty > 0 ? String(qty) : '',
         hasFoto: !!fotoSrc, semFoto: !fotoSrc, fotoSrc,
+        cardClass: 'pos-prod-card' + (qty > 0 ? ' selected' : ''), isSelecionado: qty > 0,
         // Card inteiro clicável só quando dá pra "adicionar 1" sem ambiguidade — item por
         // peso depende do valor digitado em gramas, não tem um clique único que faça sentido.
         cardCursor: porPeso ? 'default' : 'pointer',
