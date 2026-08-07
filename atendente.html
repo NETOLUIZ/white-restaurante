@@ -551,7 +551,7 @@
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;">
         <sc-for list="{{ produtosLista }}" as="p" hint-placeholder-count="6">
           <div class="bf-prod-card" onClick="{{ p.onCardClick }}" style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:8px;overflow:hidden;box-shadow:0 6px 18px rgba(29,16,9,.05);cursor:{{ p.cardCursor }};">
-            <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:96px;"><img src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+            <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:100%;height:96px;"><img sc-camel-src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
             <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:96px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);display:flex;align-items:center;justify-content:center;"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#B45309;opacity:.7;">foto</span></div></sc-if>
             <div style="padding:10px;">
               <div style="font-weight:700;font-size:13.5px;line-height:1.25;margin-bottom:6px;min-height:34px;">{{ p.nome }}</div>
