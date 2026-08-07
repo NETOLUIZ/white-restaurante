@@ -120,6 +120,11 @@ model Configuracao {
   /// Endereço completo da loja/estabelecimento exibido nas retiradas no local.
   enderecoLoja         String?  @default("Rua Central, 100 — Centro")
   capaUrl              String?
+  /// Access Token da conta Mercado Pago do PRÓPRIO tenant — nunca compartilhado
+  /// entre lojas. Presente = PIX no checkout vira cobrança real (QR Code +
+  /// confirmação automática via webhook); ausente = PIX continua só
+  /// informativo, como sempre foi (ver pedidoController.criar).
+  mercadoPagoAccessToken String?
   updatedAt            DateTime @updatedAt
 }
 
@@ -366,6 +371,15 @@ model Pedido {
   formaPagamento       FormaPagamento?
   /// Atualizado manualmente pelo admin (painel) conforme o pedido avanca na cozinha/entrega/mesa.
   statusEntrega        StatusEntrega   @default(CONFIRMADO)
+  /// Só false pra PIX criado via Mercado Pago (ver pedidoController.criar) — o
+  /// pedido existe (aparece na cozinha) mas o pagamento em si ainda não caiu.
+  /// Webhook do MP vira true assim que a API confirma status "approved".
+  /// Sempre true pra dinheiro/cartão/PIX sem integração — pago na hora, como já era.
+  pagamentoConfirmado  Boolean         @default(true)
+  /// Id do pagamento no Mercado Pago — usado pelo webhook pra achar o pedido
+  /// certo (nunca confia no valor que vem no corpo do webhook em si, sempre
+  /// reconsulta a API do MP com esse id antes de marcar como pago).
+  pagamentoExternoId   String?
   /// Marcado uma única vez, no momento em que statusEntrega vira ENTREGUE — usado
   /// pra calcular o saldo em dinheiro do entregador (não usar createdAt/updatedAt pra isso).
   entregueEm           DateTime?

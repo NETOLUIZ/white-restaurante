@@ -656,6 +656,30 @@
         </div>
 
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">PIX com Mercado Pago</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Sem isso o PIX no checkout é só informativo. Com o Access Token da sua conta Mercado Pago, o cliente escaneia um QR Code de verdade e o pedido é confirmado sozinho quando o dinheiro cai na SUA conta.</p>
+
+          <sc-if value="{{ mercadoPagoConfigurado }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;background:#EAF7EF;border:1px solid #BFE6CC;border-radius:10px;padding:10px 14px;">
+              <span style="width:9px;height:9px;border-radius:50%;background:#2D9E60;flex:none;"></span>
+              <span style="flex:1;font-size:13px;font-weight:600;color:#1F7A3D;">Ativo — token terminando em •••{{ mercadoPagoTokenFinal }}</span>
+              <button onClick="{{ desligarMercadoPago }}" style="background:none;border:1px solid #F0CFCB;color:#C0392B;border-radius:8px;padding:7px 12px;font-weight:700;font-size:12px;cursor:pointer;">Desligar</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ mercadoPagoDesligado }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;gap:10px;align-items:flex-end;">
+              <div style="flex:1;">
+                <label style="display:block;font-size:12px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Access Token (Produção) do Mercado Pago</label>
+                <input value="{{ mercadoPagoTokenInput }}" onChange="{{ onMercadoPagoTokenInput }}" type="password" placeholder="APP_USR-..." style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;outline:none;"/>
+              </div>
+              <button onClick="{{ salvarMercadoPagoToken }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:11px 16px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap;">Ativar PIX</button>
+            </div>
+            <p style="margin:10px 0 0;font-size:12px;color:#A08D7D;">Gere em: Mercado Pago → Seu negócio → Configurações → Credenciais de produção.</p>
+          </sc-if>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
           <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Taxa de entrega padrão</h3>
           <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Usada quando o cliente escolhe "Outro bairro" ou nenhum bairro está cadastrado abaixo (não se aplica a mesa/retirada).</p>
           <div style="display:flex;gap:10px;align-items:flex-end;max-width:280px;">
@@ -2047,6 +2071,9 @@ class Component extends DCLogic {
       galetoHorarioInicioInput: config.galetoHorarioInicio,
       galetoHorarioFimInput: config.galetoHorarioFim,
       horarioFuncionamentoDraft: this.horarioParaDraft(config.horarioFuncionamento),
+      mercadoPagoConfigurado: config.mercadoPagoConfigurado,
+      mercadoPagoTokenFinal: config.mercadoPagoAccessTokenFinal,
+      mercadoPagoTokenInput: '',
     });
   }
   onEnderecoLojaInput(e){ this.setState({ enderecoLojaInput: e.target.value }); }
@@ -2058,6 +2085,24 @@ class Component extends DCLogic {
       this.setState({ enderecoLojaInput: config.enderecoLoja || end });
       this.showToast('Endereço da loja atualizado');
     } catch (e) { this.showToast(e.message || 'Erro ao salvar endereço'); }
+  }
+  onMercadoPagoTokenInput(e){ this.setState({ mercadoPagoTokenInput: e.target.value }); }
+  async salvarMercadoPagoToken(){
+    const token = String(this.state.mercadoPagoTokenInput || '').trim();
+    if (!token) { this.showToast('Cole o Access Token antes de salvar'); return; }
+    try {
+      const config = await this.apiSend('PUT', '/admin/configuracao', { mercadoPagoAccessToken: token });
+      this.setState({ mercadoPagoConfigurado: config.mercadoPagoConfigurado, mercadoPagoTokenFinal: config.mercadoPagoAccessTokenFinal, mercadoPagoTokenInput: '' });
+      this.showToast('PIX com Mercado Pago ativado');
+    } catch (e) { this.showToast(e.message || 'Erro ao salvar token'); }
+  }
+  async desligarMercadoPago(){
+    if (!confirm('Desligar a cobrança automática de PIX? O pagamento volta a ser só informativo.')) return;
+    try {
+      const config = await this.apiSend('PUT', '/admin/configuracao', { mercadoPagoAccessToken: '' });
+      this.setState({ mercadoPagoConfigurado: config.mercadoPagoConfigurado, mercadoPagoTokenFinal: config.mercadoPagoAccessTokenFinal, mercadoPagoTokenInput: '' });
+      this.showToast('Integração desligada');
+    } catch (e) { this.showToast(e.message || 'Erro ao desligar'); }
   }
   /** Converte o formato da API ({dia:[{inicio,fim}]}) pro formato editável da tela (1 objeto fixo por dia, sempre com turno1/turno2). */
   horarioParaDraft(horarioFuncionamento){
@@ -3279,6 +3324,10 @@ class Component extends DCLogic {
       salvarTaxaEntrega:() => this.salvarTaxaEntrega(),
       enderecoLojaInput: this.state.enderecoLojaInput || '', onEnderecoLojaInput:(e) => this.onEnderecoLojaInput(e),
       salvarEnderecoLoja:() => this.salvarEnderecoLoja(),
+      mercadoPagoConfigurado: !!this.state.mercadoPagoConfigurado, mercadoPagoDesligado: !this.state.mercadoPagoConfigurado,
+      mercadoPagoTokenFinal: this.state.mercadoPagoTokenFinal || '',
+      mercadoPagoTokenInput: this.state.mercadoPagoTokenInput || '', onMercadoPagoTokenInput:(e) => this.onMercadoPagoTokenInput(e),
+      salvarMercadoPagoToken:() => this.salvarMercadoPagoToken(), desligarMercadoPago:() => this.desligarMercadoPago(),
       galetoHorarioInicioInput: this.state.galetoHorarioInicioInput, onGaletoHorarioInicioInput:(e) => this.onGaletoHorarioInicioInput(e),
       galetoHorarioFimInput: this.state.galetoHorarioFimInput, onGaletoHorarioFimInput:(e) => this.onGaletoHorarioFimInput(e),
       salvarGaletoHorarios:() => this.salvarGaletoHorarios(),

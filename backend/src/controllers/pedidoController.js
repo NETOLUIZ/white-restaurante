@@ -1,4 +1,5 @@
 const { estaAberto } = require('../utils/horarioFuncionamento');
+const { criarPagamentoPix } = require('../utils/mercadoPago');
 
 // Pedido público (guest checkout) aceita Dinheiro na entrega/retirada além de
 // Pix/Cartão — o troco (se precisar) é só cálculo do lado do cliente, exibido
@@ -275,6 +276,37 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
     // Log sem dado pessoal (LGPD) — só ids e valores, nunca telefone/endereço completos.
     console.log(`[pedido] criado id=${pedido.id} clienteId=${cliente?.id ?? null} total=${total}`);
 
+    // PIX com Mercado Pago configurado (Configuracao.mercadoPagoAccessToken) vira
+    // cobrança real com QR Code + confirmação automática via webhook; sem token
+    // configurado, PIX continua só informativo (comportamento de sempre — nunca
+    // quebra o checkout por causa de uma integração que o tenant nem ligou).
+    // Falha na chamada ao Mercado Pago (token inválido, fora do ar etc.) também
+    // não derruba o pedido: só cai de volta pro PIX informativo de sempre.
+    let pix = null;
+    if (formaPagamento === 'PIX') {
+      try {
+        const config = await req.prisma.configuracao.findFirst();
+        if (config?.mercadoPagoAccessToken) {
+          const cobranca = await criarPagamentoPix({
+            accessToken: config.mercadoPagoAccessToken,
+            valor: total,
+            descricao: `Pedido ${req.tenant.nome} — ${pedido.codigoAcompanhamento.slice(0, 8)}`,
+            externalReference: pedido.codigoAcompanhamento,
+            payerEmail: `cliente-${pedido.codigoAcompanhamento.slice(0, 8)}@${req.tenant.slug}.pedido.local`,
+            idempotencyKey: pedido.codigoAcompanhamento,
+            notificationUrl: `https://${req.tenant.slug}.${process.env.DOMINIO_BASE}/api/pagamentos/mercadopago/webhook`,
+          });
+          await req.prisma.pedido.update({
+            where: { id: pedido.id },
+            data: { pagamentoExternoId: cobranca.id, pagamentoConfirmado: false },
+          });
+          pix = { qrCode: cobranca.qrCode, qrCodeBase64: cobranca.qrCodeBase64 };
+        }
+      } catch (err) {
+        console.error(`[pedido] falha ao criar cobrança PIX (id=${pedido.id}), seguindo sem cobrança automática:`, err.message);
+      }
+    }
+
     res.status(201).json({
       id: pedido.id,
       codigoAcompanhamento: pedido.codigoAcompanhamento,
@@ -284,6 +316,7 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
       taxaEntrega: pedido.taxaEntrega,
       total: pedido.total,
       statusEntrega: pedido.statusEntrega,
+      pix,
     });
   } catch (err) {
     console.error('Erro ao criar pedido:', err);
@@ -340,6 +373,7 @@ async function buscarPorCodigo(req, res) {
       taxaEntrega: pedido.taxaEntrega,
       total: pedido.total,
       formaPagamento: pedido.formaPagamento,
+      pagamentoConfirmado: pedido.pagamentoConfirmado,
       criadoEm: pedido.createdAt,
       itens: pedido.itens.map((item) => ({
         produtoId: item.produtoId,

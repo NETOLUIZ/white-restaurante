@@ -56,6 +56,7 @@ const atendenteRoutes = require('./routes/atendente');
 const empresaRoutes = require('./routes/empresa');
 const superRoutes = require('./routes/super');
 const configRoutes = require('./routes/config');
+const pagamentoRoutes = require('./routes/pagamento');
 const { resolveTenant } = require('./middleware/resolveTenant');
 
 const app = express();
@@ -227,6 +228,7 @@ app.use('/api/atendente', atendenteRoutes);
 app.use('/api/empresa', empresaRoutes);
 app.use('/api/super', superRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/pagamentos', pagamentoRoutes);
 
 // Middleware de erro — precisa vir por último, depois de todas as rotas. Sem
 // isso, um erro do multer (arquivo maior que o limite, tipo não permitido)

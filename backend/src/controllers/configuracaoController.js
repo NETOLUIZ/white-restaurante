@@ -18,11 +18,18 @@ function gerarHorarios(inicio, fim) {
 }
 
 function comHorariosGaleto(config) {
+  // mercadoPagoAccessToken nunca sai daqui em texto puro — é uma credencial de
+  // verdade (não uma cor de marca), então só os últimos 4 caracteres voltam
+  // pro painel confirmar "sim, tem token salvo" sem expor o valor inteiro de
+  // novo a cada GET. Reenviar o token completo (PUT) sempre sobrescreve.
+  const { mercadoPagoAccessToken, ...resto } = config;
   return {
-    ...config,
+    ...resto,
     galetoHorarios: gerarHorarios(config.galetoHorarioInicio, config.galetoHorarioFim),
     // Calculado no servidor pra não depender do relógio/fuso do navegador do cliente.
     abertoAgora: estaAberto(config.horarioFuncionamento),
+    mercadoPagoConfigurado: !!mercadoPagoAccessToken,
+    mercadoPagoAccessTokenFinal: mercadoPagoAccessToken ? mercadoPagoAccessToken.slice(-4) : null,
   };
 }
 
@@ -69,6 +76,10 @@ async function atualizar(req, res) {
     }
     if (req.body.capaUrl !== undefined) {
       data.capaUrl = req.body.capaUrl ? String(req.body.capaUrl) : null;
+    }
+    if (req.body.mercadoPagoAccessToken !== undefined) {
+      const token = String(req.body.mercadoPagoAccessToken).trim();
+      data.mercadoPagoAccessToken = token || null; // string vazia = desliga a integração
     }
     if (req.body.galetoHorarioInicio !== undefined || req.body.galetoHorarioFim !== undefined) {
       const inicio = req.body.galetoHorarioInicio;
