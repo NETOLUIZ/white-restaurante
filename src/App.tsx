@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { getCurrentRoute, navigateTo, RouteType } from './router/routes';
+import { NavigationProvider } from './components/NavigationProvider';
 
 // Páginas
 import { LoginPage } from './app/login/LoginPage';
@@ -16,7 +17,7 @@ import { MesasPage } from './app/mesas/MesasPage';
 import { AdminPage } from './app/admin/AdminPage';
 
 /**
- * Componente App: raiz da aplicação com roteamento.
+ * Componente App: raiz da aplicação com roteamento e NavigationProvider global.
  */
 export const App: React.FC = () => {
   const { autenticado, usuario } = useAuth();
@@ -67,5 +68,10 @@ export const App: React.FC = () => {
     }
   };
 
-  return <div id="app-root">{renderarPagina()}</div>;
+  return (
+    <NavigationProvider>
+      <div id="app-root">{renderarPagina()}</div>
+    </NavigationProvider>
+  );
 };
+
