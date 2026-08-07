@@ -2055,9 +2055,13 @@ class Component extends DCLogic {
     try {
       const c = await this.apiGet('/admin/caixa');
       if (c.aberto) {
-        this.setState({ caixa:{ aberto:true, valorInicialNum:c.valorInicial, abertoEm:new Date(c.abertoEm).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }), valorInicial:'', fechamento:null, _id:c.id } });
+        this.setState({ caixa:{ aberto:true, valorInicialNum:c.valorInicial, abertoEmISO:c.abertoEm, abertoEm:new Date(c.abertoEm).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }), valorInicial:'', fechamento:null, _id:c.id } });
+      } else {
+        // Sem isso, um F5 com o caixa fechado podia herdar caixa{} de uma sessão
+        // anterior da aba (fechamento de um caixa velho, valores desatualizados).
+        this.setState({ caixa:{ aberto:false, valorInicial:'', abertoEm:'', abertoEmISO:null, fechamento:null } });
       }
-    } catch (e) { /* caixa fechado ou endpoint indisponível — mantém estado padrão */ }
+    } catch (e) { /* endpoint indisponível — mantém estado padrão */ }
   }
   async carregarConfiguracao(){
     const config = await this.apiGet('/admin/configuracao');
@@ -2637,9 +2641,13 @@ class Component extends DCLogic {
     } catch (e) { this.showToast('Erro ao atualizar cardápio da empresa'); }
   }
 
-  payBreakdown(){
+  // `desde`: só conta pedido criado DEPOIS que o caixa atual foi aberto — sem
+  // isso, fechar e abrir um caixa novo continuava somando os pedidos da
+  // sessão anterior (já fechada), e "Total recebido"/"Dinheiro em caixa"
+  // nunca zerava de verdade num caixa novo.
+  payBreakdown(desde){
     const pay = { Dinheiro:0, Pix:0, 'Cartão':0, 'Na mesa':0 };
-    this.state.orders.filter(o => o.status !== 'cancelado').forEach(o => {
+    this.state.orders.filter(o => o.status !== 'cancelado' && (!desde || new Date(o.criadoEm) >= desde)).forEach(o => {
       const t = this.orderTotals(o).total;
       pay[o.pgto] = (pay[o.pgto] || 0) + t;
     });
@@ -2650,7 +2658,9 @@ class Component extends DCLogic {
     try {
       const res = await this.apiSend('POST', '/admin/caixa/abrir', { valorInicial: v });
       const hora = new Date(res.abertoEm).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
-      this.setState(s => ({ caixa:{ ...s.caixa, aberto:true, valorInicialNum:v, abertoEm:hora, _id:res.id } }));
+      // Estado novo do zero (não espalha ...s.caixa) — o caixa anterior podia
+      // ter deixado um `fechamento` de fechamento velho pendurado no estado.
+      this.setState({ caixa:{ aberto:true, valorInicialNum:v, abertoEmISO:res.abertoEm, abertoEm:hora, valorInicial:'', fechamento:null, _id:res.id } });
       this.showToast('Caixa aberto');
     } catch (e) {
       if (e.status === 409) { this.showToast('Caixa já está aberto'); await this.carregarCaixa(); }
@@ -2661,7 +2671,7 @@ class Component extends DCLogic {
     try {
       const res = await this.apiSend('POST', '/admin/caixa/fechar', {});
       const totalVendas = res.totalVendas || 0;
-      const pay = this.payBreakdown();
+      const pay = this.payBreakdown(this.state.caixa.abertoEmISO ? new Date(this.state.caixa.abertoEmISO) : null);
       const inicial = this.state.caixa.valorInicialNum || 0;
       const emCaixa = inicial + (pay.Dinheiro || 0);
       const hora = new Date().toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' });
@@ -3310,7 +3320,7 @@ class Component extends DCLogic {
 
   caixaVals(){
     const c = this.state.caixa;
-    const pay = this.payBreakdown();
+    const pay = this.payBreakdown(c.abertoEmISO ? new Date(c.abertoEmISO) : null);
     const recebido = (pay.Dinheiro||0) + (pay.Pix||0) + (pay['Cartão']||0);
     const inicial = c.valorInicialNum || 0;
     const emCaixa = inicial + (pay.Dinheiro||0);
