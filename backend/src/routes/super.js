@@ -5,7 +5,8 @@ const superTenantController = require('../controllers/superTenantController');
 const superBrandingController = require('../controllers/superBrandingController');
 const superFeatureController = require('../controllers/superFeatureController');
 const superImpersonacaoController = require('../controllers/superImpersonacaoController');
-const { uploadFotoBranding } = require('../utils/upload');
+const superBackupController = require('../controllers/superBackupController');
+const { uploadFotoBranding, uploadBackupJson } = require('../utils/upload');
 const { converterWebp } = require('../middleware/converterWebp');
 
 /**
@@ -41,5 +42,9 @@ router.patch('/tenants/:id/features/:chave', superFeatureController.atualizar);
 
 router.post('/tenants/:id/impersonar', superImpersonacaoController.impersonar);
 router.get('/impersonacoes', superImpersonacaoController.listarLogs);
+
+router.get('/backup', superBackupController.exportarJson);
+router.get('/backup/pdf', superBackupController.exportarPdf);
+router.post('/backup/restaurar', uploadBackupJson.single('arquivo'), superBackupController.restaurar);
 
 module.exports = router;

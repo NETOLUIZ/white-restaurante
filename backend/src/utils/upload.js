@@ -115,4 +115,24 @@ const uploadPlanilha = multer({
   },
 });
 
-module.exports = { uploadFoto, uploadFotoBanner, uploadFotoCategoria, uploadFotoBranding, uploadPlanilha };
+/**
+ * Multer configurado pro upload do arquivo de backup (restaurar) — só em
+ * memória, igual a planilha: o JSON é lido, parseado e descartado, nunca
+ * grava em disco. Backup de catálogo + contas de acesso de uma loja com
+ * bastante produto cabe folgado em 10MB (é texto puro).
+ */
+const uploadBackupJson = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  fileFilter(req, file, cb) {
+    const temExtensaoValida = file.originalname.toLowerCase().endsWith('.json');
+    if (!temExtensaoValida) {
+      return cb(new Error('Envie um arquivo .json válido — o mesmo que foi baixado em "Exportar backup"'));
+    }
+    cb(null, true);
+  },
+});
+
+module.exports = {
+  uploadFoto, uploadFotoBanner, uploadFotoCategoria, uploadFotoBranding, uploadPlanilha, uploadBackupJson,
+};

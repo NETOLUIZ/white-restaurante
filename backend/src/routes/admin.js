@@ -1,7 +1,8 @@
 const express = require('express');
 const { autenticarAdmin } = require('../middleware/auth');
-const { uploadFoto, uploadFotoBanner, uploadFotoCategoria, uploadPlanilha } = require('../utils/upload');
+const { uploadFoto, uploadFotoBanner, uploadFotoCategoria, uploadPlanilha, uploadBackupJson } = require('../utils/upload');
 const { converterWebp } = require('../middleware/converterWebp');
+const backupController = require('../controllers/backupController');
 const categoriaController = require('../controllers/categoriaController');
 const produtoController = require('../controllers/produtoController');
 const cupomController = require('../controllers/cupomController');
@@ -128,5 +129,9 @@ router.put('/mesas/:id/status', mesaController.mudarStatus);
 router.post('/mesas/:id/itens', mesaController.adicionarItem);
 router.put('/mesas/:id/itens/:itemId', mesaController.ajustarItem);
 router.post('/mesas/:id/fechar', mesaController.fecharConta);
+
+router.get('/backup', backupController.exportarJson);
+router.get('/backup/pdf', backupController.exportarPdf);
+router.post('/backup/restaurar', uploadBackupJson.single('arquivo'), backupController.restaurar);
 
 module.exports = router;
