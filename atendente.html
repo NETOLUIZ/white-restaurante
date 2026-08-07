@@ -139,6 +139,15 @@
         </sc-for>
       </div>
 
+      <sc-if value="{{ hasMarmitas }}" hint-placeholder-val="{{ true }}">
+        <div style="margin-bottom:18px;">
+          <button onClick="{{ abrirMontarMarmita }}" style="width:100%;background:linear-gradient(135deg, #E8820E 0%, #B01818 100%);color:#fff;border:none;border-radius:14px;padding:16px;font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 8px 24px rgba(176,24,24,.3);display:flex;align-items:center;justify-content:center;gap:10px;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21.73a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73z"/><line x1="12" y1="22" x2="12" y2="12"/><line x1="12" y1="12" x2="21.04" y2="6.78"/><line x1="2.96" y1="6.78" x2="12" y2="12"/></svg>
+            Monte sua Marmita
+          </button>
+        </div>
+      </sc-if>
+
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;">
         <sc-for list="{{ produtosLista }}" as="p" hint-placeholder-count="6">
           <div class="bf-prod-card" onClick="{{ p.onCardClick }}" style="background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:8px;overflow:hidden;box-shadow:0 6px 18px rgba(29,16,9,.05);cursor:{{ p.cardCursor }};">
@@ -168,6 +177,86 @@
           </div>
         </sc-for>
       </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- MONTAR MARMITA -->
+<sc-if value="{{ isMontarMarmita }}" hint-placeholder-val="{{ false }}">
+<div style="max-width:800px;margin:0 auto;padding:0 16px 40px;animation:atUp .25s ease-out;">
+  <div style="display:flex;align-items:center;gap:12px;padding:calc(18px + env(safe-area-inset-top)) 0 20px;">
+    <button onClick="{{ fecharMontarMarmita }}" aria-label="Voltar" style="width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid rgba(29,16,9,.08);color:#6B2E12;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;">Monte sua Marmita</h1>
+  </div>
+  
+  <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
+    <!-- ESQUERDA: Opções da Marmita -->
+    <div style="flex:1;min-width:300px;background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
+      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 10px;">Tamanho da marmita</h3>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+        <sc-for list="{{ marmitaSizeOptions }}" as="t">
+          <button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</button>
+        </sc-for>
+      </div>
+
+      <sc-if value="{{ hasTamanhoSelecionado }}">
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 10px;">{{ marmitaProteinasLabel }}</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+          <sc-for list="{{ marmitaProteinaOptions }}" as="p">
+            <button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+          </sc-for>
+        </div>
+
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 10px;">Complementos</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+          <sc-for list="{{ marmitaComplementoOptions }}" as="c">
+            <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+
+    <!-- DIREITA: Dados e Pagamento -->
+    <div style="width:320px;flex:none;background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
+      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 12px;">Dados do Cliente</h3>
+      
+      <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Nome (opcional)</label>
+      <input value="{{ marmitaNomeCliente }}" onChange="{{ onMarmitaNomeCliente }}" placeholder="Ex: João" style="{{ inputStyle }};margin-bottom:12px;"/>
+
+      <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Endereço de Entrega</label>
+      <input value="{{ marmitaEndereco }}" onChange="{{ onMarmitaEndereco }}" placeholder="Deixe em branco p/ balcão" style="{{ inputStyle }};margin-bottom:20px;"/>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <label style="font-size:13px;font-weight:600;color:#6B2E12;margin:0;">Quantidade</label>
+        <div style="display:flex;align-items:center;background:#FFF6D6;border:1px solid rgba(29,16,9,.1);border-radius:10px;padding:2px;">
+          <input value="{{ marmitaQuantidade }}" onChange="{{ onMarmitaQuantidade }}" type="number" min="1" max="99" style="width:50px;border:none;background:transparent;text-align:center;font-weight:700;outline:none;font-size:15px;"/>
+        </div>
+      </div>
+
+      <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:1px dashed rgba(29,16,9,.14);margin-bottom:16px;">
+        <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;">Total</span>
+        <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:19px;color:#D97706;">{{ marmitaTotalFmt }}</span>
+      </div>
+
+      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Pagamento</h3>
+      <div style="display:flex;gap:8px;">
+        <sc-for list="{{ marmitaPagamentoOpcoes }}" as="pg">
+          <button onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.label }}</button>
+        </sc-for>
+      </div>
+      <sc-if value="{{ isMarmitaDinheiro }}">
+        <div style="margin-top:14px;padding-top:14px;border-top:1px dashed rgba(29,16,9,.12);">
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Valor recebido do cliente</label>
+          <input value="{{ marmitaValorRecebido }}" onChange="{{ onMarmitaValorRecebido }}" placeholder="0,00" inputmode="decimal" style="{{ inputStyle }}"/>
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;">
+            <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;color:{{ marmitaTrocoColor }}">{{ marmitaTrocoLabel }}</span>
+            <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:18px;color:{{ marmitaTrocoColor }}">{{ marmitaTrocoFmt }}</span>
+          </div>
+        </div>
+      </sc-if>
+
+      <button onClick="{{ finalizarMarmita }}" style="margin-top:18px;width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(214,40,40,.3);">{{ finalizarMarmitaLabel }}</button>
     </div>
   </div>
 </div>
@@ -241,11 +330,12 @@ class Component extends DCLogic {
     : '/api';
 
   state = {
-    screen: 'loading', // loading | login | pedido | confirmacao | senha
+    screen: 'loading', // loading | login | pedido | confirmacao | senha | montarMarmita
     atendente: null,
     loginForm: { email:'', senha:'' }, loginErro:'', loggingIn:false,
 
     categorias: [], produtos: [],
+    marmitas: { tamanhos: [], proteinas: [], complementos: [] }, // Dados do catálogo de marmitas
     selectedCat: null,
     buscaProduto: '',
     carrinho: {}, // { [produtoId]: quantidade } — pedido em montagem, ainda não enviado
@@ -257,7 +347,19 @@ class Component extends DCLogic {
     pwd: { atual:'', nova:'', conf:'' }, pwdMsg:'', pwdOk:false,
     mostrarSenha: {},
 
-    toast: ''
+    toast: '',
+    
+    // State para a tela de Montar Marmita
+    marmitaDraft: {
+      tamanhoId: null,
+      proteinas: [],
+      complementos: [],
+      quantidade: '1',
+      nomeCliente: '',
+      endereco: '',
+      formaPagamento: 'PIX',
+      valorRecebido: ''
+    }
   };
 
   toggleMostrarSenha(campo){ this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
@@ -278,7 +380,7 @@ class Component extends DCLogic {
   // Telas que fazem sentido reabrir depois de um F5 — "confirmacao" fica de
   // fora de propósito (é a tela de "acabei de enviar", sem sentido reabrir
   // minutos depois), login/loading também nunca entram aqui.
-  TELAS_RESTAURAVEIS = new Set(['pedido', 'senha']);
+  TELAS_RESTAURAVEIS = new Set(['pedido', 'senha', 'montarMarmita']);
   STORAGE_KEY = 'bf_tela_atendente';
   restaurarTela(){
     try {
@@ -313,8 +415,19 @@ class Component extends DCLogic {
   }
 
   async carregarCardapio(){
-    const [categorias, produtos] = await Promise.all([this.apiGet('/categorias'), this.apiGet('/produtos')]);
-    this.setState(s => ({ categorias, produtos, selectedCat: s.selectedCat == null ? (categorias[0] && categorias[0].id) : s.selectedCat }));
+    const [categorias, produtos, marmitasTamanhos, proteinas, complementos] = await Promise.all([
+      this.apiGet('/categorias'), 
+      this.apiGet('/produtos'),
+      this.apiGet('/marmita-tamanhos').catch(() => []),
+      this.apiGet('/proteinas').catch(() => []),
+      this.apiGet('/complementos').catch(() => [])
+    ]);
+    this.setState(s => ({ 
+      categorias, 
+      produtos, 
+      marmitas: { tamanhos: marmitasTamanhos, proteinas, complementos },
+      selectedCat: s.selectedCat == null ? (categorias[0] && categorias[0].id) : s.selectedCat 
+    }));
   }
 
   // ---- login ----
@@ -475,6 +588,108 @@ class Component extends DCLogic {
   novoPedido(){ this.setState({ screen:'pedido', ultimoPedido:null }); }
   onBuscaProduto(e){ this.setState({ buscaProduto: e.target.value }); }
 
+  // ---- Montar Marmita (Atendente) ----
+  abrirMontarMarmita(){
+    this.setState({ screen: 'montarMarmita', marmitaDraft: { tamanhoId: null, proteinas: [], complementos: [], quantidade: '1', nomeCliente: '', endereco: '', formaPagamento: 'PIX', valorRecebido: '' } });
+  }
+  fecharMontarMarmita(){
+    this.setState({ screen: 'pedido' });
+  }
+  selecionarMarmitaSize(id){
+    this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, tamanhoId: id, proteinas: [], complementos: [] } }));
+  }
+  toggleMarmitaProteina(id){
+    this.setState(s => {
+      const m = s.marmitaDraft;
+      const t = s.marmitas.tamanhos.find(x => x.id === m.tamanhoId);
+      if (!t) return null;
+      let p = m.proteinas;
+      if (p.includes(id)) p = p.filter(x => x !== id);
+      else if (p.length < t.qtdProteinas) p = [...p, id];
+      else { this.showToast('Limite de proteínas atingido'); return null; }
+      return { marmitaDraft: { ...m, proteinas: p } };
+    });
+  }
+  toggleMarmitaComplemento(id){
+    this.setState(s => {
+      const m = s.marmitaDraft;
+      let c = m.complementos;
+      if (c.includes(id)) c = c.filter(x => x !== id);
+      else c = [...c, id];
+      return { marmitaDraft: { ...m, complementos: c } };
+    });
+  }
+  onMarmitaQuantidade(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, quantidade: e.target.value } })); }
+  onMarmitaNomeCliente(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, nomeCliente: e.target.value } })); }
+  onMarmitaEndereco(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, endereco: e.target.value } })); }
+  setMarmitaPagamento(f){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, formaPagamento: f, valorRecebido: '' } })); }
+  onMarmitaValorRecebido(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, valorRecebido: e.target.value } })); }
+
+  async finalizarMarmita(){
+    const s = this.state;
+    const m = s.marmitaDraft;
+    const tamanho = s.marmitas.tamanhos.find(t => t.id === m.tamanhoId);
+    if (!tamanho) { this.showToast('Selecione um tamanho'); return; }
+    if (m.proteinas.length !== tamanho.qtdProteinas) {
+      this.showToast('Escolha ' + tamanho.qtdProteinas + (tamanho.qtdProteinas === 1 ? ' proteína' : ' proteínas'));
+      return;
+    }
+    const qtd = parseInt(m.quantidade, 10);
+    if (!Number.isInteger(qtd) || qtd < 1) { this.showToast('Quantidade inválida'); return; }
+
+    const endereco = String(m.endereco || '').trim();
+    const nomeCliente = String(m.nomeCliente || '').trim() || 'Cliente Balcão';
+    const tipo = endereco ? 'ENTREGA' : 'RETIRADA';
+
+    this.setState({ finalizando: true });
+    try {
+      const itens = [{
+        tamanhoMarmitaId: tamanho.slug,
+        proteinaIds: m.proteinas,
+        complementoIds: m.complementos,
+        quantidade: qtd
+      }];
+      
+      const payload = {
+        tipo,
+        itens,
+        nomeCliente,
+        formaPagamento: m.formaPagamento
+      };
+      
+      if (tipo === 'ENTREGA') {
+        // Formato simples de endereço (já que o frontend Atendente tem 1 input só).
+        // Na API real, se o backend espera { rua: '...', numero: '...' }, enviamos assim:
+        payload.endereco = { rua: endereco, numero: 'S/N', bairro: 'Não informado', cidade: 'Não informado', estado: 'NA' };
+      }
+
+      if (m.formaPagamento === 'DINHEIRO' && m.valorRecebido) {
+        payload.valorTrocoPara = parseFloat(String(m.valorRecebido).replace(',', '.')) || null;
+      }
+
+      const pedido = await this.apiSend('POST', '/atendente/pedidos', payload);
+      
+      const nomesProteinas = m.proteinas.map(id => (s.marmitas.proteinas.find(p => p.id === id) || {}).nome).filter(Boolean);
+      const nomesComplementos = m.complementos.map(id => (s.marmitas.complementos.find(c => c.id === id) || {}).nome).filter(Boolean);
+      const itemLabel = 'Marmita ' + tamanho.nome + (nomesProteinas.length || nomesComplementos.length ? ' (' + [...nomesProteinas, ...nomesComplementos].join(', ') + ')' : '');
+
+      this.imprimirCupomBalcao({
+        codigo: '#BF' + pedido.id,
+        itens: [{ nome: itemLabel, quantidade: qtd, precoUnitario: tamanho.preco }],
+        total: pedido.total,
+        formaPagamentoLabel: { PIX:'Pix', CARTAO:'Cartão', DINHEIRO:'Dinheiro' }[m.formaPagamento] || m.formaPagamento,
+      });
+
+      this.setState({
+        finalizando: false, screen: 'confirmacao',
+        ultimoPedido: { codigo: '#BF' + pedido.id, total: pedido.total }
+      });
+    } catch (e) {
+      this.setState({ finalizando: false });
+      this.showToast(e.message || 'Erro ao criar pedido de marmita');
+    }
+  }
+
   renderVals(){
     const s = this.state;
 
@@ -542,9 +757,29 @@ class Component extends DCLogic {
     const troco = valorRecebidoNum - carrinhoTotal;
     const trocoNegativo = troco < 0;
 
+    const m = s.marmitaDraft;
+    const isMarmitaDinheiro = m.formaPagamento === 'DINHEIRO';
+    const marmitaValorRecebidoNum = parseFloat(String(m.valorRecebido).replace(',', '.')) || 0;
+    const tamanhoAtual = s.marmitas.tamanhos.find(t => t.id === m.tamanhoId);
+    const marmitaTotal = tamanhoAtual ? tamanhoAtual.preco * (parseInt(m.quantidade,10)||1) : 0;
+    const marmitaTroco = marmitaValorRecebidoNum - marmitaTotal;
+    const marmitaTrocoNegativo = marmitaTroco < 0;
+
+    const marmitaPagamentoOpcoes = pagamentoMeta.map(([id, label]) => {
+      const on = m.formaPagamento === id;
+      return { label, onClick:() => this.setMarmitaPagamento(id),
+        style:{ flex:'1', border: on ? 'none' : '1px solid rgba(29,16,9,.14)', cursor:'pointer', borderRadius:'11px', padding:'11px', fontWeight:700, fontSize:'13.5px',
+          background: on ? '#D97706' : '#fff', color: on ? '#fff' : '#6B2E12' } };
+    });
+
+    const pillStyle = (on) => ({
+      border: on ? 'none' : '1px solid rgba(29,16,9,.14)', cursor:'pointer', borderRadius:'10px', padding:'8px 13px',
+      fontWeight:700, fontSize:'12.5px', background: on ? '#7A1209' : '#fff', color: on ? '#FFF6D6' : '#6B2E12'
+    });
+
     return {
       isLoading: s.screen === 'loading', isLogin: s.screen === 'login', isPedido: s.screen === 'pedido',
-      isConfirmacao: s.screen === 'confirmacao', isSenha: s.screen === 'senha',
+      isConfirmacao: s.screen === 'confirmacao', isSenha: s.screen === 'senha', isMontarMarmita: s.screen === 'montarMarmita',
 
       nomeAtendente: s.atendente ? (s.atendente.nome || s.atendente.email) : '',
       logout:() => this.logout(), goSenha:() => this.goSenha(), voltarPedido:() => this.voltarPedido(),
@@ -588,6 +823,43 @@ class Component extends DCLogic {
       trocoFmt: this.fmt(Math.abs(troco)),
       trocoColor: trocoNegativo ? '#C0392B' : '#2D9E60',
       finalizarPedido:() => this.finalizarPedido(), finalizarLabel: s.finalizando ? 'Enviando...' : 'Finalizar pedido',
+
+      // ---- Marmita ----
+      hasMarmitas: s.marmitas.tamanhos.length > 0,
+      abrirMontarMarmita: () => this.abrirMontarMarmita(),
+      fecharMontarMarmita: () => this.fecharMontarMarmita(),
+      
+      marmitaSizeOptions: s.marmitas.tamanhos.map(t => ({
+        label: t.nome + ' (' + this.fmt(t.preco) + ')',
+        onClick: () => this.selecionarMarmitaSize(t.id),
+        style: pillStyle(m.tamanhoId === t.id)
+      })),
+      hasTamanhoSelecionado: !!m.tamanhoId,
+      marmitaProteinasLabel: tamanhoAtual ? ('Proteínas (' + m.proteinas.length + '/' + tamanhoAtual.qtdProteinas + ')') : 'Proteínas',
+      marmitaProteinaOptions: s.marmitas.proteinas.map(p => ({
+        label: p.nome,
+        onClick: () => this.toggleMarmitaProteina(p.id),
+        style: pillStyle(m.proteinas.includes(p.id))
+      })),
+      marmitaComplementoOptions: s.marmitas.complementos.map(c => ({
+        label: c.nome,
+        onClick: () => this.toggleMarmitaComplemento(c.id),
+        style: pillStyle(m.complementos.includes(c.id))
+      })),
+      
+      marmitaQuantidade: m.quantidade, onMarmitaQuantidade: (e) => this.onMarmitaQuantidade(e),
+      marmitaNomeCliente: m.nomeCliente, onMarmitaNomeCliente: (e) => this.onMarmitaNomeCliente(e),
+      marmitaEndereco: m.endereco, onMarmitaEndereco: (e) => this.onMarmitaEndereco(e),
+      marmitaTotalFmt: this.fmt(marmitaTotal),
+      
+      marmitaPagamentoOpcoes,
+      isMarmitaDinheiro,
+      marmitaValorRecebido: m.valorRecebido, onMarmitaValorRecebido: (e) => this.onMarmitaValorRecebido(e),
+      marmitaTrocoLabel: marmitaTrocoNegativo ? 'Falta' : 'Troco',
+      marmitaTrocoFmt: this.fmt(Math.abs(marmitaTroco)),
+      marmitaTrocoColor: marmitaTrocoNegativo ? '#C0392B' : '#2D9E60',
+      
+      finalizarMarmita: () => this.finalizarMarmita(), finalizarMarmitaLabel: s.finalizando ? 'Enviando...' : 'Finalizar pedido',
 
       confirmacaoCodigo: s.ultimoPedido ? s.ultimoPedido.codigo : '',
       confirmacaoTotalFmt: s.ultimoPedido ? this.fmt(s.ultimoPedido.total) : '',
