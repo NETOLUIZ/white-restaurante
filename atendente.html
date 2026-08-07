@@ -15,18 +15,417 @@
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   *{box-sizing:border-box;}
-  body{margin:0;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:#FFF6D6;color:#1D1009;font-size:15px;}
-  input,button,select{font-family:inherit;}
-  button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #D62828;outline-offset:2px;}
-  button{-webkit-tap-highlight-color:transparent;transition:transform .12s ease;}
-  button:active{transform:scale(.96);}
-  /* Mesmo padrão de .bf-card do site do cliente (index.html) — hover só em dispositivo com mouse de verdade (@media hover:hover evita hover "grudado" em toque). */
+  :root {
+    --pos-bg: #FFF9F2;
+    --pos-card-bg: #FFFFFF;
+    --pos-border: #F2E3B0;
+    --pos-primary: #E53935;
+    --pos-primary-hover: #D32F2F;
+    --pos-secondary: #F6C453;
+    --pos-selected-bg: #FFF5EA;
+    --pos-text: #1F2937;
+    --pos-text-muted: #6B7280;
+    --pos-price: #D97706;
+    --pos-success: #16A34A;
+    --pos-error: #DC2626;
+    --pos-radius: 12px;
+  }
+  body{margin:0;font-family:'DM Sans',system-ui,sans-serif;-webkit-font-smoothing:antialiased;background:var(--pos-bg);color:var(--pos-text);font-size:15px;}
+  input,button,select,textarea{font-family:inherit;}
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid var(--pos-primary);outline-offset:2px;}
+  button{-webkit-tap-highlight-color:transparent;transition:transform .12s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;}
+  button:active{transform:scale(.97);}
   .bf-prod-card{transition:transform .15s ease, box-shadow .15s ease;}
   .bf-prod-card:active{transform:scale(.98);}
-  @media (hover:hover){ .bf-prod-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(29,16,9,.12);} }
+  @media (hover:hover){ .bf-prod-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(31,41,55,.1);} }
   @keyframes atUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
   @keyframes atRing{to{transform:rotate(360deg);}}
   @keyframes atToast{from{opacity:0;transform:translate(-50%,12px);}to{opacity:1;transform:translate(-50%,0);}}
+
+  /* LAYOUT 3 COLUNAS POS (20% / 50% / 30%) */
+  .pos-layout-3col {
+    display: grid;
+    grid-template-columns: 220px 1fr 340px;
+    gap: 16px;
+    width: 100%;
+    max-width: 1920px;
+    margin: 0 auto;
+    padding: 12px 16px 20px;
+    height: calc(100vh - 72px);
+    box-sizing: border-box;
+  }
+  @media (min-width: 1440px) {
+    .pos-layout-3col {
+      grid-template-columns: 240px 1fr 380px;
+      gap: 20px;
+    }
+  }
+  @media (max-width: 1024px) {
+    .pos-layout-3col {
+      grid-template-columns: 1fr;
+      height: auto;
+    }
+  }
+
+  .pos-col-1, .pos-col-2, .pos-col-3 {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  .pos-card-box {
+    background: var(--pos-card-bg);
+    border: 1.5px solid var(--pos-border);
+    border-radius: var(--pos-radius);
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(31, 41, 55, 0.04);
+  }
+
+  .pos-summary-card {
+    background: var(--pos-card-bg);
+    border: 1.5px solid var(--pos-border);
+    border-radius: var(--pos-radius);
+    padding: 18px;
+    box-shadow: 0 6px 18px rgba(31, 41, 55, 0.06);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
+  }
+
+  .pos-box-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--pos-text-muted);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .pos-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .pos-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: var(--pos-radius);
+    border: 1.5px solid var(--pos-border);
+    background: var(--pos-card-bg);
+    color: var(--pos-text);
+    font-weight: 700;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s ease;
+    outline: none;
+  }
+
+  .pos-nav-item:hover {
+    background: var(--pos-selected-bg);
+    border-color: var(--pos-primary);
+  }
+
+  .pos-nav-item.active {
+    background: var(--pos-primary);
+    color: #ffffff;
+    border-color: var(--pos-primary);
+    box-shadow: 0 6px 16px rgba(229, 57, 53, 0.25);
+  }
+
+  .pos-nav-item.active .pos-nav-sub {
+    color: rgba(255, 255, 255, 0.85);
+  }
+
+  .pos-nav-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .pos-nav-text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .pos-nav-title {
+    font-weight: 700;
+    font-size: 13.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .pos-nav-sub {
+    font-size: 11px;
+    color: var(--pos-text-muted);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+
+  .pos-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .pos-section-title {
+    font-family: 'Bricolage Grotesque', sans-serif;
+    font-weight: 800;
+    font-size: 17px;
+    color: var(--pos-text);
+    margin: 0;
+  }
+
+  .pos-badge-info {
+    background: var(--pos-selected-bg);
+    color: var(--pos-primary);
+    border: 1px solid var(--pos-border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-weight: 700;
+    font-size: 12px;
+  }
+
+  .pos-cards-grid-2col {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+  }
+
+  .pos-cards-grid-auto {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .pos-prod-card {
+    position: relative;
+    background: var(--pos-card-bg);
+    border: 1.5px solid var(--pos-border);
+    border-radius: var(--pos-radius);
+    padding: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+    user-select: none;
+  }
+
+  .pos-prod-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(31, 41, 55, 0.08);
+    border-color: var(--pos-primary);
+  }
+
+  .pos-prod-card.selected {
+    border: 2.5px solid var(--pos-primary);
+    background: var(--pos-selected-bg);
+    box-shadow: 0 8px 22px rgba(229, 57, 53, 0.15);
+    animation: atCardPop 0.2s ease-out;
+  }
+
+  @keyframes atCardPop {
+    0% { transform: scale(0.97); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+  }
+
+  .pos-check-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--pos-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(229, 57, 53, 0.4);
+    animation: atCheckPop 0.2s ease-out;
+  }
+
+  @keyframes atCheckPop {
+    from { transform: scale(0); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .pos-card-icon-big { font-size: 32px; flex-shrink: 0; }
+  .pos-card-icon-thumb { font-size: 24px; flex-shrink: 0; }
+  .pos-card-content { flex: 1; min-width: 0; }
+
+  .pos-card-title {
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--pos-text);
+    line-height: 1.25;
+  }
+
+  .pos-card-desc {
+    font-size: 12px;
+    color: var(--pos-text-muted);
+    margin-top: 3px;
+  }
+
+  .pos-card-price {
+    font-family: 'DM Mono', monospace;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--pos-price);
+    margin-top: 4px;
+  }
+
+  .pos-section-block {
+    margin-bottom: 12px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed rgba(31, 41, 55, 0.1);
+  }
+
+  .pos-type-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .pos-type-btn {
+    flex: 1;
+    border: 1.5px solid var(--pos-border);
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: #ffffff;
+    color: var(--pos-text);
+    font-weight: 700;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .pos-type-btn.active {
+    background: var(--pos-primary);
+    color: #ffffff;
+    border-color: var(--pos-primary);
+    box-shadow: 0 4px 12px rgba(229, 57, 53, 0.2);
+  }
+
+  .pos-input-group { margin-bottom: 6px; }
+
+  .pos-input {
+    width: 100%;
+    border: 1.5px solid var(--pos-border);
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 13.5px;
+    color: var(--pos-text);
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.15s ease;
+  }
+
+  .pos-input:focus { border-color: var(--pos-primary); }
+  .pos-input-sm { padding: 7px 10px; font-size: 12.5px; }
+
+  .pos-flex-between { display: flex; align-items: center; justify-content: space-between; }
+
+  .pos-stepper-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--pos-selected-bg);
+    border: 1.5px solid var(--pos-border);
+    border-radius: 10px;
+    padding: 3px 6px;
+  }
+
+  .pos-stepper-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--pos-border);
+    background: #ffffff;
+    color: var(--pos-primary);
+    font-weight: 800;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s ease;
+  }
+
+  .pos-stepper-btn:active { transform: scale(0.92); background: var(--pos-primary); color: #ffffff; }
+  .pos-stepper-val { font-family: 'DM Mono', monospace; font-weight: 700; font-size: 16px; min-width: 24px; text-align: center; }
+
+  .pos-pay-grid { display: flex; gap: 8px; }
+
+  .pos-pay-card {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    border: 1.5px solid var(--pos-border);
+    border-radius: 10px;
+    padding: 10px 4px;
+    background: #ffffff;
+    color: var(--pos-text);
+    font-weight: 700;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .pos-pay-card.selected {
+    background: var(--pos-primary);
+    color: #ffffff;
+    border-color: var(--pos-primary);
+    box-shadow: 0 4px 14px rgba(229, 57, 53, 0.3);
+  }
+
+  .pos-cash-box { margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(31, 41, 55, 0.1); }
+  .pos-cash-label { display: block; font-size: 12px; font-weight: 600; color: var(--pos-text-muted); margin-bottom: 4px; }
+  .pos-troco-row { margin-top: 6px; }
+  .pos-troco-title { font-weight: 700; font-size: 13px; }
+  .pos-troco-amount { font-family: 'DM Mono', monospace; font-weight: 700; font-size: 16px; }
+
+  .pos-bottom-block { margin-top: auto; padding-top: 10px; }
+  .pos-total-row { margin-bottom: 10px; }
+  .pos-total-label { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 16px; color: var(--pos-text); }
+  .pos-total-price { font-family: 'DM Mono', monospace; font-weight: 800; font-size: 26px; color: var(--pos-price); }
+
+  .pos-btn-checkout {
+    width: 100%;
+    min-height: 56px;
+    background: var(--pos-primary);
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 800;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(229, 57, 53, 0.3);
+    transition: all 0.15s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .pos-btn-checkout:hover:not(:disabled) { background: var(--pos-primary-hover); transform: translateY(-1px); box-shadow: 0 10px 24px rgba(229, 57, 53, 0.4); }
+  .pos-btn-checkout:disabled { background: #E5E7EB; color: #9CA3AF; box-shadow: none; cursor: not-allowed; }
+
+  .pos-tags-container { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+  .pos-tag { background: var(--pos-selected-bg); border: 1px solid var(--pos-border); color: var(--pos-primary); font-weight: 700; font-size: 11px; padding: 3px 8px; border-radius: 6px; }
+  .pos-tag-secondary { background: #F3F4F6; border-color: #E5E7EB; color: var(--pos-text); }
+  .pos-anim-fade { animation: atUp .2s ease-out; }
 </style>
 </helmet>
 
@@ -184,79 +583,288 @@
 
 <!-- MONTAR MARMITA -->
 <sc-if value="{{ isMontarMarmita }}" hint-placeholder-val="{{ false }}">
-<div style="max-width:800px;margin:0 auto;padding:0 16px 40px;animation:atUp .25s ease-out;">
-  <div style="display:flex;align-items:center;gap:12px;padding:calc(18px + env(safe-area-inset-top)) 0 20px;">
-    <button onClick="{{ fecharMontarMarmita }}" aria-label="Voltar" style="width:38px;height:38px;border-radius:11px;background:#fff;border:1px solid rgba(29,16,9,.08);color:#6B2E12;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;">Monte sua Marmita</h1>
+<div style="width:100%;animation:atUp .25s ease-out;">
+  <div style="background:#E53935;color:#fff;padding:12px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 4px 14px rgba(229,57,53,.2);">
+    <button onClick="{{ fecharMontarMarmita }}" aria-label="Voltar" style="width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.18);border:none;color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;margin:0;flex:1;">Monte sua Marmita — PDV Atendente</h1>
+    <div style="font-size:12px;opacity:.9;font-weight:600;">[Enter] Finalizar | [Esc] Voltar | [+] / [-] Qtd</div>
   </div>
-  
-  <div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start;">
-    <!-- ESQUERDA: Opções da Marmita -->
-    <div style="flex:1;min-width:300px;background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
-      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 10px;">Tamanho da marmita</h3>
-      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
-        <sc-for list="{{ marmitaSizeOptions }}" as="t">
-          <button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}</button>
-        </sc-for>
-      </div>
 
-      <sc-if value="{{ hasTamanhoSelecionado }}">
-        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 10px;">{{ marmitaProteinasLabel }}</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
-          <sc-for list="{{ marmitaProteinaOptions }}" as="p">
-            <button onClick="{{ p.onClick }}" style="{{ p.style }}">{{ p.label }}</button>
+  <div class="pos-layout-3col">
+    <!-- COLUNA 1 (20%): Painel de Seleção / Categorias -->
+    <div class="pos-col-1">
+      <div class="pos-card-box">
+        <div class="pos-box-title">CATEGORIAS</div>
+        <div class="pos-nav-list">
+          <button type="button" onClick="{{ selectMarmitaCatTamanho }}" class="{{ navCatTamanhoClass }}">
+            <span class="pos-nav-icon">🍱</span>
+            <div class="pos-nav-text">
+              <div class="pos-nav-title">Tamanho</div>
+              <div class="pos-nav-sub">{{ marmitaTamanhoSubLabel }}</div>
+            </div>
+          </button>
+          
+          <button type="button" onClick="{{ selectMarmitaCatProteinas }}" class="{{ navCatProteinasClass }}">
+            <span class="pos-nav-icon">🥩</span>
+            <div class="pos-nav-text">
+              <div class="pos-nav-title">Proteínas</div>
+              <div class="pos-nav-sub">{{ marmitaProteinasSubLabel }}</div>
+            </div>
+          </button>
+          
+          <button type="button" onClick="{{ selectMarmitaCatComplementos }}" class="{{ navCatComplementosClass }}">
+            <span class="pos-nav-icon">🍚</span>
+            <div class="pos-nav-text">
+              <div class="pos-nav-title">Acompanhamentos</div>
+              <div class="pos-nav-sub">{{ marmitaComplementosSubLabel }}</div>
+            </div>
+          </button>
+          
+          <button type="button" onClick="{{ selectMarmitaCatBebidas }}" class="{{ navCatBebidasClass }}">
+            <span class="pos-nav-icon">🥤</span>
+            <div class="pos-nav-text">
+              <div class="pos-nav-title">Bebidas</div>
+              <div class="pos-nav-sub">Opcional</div>
+            </div>
+          </button>
+          
+          <button type="button" onClick="{{ selectMarmitaCatExtras }}" class="{{ navCatExtrasClass }}">
+            <span class="pos-nav-icon">🍟</span>
+            <div class="pos-nav-text">
+              <div class="pos-nav-title">Extras</div>
+              <div class="pos-nav-sub">Opcional</div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLUNA 2 (50%): Área Principal (Cards Grandes) -->
+    <div class="pos-col-2">
+      <sc-if value="{{ showMarmitaCatTamanho }}">
+        <div class="pos-section-header">
+          <h2 class="pos-section-title">🍱 Tamanho da Marmita</h2>
+          <span class="pos-badge-info">Selecione 1 opção</span>
+        </div>
+        <div class="pos-cards-grid-2col">
+          <sc-for list="{{ marmitaSizeCards }}" as="t">
+            <div class="{{ t.cardClass }}" onClick="{{ t.onClick }}">
+              <sc-if value="{{ t.isSelected }}">
+                <div class="pos-check-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </sc-if>
+              <div class="pos-card-icon-big">🍱</div>
+              <div class="pos-card-content">
+                <div class="pos-card-title">{{ t.nome }}</div>
+                <div class="pos-card-desc">{{ t.desc }}</div>
+                <div class="pos-card-price">{{ t.precoFmt }}</div>
+              </div>
+            </div>
           </sc-for>
         </div>
+      </sc-if>
 
-        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 10px;">Complementos</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
-          <sc-for list="{{ marmitaComplementoOptions }}" as="c">
-            <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+      <sc-if value="{{ showMarmitaCatProteinas }}">
+        <div class="pos-section-header">
+          <h2 class="pos-section-title">🥩 Proteínas</h2>
+          <span class="pos-badge-info">{{ marmitaProteinasCountLabel }}</span>
+        </div>
+        <div class="pos-cards-grid-auto">
+          <sc-for list="{{ marmitaProteinaCards }}" as="p">
+            <div class="{{ p.cardClass }}" onClick="{{ p.onClick }}">
+              <sc-if value="{{ p.isSelected }}">
+                <div class="pos-check-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </sc-if>
+              <div class="pos-card-icon-thumb">🥩</div>
+              <div class="pos-card-content">
+                <div class="pos-card-title">{{ p.nome }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showMarmitaCatComplementos }}">
+        <div class="pos-section-header">
+          <h2 class="pos-section-title">🍚 Acompanhamentos</h2>
+          <span class="pos-badge-info">{{ marmitaComplementosCountLabel }}</span>
+        </div>
+        <div class="pos-cards-grid-auto">
+          <sc-for list="{{ marmitaComplementoCards }}" as="c">
+            <div class="{{ c.cardClass }}" onClick="{{ c.onClick }}">
+              <sc-if value="{{ c.isSelected }}">
+                <div class="pos-check-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </sc-if>
+              <div class="pos-card-icon-thumb">🍚</div>
+              <div class="pos-card-content">
+                <div class="pos-card-title">{{ c.nome }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showMarmitaCatBebidas }}">
+        <div class="pos-section-header">
+          <h2 class="pos-section-title">🥤 Bebidas</h2>
+          <span class="pos-badge-info">Adicionais</span>
+        </div>
+        <div class="pos-cards-grid-auto">
+          <sc-for list="{{ marmitaBebidaCards }}" as="b">
+            <div class="{{ b.cardClass }}" onClick="{{ b.onClick }}">
+              <sc-if value="{{ b.isSelected }}">
+                <div class="pos-check-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </sc-if>
+              <div class="pos-card-icon-thumb">🥤</div>
+              <div class="pos-card-content">
+                <div class="pos-card-title">{{ b.nome }}</div>
+                <div class="pos-card-price">{{ b.priceFmt }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ showMarmitaCatExtras }}">
+        <div class="pos-section-header">
+          <h2 class="pos-section-title">🍟 Extras</h2>
+          <span class="pos-badge-info">Adicionais</span>
+        </div>
+        <div class="pos-cards-grid-auto">
+          <sc-for list="{{ marmitaExtraCards }}" as="e">
+            <div class="{{ e.cardClass }}" onClick="{{ e.onClick }}">
+              <sc-if value="{{ e.isSelected }}">
+                <div class="pos-check-badge">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+              </sc-if>
+              <div class="pos-card-icon-thumb">🍟</div>
+              <div class="pos-card-content">
+                <div class="pos-card-title">{{ e.nome }}</div>
+                <div class="pos-card-price">{{ e.priceFmt }}</div>
+              </div>
+            </div>
           </sc-for>
         </div>
       </sc-if>
     </div>
 
-    <!-- DIREITA: Dados e Pagamento -->
-    <div style="width:320px;flex:none;background:#fff;border-radius:20px;padding:22px;box-shadow:0 6px 18px rgba(29,16,9,.06);">
-      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 12px;">Dados do Cliente</h3>
-      
-      <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Nome (opcional)</label>
-      <input value="{{ marmitaNomeCliente }}" onChange="{{ onMarmitaNomeCliente }}" placeholder="Ex: João" style="{{ inputStyle }};margin-bottom:12px;"/>
+    <!-- COLUNA 3 (30%): Resumo do Pedido (Sempre Fixo) -->
+    <div class="pos-col-3">
+      <div class="pos-summary-card">
+        <div class="pos-box-title">RESUMO DO PEDIDO</div>
+        
+        <!-- DADOS DO CLIENTE -->
+        <div class="pos-section-block">
+          <div class="pos-box-title" style="margin-bottom:6px;">CLIENTE</div>
+          <div class="pos-type-toggle">
+            <button type="button" onClick="{{ setTipoBalcao }}" class="{{ tipoBalcaoClass }}">🏷️ Balcão</button>
+            <button type="button" onClick="{{ setTipoEntrega }}" class="{{ tipoEntregaClass }}">🛵 Entrega</button>
+          </div>
+          
+          <div class="pos-input-group">
+            <input value="{{ marmitaNomeCliente }}" onChange="{{ onMarmitaNomeCliente }}" placeholder="Nome do cliente (opcional)" class="pos-input"/>
+          </div>
+          
+          <div class="pos-input-group">
+            <input value="{{ marmitaTelefone }}" onChange="{{ onMarmitaTelefone }}" placeholder="Telefone (opcional)" class="pos-input"/>
+          </div>
 
-      <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Endereço de Entrega</label>
-      <input value="{{ marmitaEndereco }}" onChange="{{ onMarmitaEndereco }}" placeholder="Deixe em branco p/ balcão" style="{{ inputStyle }};margin-bottom:20px;"/>
-
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-        <label style="font-size:13px;font-weight:600;color:#6B2E12;margin:0;">Quantidade</label>
-        <div style="display:flex;align-items:center;background:#FFF6D6;border:1px solid rgba(29,16,9,.1);border-radius:10px;padding:2px;">
-          <input value="{{ marmitaQuantidade }}" onChange="{{ onMarmitaQuantidade }}" type="number" min="1" max="99" style="width:50px;border:none;background:transparent;text-align:center;font-weight:700;outline:none;font-size:15px;"/>
+          <sc-if value="{{ isMarmitaEntrega }}">
+            <div class="pos-input-group pos-anim-fade">
+              <input value="{{ marmitaEndereco }}" onChange="{{ onMarmitaEndereco }}" placeholder="Endereço de entrega completo..." class="pos-input"/>
+            </div>
+          </sc-if>
         </div>
-      </div>
 
-      <div style="display:flex;justify-content:space-between;align-items:baseline;padding-top:12px;border-top:1px dashed rgba(29,16,9,.14);margin-bottom:16px;">
-        <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;">Total</span>
-        <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:19px;color:#D97706;">{{ marmitaTotalFmt }}</span>
-      </div>
+        <!-- DETALHES DOS ITENS -->
+        <div class="pos-section-block">
+          <div class="pos-box-title" style="margin-bottom:6px;">ITENS SELECIONADOS</div>
+          <div style="font-size:13px;color:var(--pos-text);font-weight:700;">{{ summaryTamanhoName }}</div>
+          
+          <sc-if value="{{ hasSummaryProteinas }}">
+            <div style="margin-top:6px;">
+              <div style="font-size:11px;color:var(--pos-text-muted);font-weight:600;">Proteínas:</div>
+              <div class="pos-tags-container">
+                <sc-for list="{{ summaryProteinasTags }}" as="pt">
+                  <span class="pos-tag">{{ pt }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
 
-      <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin:0 0 10px;">Pagamento</h3>
-      <div style="display:flex;gap:8px;">
-        <sc-for list="{{ marmitaPagamentoOpcoes }}" as="pg">
-          <button onClick="{{ pg.onClick }}" style="{{ pg.style }}">{{ pg.label }}</button>
-        </sc-for>
-      </div>
-      <sc-if value="{{ isMarmitaDinheiro }}">
-        <div style="margin-top:14px;padding-top:14px;border-top:1px dashed rgba(29,16,9,.12);">
-          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Valor recebido do cliente</label>
-          <input value="{{ marmitaValorRecebido }}" onChange="{{ onMarmitaValorRecebido }}" placeholder="0,00" inputmode="decimal" style="{{ inputStyle }}"/>
-          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-top:12px;">
-            <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;color:{{ marmitaTrocoColor }}">{{ marmitaTrocoLabel }}</span>
-            <span style="font-family:'DM Mono',monospace;font-weight:500;font-size:18px;color:{{ marmitaTrocoColor }}">{{ marmitaTrocoFmt }}</span>
+          <sc-if value="{{ hasSummaryComplementos }}">
+            <div style="margin-top:6px;">
+              <div style="font-size:11px;color:var(--pos-text-muted);font-weight:600;">Acompanhamentos:</div>
+              <div class="pos-tags-container">
+                <sc-for list="{{ summaryComplementosTags }}" as="ct">
+                  <span class="pos-tag pos-tag-secondary">{{ ct }}</span>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- QUANTIDADE STEPPER -->
+        <div class="pos-section-block">
+          <div class="pos-flex-between">
+            <span class="pos-box-title" style="margin:0;">QUANTIDADE</span>
+            <div class="pos-stepper-container">
+              <button type="button" onClick="{{ marmitaDecQty }}" class="pos-stepper-btn" aria-label="Diminuir quantidade">-</button>
+              <span class="pos-stepper-val">{{ marmitaQuantidade }}</span>
+              <button type="button" onClick="{{ marmitaIncQty }}" class="pos-stepper-btn" aria-label="Aumentar quantidade">+</button>
+            </div>
           </div>
         </div>
-      </sc-if>
 
-      <button onClick="{{ finalizarMarmita }}" style="margin-top:18px;width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:14px 22px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(214,40,40,.3);">{{ finalizarMarmitaLabel }}</button>
+        <!-- OBSERVAÇÃO -->
+        <div class="pos-section-block">
+          <input value="{{ marmitaObs }}" onChange="{{ onMarmitaObs }}" placeholder="Observação (ex: sem cebola)" class="pos-input pos-input-sm"/>
+        </div>
+
+        <!-- PAGAMENTO -->
+        <div class="pos-section-block">
+          <div class="pos-box-title" style="margin-bottom:6px;">FORMA DE PAGAMENTO</div>
+          <div class="pos-pay-grid">
+            <sc-for list="{{ marmitaPayCards }}" as="p">
+              <button type="button" onClick="{{ p.onClick }}" class="{{ p.btnClass }}">
+                <span>{{ p.icon }}</span>
+                <span>{{ p.label }}</span>
+              </button>
+            </sc-for>
+          </div>
+
+          <sc-if value="{{ isMarmitaDinheiro }}">
+            <div class="pos-cash-box pos-anim-fade">
+              <label class="pos-cash-label">Valor recebido:</label>
+              <input value="{{ marmitaValorRecebido }}" onChange="{{ onMarmitaValorRecebido }}" placeholder="0,00" inputmode="decimal" class="pos-input"/>
+              <div class="pos-flex-between pos-troco-row">
+                <span class="pos-troco-title">{{ marmitaTrocoLabel }}</span>
+                <span class="pos-troco-amount" style="color:{{ marmitaTrocoColor }}">{{ marmitaTrocoFmt }}</span>
+              </div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- TOTAL & CHECKOUT BUTTON -->
+        <div class="pos-bottom-block">
+          <div class="pos-flex-between pos-total-row">
+            <span class="pos-total-label">TOTAL</span>
+            <span class="pos-total-price">{{ marmitaTotalFmt }}</span>
+          </div>
+
+          <button type="button" onClick="{{ finalizarMarmita }}" class="pos-btn-checkout" disabled="{{ checkoutBtnDisabled }}">
+            {{ finalizarMarmitaLabel }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -391,10 +999,25 @@ class Component extends DCLogic {
   }
 
   async componentDidMount(){
-    // Precisa ser setado ANTES de qualquer outro setState — senão o setState
-    // que guarda o "atendente" logo abaixo já dispara um componentDidUpdate
-    // "fantasma" que apaga o sessionStorage antes do restaurarTela() ler.
     this._lastScreen = this.state.screen;
+    this._keyHandler = (e) => {
+      if (this.state.screen === 'montarMarmita') {
+        const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target ? e.target.tagName : '');
+        if (e.key === 'Escape') {
+          this.fecharMontarMarmita();
+        } else if (e.key === 'Enter' && !isInput) {
+          e.preventDefault();
+          this.finalizarMarmita();
+        } else if ((e.key === '+' || e.key === '=') && !isInput) {
+          e.preventDefault();
+          this.marmitaIncQty();
+        } else if ((e.key === '-' || e.key === '_') && !isInput) {
+          e.preventDefault();
+          this.marmitaDecQty();
+        }
+      }
+    };
+    window.addEventListener('keydown', this._keyHandler);
     try {
       const { atendente } = await this.apiGet('/atendente/me');
       this.setState({ atendente, screen: this.restaurarTela() || 'pedido' });
@@ -402,6 +1025,10 @@ class Component extends DCLogic {
     } catch (e) {
       this.setState({ screen:'login' });
     }
+  }
+
+  componentWillUnmount(){
+    if (this._keyHandler) window.removeEventListener('keydown', this._keyHandler);
   }
   componentDidUpdate(){
     if (this.state.screen !== this._lastScreen) {
@@ -622,6 +1249,11 @@ class Component extends DCLogic {
       return { marmitaDraft: { ...m, complementos: c } };
     });
   }
+  onMarmitaObs(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, obs: e.target.value } })); }
+  onMarmitaTelefone(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, telefone: e.target.value } })); }
+  marmitaIncQty(){ this.setState(s => { const q = (parseInt(s.marmitaDraft.quantidade, 10) || 1) + 1; return { marmitaDraft: { ...s.marmitaDraft, quantidade: String(q) } }; }); }
+  marmitaDecQty(){ this.setState(s => { const q = Math.max(1, (parseInt(s.marmitaDraft.quantidade, 10) || 1) - 1); return { marmitaDraft: { ...s.marmitaDraft, quantidade: String(q) } }; }); }
+
   onMarmitaQuantidade(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, quantidade: e.target.value } })); }
   onMarmitaNomeCliente(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, nomeCliente: e.target.value } })); }
   onMarmitaEndereco(e){ this.setState(s => ({ marmitaDraft: { ...s.marmitaDraft, endereco: e.target.value } })); }
@@ -827,11 +1459,126 @@ class Component extends DCLogic {
       trocoColor: trocoNegativo ? '#C0392B' : '#2D9E60',
       finalizarPedido:() => this.finalizarPedido(), finalizarLabel: s.finalizando ? 'Enviando...' : 'Finalizar pedido',
 
-      // ---- Marmita ----
+      // ---- Marmita (POS 3 Colunas) ----
       hasMarmitas: s.marmitas.tamanhos.length > 0,
       abrirMontarMarmita: () => this.abrirMontarMarmita(),
       fecharMontarMarmita: () => this.fecharMontarMarmita(),
       
+      activeMarmitaCat: s.activeMarmitaCat || 'tamanho',
+      selectMarmitaCatTamanho: () => this.setState({ activeMarmitaCat: 'tamanho' }),
+      selectMarmitaCatProteinas: () => this.setState({ activeMarmitaCat: 'proteinas' }),
+      selectMarmitaCatComplementos: () => this.setState({ activeMarmitaCat: 'complementos' }),
+      selectMarmitaCatBebidas: () => this.setState({ activeMarmitaCat: 'bebidas' }),
+      selectMarmitaCatExtras: () => this.setState({ activeMarmitaCat: 'extras' }),
+
+      navCatTamanhoClass: 'pos-nav-item' + ((s.activeMarmitaCat || 'tamanho') === 'tamanho' ? ' active' : ''),
+      navCatProteinasClass: 'pos-nav-item' + ((s.activeMarmitaCat || 'tamanho') === 'proteinas' ? ' active' : ''),
+      navCatComplementosClass: 'pos-nav-item' + ((s.activeMarmitaCat || 'tamanho') === 'complementos' ? ' active' : ''),
+      navCatBebidasClass: 'pos-nav-item' + ((s.activeMarmitaCat || 'tamanho') === 'bebidas' ? ' active' : ''),
+      navCatExtrasClass: 'pos-nav-item' + ((s.activeMarmitaCat || 'tamanho') === 'extras' ? ' active' : ''),
+
+      marmitaTamanhoSubLabel: tamanhoAtual ? (tamanhoAtual.nome + ' • ' + this.fmt(tamanhoAtual.preco)) : 'Pendente',
+      marmitaProteinasSubLabel: tamanhoAtual ? (m.proteinas.length + '/' + tamanhoAtual.qtdProteinas + ' selecionadas') : 'Escolha o tamanho',
+      marmitaComplementosSubLabel: m.complementos.length ? (m.complementos.length + ' selecionados') : 'Opcional',
+
+      showMarmitaCatTamanho: (s.activeMarmitaCat || 'tamanho') === 'tamanho',
+      showMarmitaCatProteinas: (s.activeMarmitaCat || 'tamanho') === 'proteinas',
+      showMarmitaCatComplementos: (s.activeMarmitaCat || 'tamanho') === 'complementos',
+      showMarmitaCatBebidas: (s.activeMarmitaCat || 'tamanho') === 'bebidas',
+      showMarmitaCatExtras: (s.activeMarmitaCat || 'tamanho') === 'extras',
+
+      marmitaProteinasCountLabel: tamanhoAtual ? (m.proteinas.length + '/' + tamanhoAtual.qtdProteinas + ' selecionadas') : 'Selecione o tamanho primeiro',
+      marmitaComplementosCountLabel: m.complementos.length + ' selecionados',
+
+      marmitaSizeCards: s.marmitas.tamanhos.map(t => {
+        const isSelected = m.tamanhoId === t.id;
+        return {
+          id: t.id,
+          nome: t.nome,
+          desc: 'Até ' + t.qtdProteinas + (t.qtdProteinas === 1 ? ' opção de proteína' : ' opções de proteínas'),
+          precoFmt: this.fmt(t.preco),
+          isSelected,
+          cardClass: 'pos-prod-card' + (isSelected ? ' selected' : ''),
+          onClick: () => {
+            this.selecionarMarmitaSize(t.id);
+            this.setState({ activeMarmitaCat: 'proteinas' });
+          }
+        };
+      }),
+
+      marmitaProteinaCards: s.marmitas.proteinas.map(p => {
+        const isSelected = m.proteinas.includes(p.id);
+        return {
+          id: p.id,
+          nome: p.nome,
+          isSelected,
+          cardClass: 'pos-prod-card' + (isSelected ? ' selected' : ''),
+          onClick: () => this.toggleMarmitaProteina(p.id)
+        };
+      }),
+
+      marmitaComplementoCards: s.marmitas.complementos.map(c => {
+        const isSelected = m.complementos.includes(c.id);
+        return {
+          id: c.id,
+          nome: c.nome,
+          isSelected,
+          cardClass: 'pos-prod-card' + (isSelected ? ' selected' : ''),
+          onClick: () => this.toggleMarmitaComplemento(c.id)
+        };
+      }),
+
+      marmitaBebidaCards: s.produtos.filter(p => {
+        const cat = s.categorias.find(ct => String(ct.id) === String(p.categoriaId));
+        return cat && cat.nome.toLowerCase().includes('bebida');
+      }).map(p => ({
+        id: p.id, nome: p.nome, priceFmt: this.fmt(p.preco), isSelected: !!s.carrinho[p.id],
+        cardClass: 'pos-prod-card' + (s.carrinho[p.id] ? ' selected' : ''),
+        onClick: () => this.carrinhoInc(p.id)
+      })),
+
+      marmitaExtraCards: s.produtos.filter(p => {
+        const cat = s.categorias.find(ct => String(ct.id) === String(p.categoriaId));
+        return cat && (cat.nome.toLowerCase().includes('extra') || cat.nome.toLowerCase().includes('porç'));
+      }).map(p => ({
+        id: p.id, nome: p.nome, priceFmt: this.fmt(p.preco), isSelected: !!s.carrinho[p.id],
+        cardClass: 'pos-prod-card' + (s.carrinho[p.id] ? ' selected' : ''),
+        onClick: () => this.carrinhoInc(p.id)
+      })),
+
+      isMarmitaEntrega: s.marmitaTipoCliente === 'ENTREGA',
+      tipoBalcaoClass: 'pos-type-btn' + (s.marmitaTipoCliente !== 'ENTREGA' ? ' active' : ''),
+      tipoEntregaClass: 'pos-type-btn' + (s.marmitaTipoCliente === 'ENTREGA' ? ' active' : ''),
+      setTipoBalcao: () => this.setState(st => ({ marmitaTipoCliente: 'BALCAO', marmitaDraft: { ...st.marmitaDraft, endereco: '' } })),
+      setTipoEntrega: () => this.setState({ marmitaTipoCliente: 'ENTREGA' }),
+
+      summaryTamanhoName: tamanhoAtual ? (tamanhoAtual.nome + ' • ' + this.fmt(tamanhoAtual.preco)) : 'Não selecionado',
+      hasSummaryProteinas: m.proteinas.length > 0,
+      summaryProteinasTags: m.proteinas.map(id => (s.marmitas.proteinas.find(x => x.id === id) || {}).nome).filter(Boolean),
+      hasSummaryComplementos: m.complementos.length > 0,
+      summaryComplementosTags: m.complementos.map(id => (s.marmitas.complementos.find(x => x.id === id) || {}).nome).filter(Boolean),
+
+      marmitaObs: m.obs || '',
+      onMarmitaObs: (e) => this.onMarmitaObs(e),
+      marmitaTelefone: m.telefone || '',
+      onMarmitaTelefone: (e) => this.onMarmitaTelefone(e),
+      marmitaIncQty: () => this.marmitaIncQty(),
+      marmitaDecQty: () => this.marmitaDecQty(),
+
+      marmitaPayCards: [
+        { id: 'PIX', label: 'PIX', icon: '⚡' },
+        { id: 'CARTAO', label: 'Cartão', icon: '💳' },
+        { id: 'DINHEIRO', label: 'Dinheiro', icon: '💵' }
+      ].map(item => ({
+        id: item.id,
+        label: item.label,
+        icon: item.icon,
+        btnClass: 'pos-pay-card' + (m.formaPagamento === item.id ? ' selected' : ''),
+        onClick: () => this.setMarmitaPagamento(item.id)
+      })),
+
+      checkoutBtnDisabled: !tamanhoAtual || (m.proteinas.length !== tamanhoAtual.qtdProteinas) || (s.marmitaTipoCliente === 'ENTREGA' && !String(m.endereco||'').trim()) || s.finalizando,
+
       marmitaSizeOptions: s.marmitas.tamanhos.map(t => ({
         label: t.nome + ' (' + this.fmt(t.preco) + ')',
         onClick: () => this.selecionarMarmitaSize(t.id),
@@ -861,6 +1608,7 @@ class Component extends DCLogic {
       marmitaTrocoLabel: marmitaTrocoNegativo ? 'Falta' : 'Troco',
       marmitaTrocoFmt: this.fmt(Math.abs(marmitaTroco)),
       marmitaTrocoColor: marmitaTrocoNegativo ? '#C0392B' : '#2D9E60',
+      marmitaTrocoStyle: 'color:' + (marmitaTrocoNegativo ? '#C0392B' : '#2D9E60'),
       
       finalizarMarmita: () => this.finalizarMarmita(), finalizarMarmitaLabel: s.finalizando ? 'Enviando...' : 'Finalizar pedido',
 
