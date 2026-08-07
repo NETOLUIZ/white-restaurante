@@ -2810,10 +2810,16 @@ class Component extends DCLogic {
   async salvarMarmitaSizes(){
     const sizes = this.state.marmitaSizes;
     try {
-      const uniqueIds = Array.from(new Set(Object.values(sizes).map(s => s.id).filter(Boolean)));
-      await Promise.all(uniqueIds.map((id) =>
-        this.apiSend('PUT', '/admin/marmita-tamanhos/' + id, { preco: parseFloat(String(sizes[id].price).replace(',','.')) || 0 })
-      ));
+      // marmitaSizes é sempre chaveado pelo slug ('pequena'/'grande'/'executiva'
+      // — ver carregarMarmitaConfig), nunca pelo id numérico do banco, então
+      // salvar por s.id nunca achava nada pra salvar (uniqueIds sempre vazio,
+      // nenhum PUT saía). O backend já aceita slug OU id no :id da rota.
+      await Promise.all(['pequena', 'grande', 'executiva'].map((slug) => {
+        const item = sizes[slug];
+        if (!item) return null;
+        const preco = parseFloat(String(item.price).replace(',', '.')) || 0;
+        return this.apiSend('PUT', '/admin/marmita-tamanhos/' + slug, { preco });
+      }));
       await this.carregarMarmitaConfig();
       this.showToast('Preços salvos');
     } catch (e) { this.showToast(e.message || 'Erro ao salvar preços'); }
