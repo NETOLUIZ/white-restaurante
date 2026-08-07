@@ -9,14 +9,25 @@ async function listarPublico(req, res) {
   }
 }
 
+// Mesmos 3 tamanhos canônicos do seed (prisma/seed.js) — usado só pra
+// completar um tenant que ficou sem uma dessas linhas (ex: criado antes da
+// marmita executiva existir, ou seed parcial). Nunca usado pra slug fora
+// desse conjunto: não faz sentido "criar" um tamanho arbitrário só porque
+// o :id não bateu.
+const PADRAO_POR_SLUG = {
+  pequena: { nome: 'Marmita Pequena', qtdProteinas: 1, preco: 24.9 },
+  grande: { nome: 'Marmita Grande', qtdProteinas: 2, preco: 32.9 },
+  executiva: { nome: 'Marmita Executiva', qtdProteinas: 3, preco: 39.9 },
+};
+
 /**
  * Atualiza preço/nome/quantidade de proteínas de um tamanho — painel admin.
  *
  * O :id da rota chega em dois formatos, dependendo de qual tela do admin
  * chamou: o editor de preço "Monte sua Marmita" (pré-existente, não pode
- * mudar) manda o slug hardcoded ('pequena'/'grande'); a seção "Empresas"
- * manda o id numérico devolvido pela própria API. Aceita os dois — nunca
- * findUnique (proibido no client escopado, ver lib/prismaTenant.js).
+ * mudar) manda o slug hardcoded ('pequena'/'grande'/'executiva'); a seção
+ * "Empresas" manda o id numérico devolvido pela própria API. Aceita os
+ * dois — nunca findUnique (proibido no client escopado, ver lib/prismaTenant.js).
  */
 async function atualizar(req, res) {
   try {
@@ -30,8 +41,19 @@ async function atualizar(req, res) {
 
     const filtro = /^\d+$/.test(idParam) ? { id: parseInt(idParam, 10) } : { slug: idParam };
     const atual = await req.prisma.tamanhoMarmita.findFirst({ where: filtro });
+
     if (!atual) {
-      return res.status(404).json({ erro: 'Tamanho de marmita não encontrado' });
+      // Slug canônico sem linha no banco (tenant com seed incompleto) —
+      // cria com o padrão + o que veio no corpo, em vez de 404. Id numérico
+      // que não bate é sempre 404: não existe "padrão" pra um id arbitrário.
+      const padrao = PADRAO_POR_SLUG[idParam];
+      if (!padrao) {
+        return res.status(404).json({ erro: 'Tamanho de marmita não encontrado' });
+      }
+      const criado = await req.prisma.tamanhoMarmita.create({
+        data: { slug: idParam, ...padrao, ...data },
+      });
+      return res.json(criado);
     }
 
     const tamanho = await req.prisma.tamanhoMarmita.update({ where: { id: atual.id }, data });
