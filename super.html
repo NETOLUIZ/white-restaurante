@@ -180,7 +180,7 @@
 
       <!-- ---------- DETALHE DO TENANT ---------- -->
       <sc-if value="{{ isTenantDetalhe }}" hint-placeholder-val="{{ false }}">
-      <div style="animation:suIn .25s ease-out;max-width:760px;">
+      <div style="animation:suIn .25s ease-out;">
         <button onClick="{{ voltarTenants }}" style="display:flex;align-items:center;gap:7px;background:none;border:none;color:#6B2E12;font-weight:700;font-size:13px;cursor:pointer;padding:0;margin-bottom:16px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Todos os tenants</button>
 
         <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap;">
@@ -192,6 +192,7 @@
 
         <!-- GERAL -->
         <sc-if value="{{ isAbaGeral }}" hint-placeholder-val="{{ true }}">
+        <div style="max-width:760px;">
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
           <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Slug (fixo)</label>
           <input value="{{ tenantSlug }}" disabled style="width:100%;border:1px solid rgba(29,16,9,.1);background:#F6F1E7;color:#8C8075;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;margin-bottom:14px;"/>
@@ -236,6 +237,7 @@
           </div>
           <sc-if value="{{ hasExcluirTenantErro }}" hint-placeholder-val="{{ false }}"><p style="margin:8px 0 0;font-size:13px;font-weight:600;color:#C0392B;">{{ excluirTenantErro }}</p></sc-if>
         </div>
+        </div>
         </sc-if>
 
         <!-- MARCA -->
@@ -250,7 +252,7 @@
             <button onClick="{{ goSubAbaNavegacao }}" style="{{ subAbaNavegacaoStyle }}">Navegação</button>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+          <div style="display:grid;grid-template-columns:1fr 420px;gap:20px;align-items:start;">
           <div>
 
           <!-- IDENTIDADE VISUAL -->
@@ -265,7 +267,7 @@
               <button onClick="{{ enviarLogo }}" style="display:block;margin-top:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:10px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;">{{ enviarLogoLabel }}</button>
             </div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
             <div>
               <label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fonte dos títulos</label>
               <select value="{{ fonteTitulo }}" onChange="{{ onFonteTitulo }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;">
@@ -285,7 +287,7 @@
 
           <!-- CORES BASE -->
           <sc-if value="{{ isSubAbaCoresBase }}" hint-placeholder-val="{{ false }}">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
             <div>
               <label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo principal</label>
               <div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corFundo }};"></div><input type="text" value="{{ corFundo }}" onChange="{{ onCorFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div>
@@ -336,7 +338,7 @@
 
           <!-- BOTÕES -->
           <sc-if value="{{ isSubAbaBotoes }}" hint-placeholder-val="{{ false }}">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
             <div>
               <label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Primário — fundo</label>
               <div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ botaoPrimarioFundo }};"></div><input type="text" value="{{ botaoPrimarioFundo }}" onChange="{{ onBotaoPrimarioFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div>
@@ -382,7 +384,7 @@
 
           <!-- CARDS E BLOCOS -->
           <sc-if value="{{ isSubAbaCards }}" hint-placeholder-val="{{ false }}">
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
             <div>
               <label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo</label>
               <div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ corCard }};"></div><input type="text" value="{{ corCard }}" onChange="{{ onCorCard }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div>
@@ -419,7 +421,7 @@
           <!-- NAVEGAÇÃO -->
           <sc-if value="{{ isSubAbaNavegacao }}" hint-placeholder-val="{{ false }}">
           <div style="font-weight:700;font-size:13px;color:#6B2E12;margin-bottom:8px;">Cabeçalho</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:20px;">
             <div>
               <label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo</label>
               <div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ headerFundo }};"></div><input type="text" value="{{ headerFundo }}" onChange="{{ onHeaderFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div>
@@ -447,7 +449,7 @@
             </div>
           </div>
           <div style="font-weight:700;font-size:13px;color:#6B2E12;margin-bottom:8px;">Barra inferior</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;">
             <div>
               <label style="display:block;font-size:12.5px;font-weight:600;color:#6B2E12;margin-bottom:5px;">Fundo</label>
               <div style="display:flex;gap:8px;align-items:center;"><div style="width:38px;height:38px;flex:none;border-radius:8px;border:1px solid rgba(29,16,9,.14);background:{{ navInferiorFundo }};"></div><input type="text" value="{{ navInferiorFundo }}" onChange="{{ onNavInferiorFundo }}" placeholder="#RRGGBB" maxlength="7" style="flex:1;min-width:0;border:1px solid rgba(29,16,9,.14);border-radius:8px;padding:9px 10px;font-family:'DM Mono',monospace;font-size:13px;text-transform:uppercase;"/></div>
@@ -495,6 +497,7 @@
 
         <!-- FEATURES -->
         <sc-if value="{{ isAbaFeatures }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:760px;">
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
           <sc-for list="{{ featureRows }}" as="ft" hint-placeholder-count="5">
             <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-top:1px solid rgba(29,16,9,.06);">
@@ -506,10 +509,12 @@
             </div>
           </sc-for>
         </div>
+        </div>
         </sc-if>
 
         <!-- IMPERSONAR -->
         <sc-if value="{{ isAbaImpersonar }}" hint-placeholder-val="{{ false }}">
+        <div style="max-width:760px;">
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:20px;box-shadow:0 5px 16px rgba(29,16,9,.05);">
           <p style="margin:0 0 16px;font-size:13px;color:#8C8075;">Gera um código de uso único (expira em 60s) pra entrar como o admin desse tenant, sem saber a senha de ninguém.</p>
           <button onClick="{{ gerarImpersonacao }}" style="background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:12px 18px;font-weight:700;font-size:14px;cursor:pointer;">{{ gerarImpersonacaoLabel }}</button>
@@ -523,6 +528,7 @@
               </div>
             </div>
           </sc-if>
+        </div>
         </div>
         </sc-if>
       </div>
