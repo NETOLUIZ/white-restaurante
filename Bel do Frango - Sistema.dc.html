@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <script src="scripts/support.js"></script>
+<script src="scripts/tema.js"></script>
 <!-- Runtime DC/React para renderização dos componentes. -->
 </head>
 <body>
@@ -42,7 +43,7 @@
         </div>
       </div>
       <label style="display:block;font-size:13px;font-weight:600;color:#7A1209;margin:22px 0 6px;">E-mail</label>
-      <input value="{{ email }}" onChange="{{ onEmail }}" placeholder="voce@beldofrango.com" style="{{ inputStyle }}"/>
+      <input value="{{ email }}" onChange="{{ onEmail }}" placeholder="seu@email.com" style="{{ inputStyle }}"/>
       <label style="display:block;font-size:13px;font-weight:600;color:#7A1209;margin:16px 0 6px;">Senha</label>
       <input type="password" value="{{ senha }}" onChange="{{ onSenha }}" placeholder="••••••••" style="{{ inputStyle }}"/>
       <button onClick="{{ doLogin }}" style="margin-top:22px;width:100%;background:#D62828;color:#fff;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 10px 24px rgba(214,40,40,.34);display:flex;align-items:center;justify-content:center;gap:9px;">
