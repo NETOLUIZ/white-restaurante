@@ -962,8 +962,8 @@ class Component extends DCLogic {
   onNavInferiorIconeAtivo(e) { this.onCorCampo('navInferiorIconeAtivo', e); }
   onNavInferiorTextoNormal(e) { this.onCorCampo('navInferiorTextoNormal', e); }
   onNavInferiorTextoAtivo(e) { this.onCorCampo('navInferiorTextoAtivo', e); }
-  onFonteTitulo(e) { this.setState(s => ({ branding: { ...s.branding, fonteTitulo: e.target.value } })); }
-  onFonteTexto(e) { this.setState(s => ({ branding: { ...s.branding, fonteTexto: e.target.value } })); }
+  onFonteTitulo(e) { this.setState(s => ({ branding: { ...s.branding, fonteTitulo: e.target.value } })); setTimeout(() => this.enviarPreview(), 0); }
+  onFonteTexto(e) { this.setState(s => ({ branding: { ...s.branding, fonteTexto: e.target.value } })); setTimeout(() => this.enviarPreview(), 0); }
 
   async salvarBranding() {
     const id = this.state.tenantDetalheId;

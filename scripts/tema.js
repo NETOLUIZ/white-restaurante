@@ -89,6 +89,36 @@
     });
   }
 
+  /** Mesma ideia de aplicarCssVarsDireto, mas pra fonte — o <style id="bf-tema-tenant">
+   * de aplicarCssBase só existe se a página carregou com branding já salvo, então o
+   * preview usa uma tag própria (nunca mexe na de aplicarCssBase) e pode ser
+   * chamada de novo a cada tecla digitada no painel, sem duplicar nada. */
+  function aplicarFontesDireto(branding) {
+    var linhas = [];
+    if (branding.fonteTexto) {
+      injetarFonte(branding.fonteTexto);
+      linhas.push("body{font-family:'" + branding.fonteTexto + "',system-ui,sans-serif !important}");
+    }
+    if (branding.fonteTitulo) {
+      injetarFonte(branding.fonteTitulo);
+      linhas.push('[style*="Bricolage Grotesque"]{font-family:\'' + branding.fonteTitulo + '\',sans-serif !important}');
+    }
+    if (!linhas.length) return;
+    var style = document.getElementById('bf-tema-preview-fonte');
+    if (!style) {
+      style = document.createElement('style');
+      style.id = 'bf-tema-preview-fonte';
+    }
+    style.textContent = linhas.join('\n');
+    // Reanexa sempre (mesmo se já existir) — appendChild move o nó existente pro
+    // fim do <head>. aplicarCssBase() cria o <style id="bf-tema-tenant"> de forma
+    // assíncrona (depois do fetch de /config), então a ordem entre as duas tags
+    // não é garantida; sem isso, se bf-tema-tenant nascer depois desta tag (corrida
+    // vencida pelo fetch), a regra !important dele empata em especificidade e
+    // vence por ordem de origem, e a fonte trocada no preview nunca aparece.
+    document.head.appendChild(style);
+  }
+
   // Mesma regra de apiBase usada em todos os outros arquivos (index.html,
   // Admin.dc.html etc.) — em dev o front roda numa porta separada (5000) da
   // API (3010), não dá pra usar caminho relativo.
@@ -271,5 +301,6 @@
     if (!origemPermitida(event.origin)) return;
     if (!event.data || event.data.type !== 'bf-preview-update' || !event.data.branding) return;
     aplicarCssVarsDireto(event.data.branding);
+    aplicarFontesDireto(event.data.branding);
   });
 })();
