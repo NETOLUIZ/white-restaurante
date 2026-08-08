@@ -92,6 +92,7 @@ model Tenant {
   entregadores        Entregador[]
   sangriasEntregador  SangriaEntregador[]
   bairros             Bairro[]
+  avaliacoesProduto   AvaliacaoProduto[]
 
   // Fase 6A — Super Admin
   branding            TenantBranding?
@@ -254,6 +255,9 @@ model Produto {
   /// Só usado por tenant MERCANTIL (leitor de código de barras no PDV) — null pro resto.
   /// Único por tenant quando preenchido (dois produtos não podem ter o mesmo código).
   codigoBarras      String?
+  /// Média das notas de AvaliacaoProduto — denormalizada (recalculada a cada
+  /// avaliação nova, ver pedidoController.avaliar) pra não agregar toda vez
+  /// que o cardápio carrega, que é caminho quente.
   avaliacao         Float?
   tag               String?
   /// Caminho relativo do arquivo em /uploads/produtos (ex: "produtos/abc123.jpg") — nunca base64 no banco.
@@ -273,6 +277,7 @@ model Produto {
   /// Adicionais pagos próprios deste produto (ex: "Bacon +R$3" só no Galeto) —
   /// cadastrados e editados direto no modal do produto, nunca compartilhados entre produtos.
   adicionais        Adicional[]
+  avaliacoes        AvaliacaoProduto[]
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
@@ -280,6 +285,26 @@ model Produto {
   @@index([tenantId])
   @@index([categoriaId])
   @@index([subcategoriaId])
+}
+
+/// Nota (1-5) que um cliente dá a um produto depois que o PRÓPRIO pedido dele
+/// chegou (statusEntrega=ENTREGUE) — nunca antes disso, e nunca pra produto
+/// que não estava no pedido (ver pedidoController.avaliar). Uma linha por
+/// combinação pedido+produto — reenviar atualiza a nota (upsert), não duplica.
+model AvaliacaoProduto {
+  id        Int      @id @default(autoincrement())
+  tenantId  String
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  pedidoId  Int
+  pedido    Pedido   @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produtoId Int
+  produto   Produto  @relation(fields: [produtoId], references: [id], onDelete: Cascade)
+  nota      Int
+  createdAt DateTime @default(now())
+
+  @@unique([pedidoId, produtoId])
+  @@index([tenantId])
+  @@index([produtoId])
 }
 
 /// Adicional pago de um produto específico (ex: "Bacon +R$3" só no Galeto Inteiro).
@@ -360,6 +385,7 @@ model Pedido {
   endereco             Json?
   valorTrocoPara       Float?
   itens                ItemPedido[]
+  avaliacoes           AvaliacaoProduto[]
   cupomId              Int?
   cupom                Cupom?          @relation(fields: [cupomId], references: [id], onDelete: SetNull)
   /// subtotal/desconto/taxaEntrega/total sao calculados e congelados no servidor na criacao — nunca recebidos prontos do client.

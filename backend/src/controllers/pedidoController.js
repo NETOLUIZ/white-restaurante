@@ -359,11 +359,14 @@ async function buscarPorCodigo(req, res) {
           },
         },
         entregador: true,
+        avaliacoes: true,
       },
     });
     if (!pedido) {
       return res.status(404).json({ erro: 'Pedido não encontrado' });
     }
+
+    const notaPorProduto = new Map(pedido.avaliacoes.map((a) => [a.produtoId, a.nota]));
 
     res.json({
       id: pedido.id,
@@ -375,6 +378,10 @@ async function buscarPorCodigo(req, res) {
       formaPagamento: pedido.formaPagamento,
       pagamentoConfirmado: pedido.pagamentoConfirmado,
       criadoEm: pedido.createdAt,
+      // podeAvaliar: só produto de catálogo (não marmita montada, que não é um
+      // Produto pra ter média própria) num pedido já ENTREGUE. minhaNota vem
+      // preenchida se o cliente já avaliou — reenviar edita, não duplica.
+      podeAvaliar: pedido.statusEntrega === 'ENTREGUE',
       itens: pedido.itens.map((item) => ({
         produtoId: item.produtoId,
         nome: item.produto ? item.produto.nome : item.tamanhoMarmita?.nome,
@@ -385,6 +392,7 @@ async function buscarPorCodigo(req, res) {
         quantidade: item.quantidade,
         observacoes: item.observacoes,
         precoUnitario: item.precoUnitarioCongelado,
+        minhaNota: item.produtoId ? (notaPorProduto.get(item.produtoId) ?? null) : null,
       })),
       entregador: pedido.entregador
         ? { nome: pedido.entregador.nome }
@@ -392,6 +400,71 @@ async function buscarPorCodigo(req, res) {
     });
   } catch (err) {
     console.error('Erro ao buscar pedido:', err);
+    res.status(500).json({ erro: 'Erro interno do servidor' });
+  }
+}
+
+/**
+ * Cliente avalia (1-5 estrelas) os produtos do PRÓPRIO pedido, só depois de
+ * entregue — nunca antes (evita nota "no escuro", antes de provar) e nunca
+ * pra produto fora do pedido (senão qualquer um com o código poderia inflar
+ * a nota de um produto qualquer sem ter comprado nada). Reenviar a mesma
+ * combinação pedido+produto edita a nota (upsert), não duplica.
+ *
+ * Corpo esperado: { avaliacoes: [{ produtoId, nota (1-5) }] }
+ */
+async function avaliar(req, res) {
+  try {
+    const { codigo } = req.params;
+    const avaliacoes = Array.isArray(req.body.avaliacoes) ? req.body.avaliacoes : [];
+    if (avaliacoes.length === 0) {
+      return res.status(400).json({ erro: 'Nenhuma avaliação informada' });
+    }
+    if (avaliacoes.length > 50) {
+      return res.status(400).json({ erro: 'Excesso de itens avaliados' });
+    }
+
+    const pedido = await req.prisma.pedido.findFirst({
+      where: { codigoAcompanhamento: codigo },
+      include: { itens: { select: { produtoId: true } } },
+    });
+    if (!pedido) {
+      return res.status(404).json({ erro: 'Pedido não encontrado' });
+    }
+    if (pedido.statusEntrega !== 'ENTREGUE') {
+      return res.status(400).json({ erro: 'Só é possível avaliar depois que o pedido for entregue' });
+    }
+
+    const produtoIdsDoPedido = new Set(pedido.itens.map((i) => i.produtoId).filter((id) => id != null));
+
+    const avaliacoesValidadas = [];
+    for (const av of avaliacoes) {
+      const produtoId = parseInt(av.produtoId, 10);
+      const nota = parseInt(av.nota, 10);
+      if (!produtoIdsDoPedido.has(produtoId)) {
+        return res.status(400).json({ erro: `Produto ${produtoId} não faz parte deste pedido` });
+      }
+      if (!Number.isInteger(nota) || nota < 1 || nota > 5) {
+        return res.status(400).json({ erro: 'Nota inválida — use de 1 a 5' });
+      }
+      avaliacoesValidadas.push({ produtoId, nota });
+    }
+
+    await req.prisma.$transaction(async (tx) => {
+      for (const { produtoId, nota } of avaliacoesValidadas) {
+        await tx.avaliacaoProduto.upsert({
+          where: { pedidoId_produtoId: { pedidoId: pedido.id, produtoId } },
+          update: { nota },
+          create: { pedidoId: pedido.id, produtoId, nota },
+        });
+        const agregado = await tx.avaliacaoProduto.aggregate({ where: { produtoId }, _avg: { nota: true } });
+        await tx.produto.update({ where: { id: produtoId }, data: { avaliacao: agregado._avg.nota } });
+      }
+    });
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Erro ao avaliar pedido:', err);
     res.status(500).json({ erro: 'Erro interno do servidor' });
   }
 }
@@ -542,4 +615,4 @@ async function relatorioDia(req, res) {
   }
 }
 
-module.exports = { criar, criarComoAtendente, buscarPorCodigo, listarAdmin, atualizarStatus, atribuirEntregador, relatorioDia, montarItemValidado, Erro400 };
+module.exports = { criar, criarComoAtendente, buscarPorCodigo, avaliar, listarAdmin, atualizarStatus, atribuirEntregador, relatorioDia, montarItemValidado, Erro400 };
