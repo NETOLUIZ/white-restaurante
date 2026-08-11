@@ -3,7 +3,7 @@ const fs = require('fs/promises');
 const crypto = require('crypto');
 const sharp = require('sharp');
 const ExcelJS = require('exceljs');
-const { parsePlanilha, gerarPlanilhaModelo } = require('../utils/produtoImport');
+const { parsePlanilha, gerarPlanilhaModelo, removerComentariosXlsx } = require('../utils/produtoImport');
 const { buscarPorCodigoBarras, baixarImagem } = require('../utils/openFoodFacts');
 
 /**
@@ -331,12 +331,18 @@ async function importarProdutos(req, res) {
     try {
       await workbook.xlsx.load(req.file.buffer);
     } catch (err) {
-      // exceljs falha em ler algumas planilhas .xlsx válidas (ex: exportadas do
-      // Google Sheets/Numbers com elementos que a lib não reconhece) — erro
-      // interno da lib, não do arquivo do usuário nem do parsing dele, mas sem
-      // isso o cliente só via "erro interno do servidor" sem nenhuma pista.
-      console.error('Erro ao carregar planilha (exceljs):', err);
-      return res.status(400).json({ erro: 'Não foi possível ler essa planilha. Tente abrir no Excel/LibreOffice e salvar novamente como .xlsx, ou baixe nosso modelo e cole seus dados nele.' });
+      // exceljs quebra em .xlsx com comentário/nota de célula com relationship
+      // IDs fora do padrão "rId1", "rId2" (comum em arquivos gerados por
+      // ferramentas de terceiros) — comentário não é lido pela importação de
+      // qualquer forma, então tenta de novo removendo essas partes do zip
+      // antes de desistir e mandar o usuário mexer no arquivo manualmente.
+      try {
+        const semComentarios = await removerComentariosXlsx(req.file.buffer);
+        await workbook.xlsx.load(semComentarios);
+      } catch (err2) {
+        console.error('Erro ao carregar planilha (exceljs):', err2);
+        return res.status(400).json({ erro: 'Não foi possível ler essa planilha. Tente abrir no Excel/LibreOffice e salvar novamente como .xlsx, ou baixe nosso modelo e cole seus dados nele.' });
+      }
     }
 
     let linhas;

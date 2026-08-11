@@ -1,6 +1,50 @@
 const ExcelJS = require('exceljs');
+const JSZip = require('jszip');
 
 const LIMITE_LINHAS = 500;
+
+/**
+ * Alguns .xlsx trazem comentário/nota de célula com relationship IDs fora do
+ * padrão "rId1", "rId2"... (ex: "comments", "anysvml") — acontece com
+ * arquivos gerados por ferramentas de terceiros, não pelo próprio Excel.
+ * O exceljs quebra ao reconciliar esses IDs ("Cannot read properties of
+ * undefined (reading 'comments')"). Comentário de célula não é lido pela
+ * importação de qualquer forma, então a saída mais simples é remover as
+ * partes de comentário/desenho legado do .xlsx (é um zip) antes de abrir
+ * com o exceljs, em vez de tentar consertar o parser da lib.
+ */
+async function removerComentariosXlsx(buffer) {
+  const zip = await JSZip.loadAsync(buffer);
+  let alterado = false;
+
+  for (const caminho of Object.keys(zip.files)) {
+    if (/^xl\/comments\d*\.xml$/.test(caminho) || /^xl\/drawings\/(vmlDrawing|commentsDrawing)\d*\.vml$/.test(caminho)) {
+      zip.remove(caminho);
+      alterado = true;
+    }
+  }
+  if (!alterado) return buffer;
+
+  for (const caminho of Object.keys(zip.files)) {
+    if (!/^xl\/worksheets\/_rels\/sheet\d+\.xml\.rels$/.test(caminho)) continue;
+    const relsXml = await zip.file(caminho).async('string');
+    zip.file(caminho, relsXml.replace(/<Relationship[^>]*Type="[^"]*\/(comments|vmlDrawing)"[^>]*\/>/g, ''));
+  }
+
+  for (const caminho of Object.keys(zip.files)) {
+    if (!/^xl\/worksheets\/sheet\d+\.xml$/.test(caminho)) continue;
+    const sheetXml = await zip.file(caminho).async('string');
+    zip.file(caminho, sheetXml.replace(/<legacyDrawing[^/]*\/>/g, ''));
+  }
+
+  const caminhoContentTypes = '[Content_Types].xml';
+  if (zip.file(caminhoContentTypes)) {
+    const ct = await zip.file(caminhoContentTypes).async('string');
+    zip.file(caminhoContentTypes, ct.replace(/<Override[^>]*PartName="\/xl\/comments\d*\.xml"[^>]*\/>/g, ''));
+  }
+
+  return zip.generateAsync({ type: 'nodebuffer' });
+}
 
 // Faixa Unicode dos acentos combinantes (U+0300–U+036F) — montada por código
 // em vez de literal no arquivo-fonte pra não depender da codificação do
@@ -229,4 +273,4 @@ async function gerarPlanilhaModelo() {
   return Buffer.from(await workbook.xlsx.writeBuffer());
 }
 
-module.exports = { parsePlanilha, gerarPlanilhaModelo, LIMITE_LINHAS };
+module.exports = { parsePlanilha, gerarPlanilhaModelo, removerComentariosXlsx, LIMITE_LINHAS };
