@@ -328,7 +328,16 @@ async function importarProdutos(req, res) {
     }
 
     const workbook = new ExcelJS.Workbook();
-    await workbook.xlsx.load(req.file.buffer);
+    try {
+      await workbook.xlsx.load(req.file.buffer);
+    } catch (err) {
+      // exceljs falha em ler algumas planilhas .xlsx válidas (ex: exportadas do
+      // Google Sheets/Numbers com elementos que a lib não reconhece) — erro
+      // interno da lib, não do arquivo do usuário nem do parsing dele, mas sem
+      // isso o cliente só via "erro interno do servidor" sem nenhuma pista.
+      console.error('Erro ao carregar planilha (exceljs):', err);
+      return res.status(400).json({ erro: 'Não foi possível ler essa planilha. Tente abrir no Excel/LibreOffice e salvar novamente como .xlsx, ou baixe nosso modelo e cole seus dados nele.' });
+    }
 
     let linhas;
     let erros;
