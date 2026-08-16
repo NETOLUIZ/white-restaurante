@@ -1,4 +1,4 @@
-# Bel do Frango — Front-end
+# white- label — Front-end
 
 Protótipo front-end do sistema Bel do Frango.
 
