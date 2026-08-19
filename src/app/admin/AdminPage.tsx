@@ -111,20 +111,12 @@ export const AdminPage: React.FC = () => {
   }, []);
 
   /**
-   * Função para imprimir ou re-imprimir o recibo do pedido em impressora térmica (58mm/80mm)
+   * Função para imprimir ou re-imprimir o recibo do pedido em impressora térmica (58mm/80mm e Mobile/RawBT)
    */
   const reImprimirRecibo = (pedido: Pedido) => {
-    const iframe = document.createElement('iframe');
-    iframe.style.position = 'fixed';
-    iframe.style.right = '0';
-    iframe.style.bottom = '0';
-    iframe.style.width = '0';
-    iframe.style.height = '0';
-    iframe.style.border = '0';
-    document.body.appendChild(iframe);
-
-    const doc = iframe.contentWindow?.document;
-    if (!doc) return;
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent || '') ||
+      (window.innerWidth <= 768 && 'ontouchstart' in window);
 
     const agora = new Date().toLocaleString('pt-BR', {
       day: '2-digit',
@@ -149,6 +141,102 @@ export const AdminPage: React.FC = () => {
     const endereco = pedido.endereco
       ? `${pedido.endereco.rua}, ${pedido.endereco.numero}${pedido.endereco.complemento ? ' - ' + pedido.endereco.complemento : ''} - ${pedido.endereco.bairro}`
       : 'Retirada no balcão';
+
+    const textoPuro = [
+      'BEL DO FRANGO',
+      `PEDIDO ${pedido.id}`,
+      '================================',
+      `Endereço: ${endereco}`,
+      '================================',
+      ...(pedido.itens || []).map((it) => `${it.quantidade}x ${it.produto?.nome || 'Item'}`),
+      '================================',
+      `Subtotal: ${formatarMoeda(pedido.subtotal)}`,
+      pedido.taxa_entrega ? `Taxa Entrega: ${formatarMoeda(pedido.taxa_entrega)}` : '',
+      `TOTAL: ${formatarMoeda(pedido.total)}`,
+      '================================',
+      '*** REIMPRESSÃO ***',
+      agora,
+      '\n\n\n',
+    ]
+      .filter(Boolean)
+      .join('\n');
+
+    const b64 = typeof window !== 'undefined' ? btoa(unescape(encodeURIComponent(textoPuro))) : '';
+
+    if (isMobile) {
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.open();
+        win.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Recibo Pedido ${pedido.id}</title>
+            <style>
+              @page { size: 58mm auto; margin: 0; }
+              body {
+                width: 48mm;
+                margin: 0 auto;
+                padding: 4mm 2mm;
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 12px;
+                line-height: 1.4;
+                color: #000;
+              }
+              .c { text-align: center; }
+              .r { text-align: right; }
+              .b { font-weight: bold; }
+              .tit { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
+              .sep { border-bottom: 1px dashed #000; margin: 6px 0; }
+              .destaque { font-size: 11px; text-align: center; margin-top: 8px; font-weight: bold; }
+              .btn-print { display: block; width: 100%; margin: 15px 0; padding: 14px; background: #2D9E60; color: #fff; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; }
+              .btn-rawbt { display: block; width: 100%; margin: 8px 0; padding: 12px; background: #0284C7; color: #fff; font-size: 14px; font-weight: bold; border: none; border-radius: 10px; text-decoration: none; text-align: center; }
+              @media print { .no-print { display: none !important; } }
+            </style>
+          </head>
+          <body>
+            <div class="no-print">
+              <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR RECIBO</button>
+              <a class="btn-rawbt" href="rawbt:data:text/plain;base64,${b64}">📱 Imprimir via RawBT (Bluetooth)</a>
+              <hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>
+            </div>
+            <div class="c tit">BEL DO FRANGO</div>
+            <div class="c b">PEDIDO ${pedido.id}</div>
+            <div class="sep"></div>
+            <div><span class="b">Endereço:</span> ${endereco}</div>
+            <div class="sep"></div>
+            ${itensHtml}
+            <div class="sep"></div>
+            <div style="display:flex; justify-content:space-between;"><span>Subtotal:</span> <span>${formatarMoeda(pedido.subtotal)}</span></div>
+            ${pedido.taxa_entrega ? `<div style="display:flex; justify-content:space-between;"><span>Taxa Entrega:</span> <span>${formatarMoeda(pedido.taxa_entrega)}</span></div>` : ''}
+            <div style="display:flex; justify-content:space-between;" class="b"><span>TOTAL:</span> <span>${formatarMoeda(pedido.total)}</span></div>
+            <div class="sep"></div>
+            <div class="destaque">*** REIMPRESSÃO ***</div>
+            <div class="c" style="font-size:10px; margin-top:4px;">${agora}</div>
+            <script>
+              setTimeout(function(){ try { window.focus(); window.print(); } catch(e){} }, 350);
+            </script>
+          </body>
+          </html>
+        `);
+        win.document.close();
+        return;
+      }
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document;
+    if (!doc) return;
 
     const html = `
       <!DOCTYPE html>
@@ -197,8 +285,10 @@ export const AdminPage: React.FC = () => {
     doc.close();
 
     setTimeout(() => {
-      iframe.contentWindow?.focus();
-      iframe.contentWindow?.print();
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } catch (err) {}
       setTimeout(() => iframe.remove(), 1000);
     }, 250);
   };

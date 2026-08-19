@@ -100,9 +100,37 @@ export const CheckoutPage: React.FC = () => {
             <p className="text-lg font-semibold mb-6">
               Número do Pedido: <span className="text-orange-600">#12345</span>
             </p>
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-600 mb-6">
               Prazo de entrega: 30-40 minutos
             </p>
+
+            {/* Botão Chamativo para o Cliente Jogar */}
+            <div className="mb-4">
+              <a
+                href="https://jogo.temnaarea.site/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-jogar-pedido"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '10px',
+                  width: '100%',
+                  background: 'linear-gradient(135deg, #f59e0b, #d97706)',
+                  color: '#ffffff',
+                  padding: '14px 24px',
+                  borderRadius: '12px',
+                  fontWeight: 'bold',
+                  textDecoration: 'none',
+                  fontSize: '16px',
+                  boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)',
+                }}
+              >
+                <span>🎮</span> Jogar e Ganhar Descontos enquanto aguarda seu pedido
+              </a>
+            </div>
+
             <Button
               variant="primary"
               tamanho="grande"

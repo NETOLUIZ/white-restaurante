@@ -1155,12 +1155,81 @@ class Component extends DCLogic {
   setFormaPagamento(f){ this.setState({ formaPagamento:f, valorRecebido:'' }); }
   onValorRecebido(e){ this.setState({ valorRecebido:e.target.value }); }
 
-  // ---- impressão térmica (POS-58, 58mm) — mesmo padrão do Admin (Bel do Frango - Admin.dc.html) ----
-  // Usa um iframe oculto: escreve o cupom nele e chama print() só daquele frame, sem afetar a tela.
+  // ---- impressão térmica (POS-58, 58mm / 80mm e Mobile / RawBT) ----
+  isDispositivoMovel(){
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent || '') || (window.innerWidth <= 768 && 'ontouchstart' in window);
+  }
   escapeHtml(str){
     return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   }
-  imprimirHTML(corpoHtml){
+  gerarTextoCupomBalcao({ codigo, itens, total, formaPagamentoLabel }){
+    const SEP = '================================';
+    const nomeFantasia = ((this.state.tenant && this.state.tenant.nome) ? this.state.tenant.nome : 'BEL DO FRANGO').toUpperCase();
+    const itensTxt = itens.map((it) => it.quantidade + 'x ' + it.nome + ' - ' + this.fmt(it.quantidade * it.precoUnitario)).join('\n');
+    const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    return [
+      nomeFantasia,
+      'PEDIDO ' + (codigo || '') + ' — BALCÃO',
+      SEP,
+      itensTxt,
+      SEP,
+      'TOTAL: ' + this.fmt(total),
+      SEP,
+      'Pagamento: ' + (formaPagamentoLabel || 'Dinheiro'),
+      agora,
+      '\n\n\n'
+    ].join('\n');
+  }
+  imprimirHTML(corpoHtml, textoPuro, tituloDoc){
+    const isMobile = this.isDispositivoMovel();
+    const titulo = tituloDoc || 'Cupom';
+
+    // Suporte RawBT / Impressora Bluetooth no Mobile
+    const prefRawbt = localStorage.getItem('bf_preferir_rawbt') === 'true';
+    if (isMobile && prefRawbt && textoPuro) {
+      try {
+        const b64 = btoa(unescape(encodeURIComponent(textoPuro)));
+        window.location.href = 'rawbt:data:text/plain;base64,' + b64;
+        return;
+      } catch (e) {}
+    }
+
+    if (isMobile) {
+      // Mobile: abre janela limpa responsiva com botão de toque e auto-print
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.open();
+        win.document.write(
+          '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+          '<title>' + this.escapeHtml(titulo) + '</title>' +
+          '<style>' +
+          '@page{ size:58mm auto; margin:0; }' +
+          'body{ width:48mm; margin:0 auto; padding:4mm 2mm; font-family:\'Courier New\',monospace; font-size:13px; font-weight:700; line-height:1.4; color:#000; }' +
+          '.c{ text-align:center; } .r{ text-align:right; } .b{ font-weight:900; }' +
+          '.linha{ margin:5px 0; white-space:pre; }' +
+          '.esp{ height:8px; }' +
+          '.lin{ display:flex; justify-content:space-between; gap:6px; }' +
+          '.tit{ font-size:16px; }' +
+          '.btn-print{ display:block; width:100%; margin:15px 0; padding:14px; background:#2D9E60; color:#fff; font-size:16px; font-weight:bold; border:none; border-radius:10px; cursor:pointer; }' +
+          '.btn-rawbt{ display:block; width:100%; margin:8px 0; padding:12px; background:#0284C7; color:#fff; font-size:14px; font-weight:bold; border:none; border-radius:10px; text-decoration:none; text-align:center; }' +
+          '@media print { .no-print { display:none !important; } }' +
+          '</style></head><body>' +
+          '<div class="no-print">' +
+          '<button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR CUPOM</button>' +
+          (textoPuro ? '<a class="btn-rawbt" href="rawbt:data:text/plain;base64,' + btoa(unescape(encodeURIComponent(textoPuro))) + '">📱 Imprimir via RawBT (Bluetooth)</a>' : '') +
+          '<hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>' +
+          '</div>' +
+          corpoHtml +
+          '<script>' +
+          'setTimeout(function(){ try { window.focus(); window.print(); } catch(e){} }, 350);' +
+          '<\/script></body></html>'
+        );
+        win.document.close();
+        return;
+      }
+    }
+
+    // Desktop: iframe oculto para impressão silenciosa (--kiosk-printing)
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0';
     iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
@@ -1180,8 +1249,10 @@ class Component extends DCLogic {
     );
     doc.close();
     setTimeout(() => {
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch (err) {}
       setTimeout(() => iframe.remove(), 1000);
     }, 250);
   }
@@ -1201,7 +1272,8 @@ class Component extends DCLogic {
       '<div><span class="b">Pagamento:</span> ' + this.escapeHtml(formaPagamentoLabel) + '</div>' +
       '<div class="esp"></div>' +
       '<div class="c" style="font-size:10px;">' + agora + '</div>';
-    this.imprimirHTML(html);
+    const texto = this.gerarTextoCupomBalcao({ codigo, itens, total, formaPagamentoLabel });
+    this.imprimirHTML(html, texto, 'Pedido ' + codigo);
   }
 
   async finalizarPedido(){

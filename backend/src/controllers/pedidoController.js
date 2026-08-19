@@ -1,5 +1,6 @@
 const { estaAberto } = require('../utils/horarioFuncionamento');
 const { criarPagamentoPix } = require('../utils/mercadoPago');
+const { gerarLinkDoJogo } = require('../utils/gameLink');
 
 // Pedido público (guest checkout) aceita Dinheiro na entrega/retirada além de
 // Pix/Cartão — o troco (se precisar) é só cálculo do lado do cliente, exibido
@@ -307,6 +308,13 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
       }
     }
 
+    const branding = await req.prisma.tenantBranding.findFirst({ where: { tenantId: req.tenantId } }).catch(() => null);
+    const loja = {
+      ...req.tenant,
+      logo_url: branding?.logoUrl || null,
+    };
+    const linkDoJogo = gerarLinkDoJogo(pedido, cliente, loja);
+
     res.status(201).json({
       id: pedido.id,
       codigoAcompanhamento: pedido.codigoAcompanhamento,
@@ -317,6 +325,7 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
       total: pedido.total,
       statusEntrega: pedido.statusEntrega,
       pix,
+      linkDoJogo,
     });
   } catch (err) {
     console.error('Erro ao criar pedido:', err);
@@ -349,6 +358,7 @@ async function buscarPorCodigo(req, res) {
     const pedido = await req.prisma.pedido.findFirst({
       where: { codigoAcompanhamento: codigo },
       include: {
+        cliente: true,
         itens: {
           include: {
             produto: true,
@@ -368,8 +378,16 @@ async function buscarPorCodigo(req, res) {
 
     const notaPorProduto = new Map(pedido.avaliacoes.map((a) => [a.produtoId, a.nota]));
 
+    const branding = await req.prisma.tenantBranding.findFirst({ where: { tenantId: req.tenantId } }).catch(() => null);
+    const loja = {
+      ...req.tenant,
+      logo_url: branding?.logoUrl || null,
+    };
+    const linkDoJogo = gerarLinkDoJogo(pedido, pedido.cliente, loja);
+
     res.json({
       id: pedido.id,
+      codigoAcompanhamento: pedido.codigoAcompanhamento,
       statusEntrega: pedido.statusEntrega,
       subtotal: pedido.subtotal,
       desconto: pedido.desconto,
@@ -378,6 +396,7 @@ async function buscarPorCodigo(req, res) {
       formaPagamento: pedido.formaPagamento,
       pagamentoConfirmado: pedido.pagamentoConfirmado,
       criadoEm: pedido.createdAt,
+      linkDoJogo,
       // podeAvaliar: só produto de catálogo (não marmita montada, que não é um
       // Produto pra ter média própria) num pedido já ENTREGUE. minhaNota vem
       // preenchida se o cliente já avaliou — reenviar edita, não duplica.

@@ -196,6 +196,23 @@
       </div>
     </header>
 
+    <!-- Alerta de Impressão de Novo Pedido no Mobile -->
+    <sc-if value="{{ hasAlertaNovoPedidoMobile }}" hint-placeholder-val="{{ false }}">
+      <div style="background:linear-gradient(135deg, #F59E0B, #D97706);color:#fff;padding:12px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;box-shadow:0 4px 14px rgba(217,119,6,.3);position:sticky;top:0;z-index:40;">
+        <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+          <span style="font-size:22px;animation:bfPulse 1.2s infinite;">🔔</span>
+          <div style="min-width:0;">
+            <div style="font-weight:800;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Novo Pedido {{ alertaNovoPedidoId }} ({{ alertaNovoPedidoCliente }})</div>
+            <div style="font-size:12px;opacity:.9;">Total: {{ alertaNovoPedidoTotal }}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex:none;">
+          <button onClick="{{ imprimirAlertaNovoPedidoMobile }}" style="background:#fff;color:#B45309;border:none;border-radius:10px;padding:8px 14px;font-weight:800;font-size:13px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,.15);display:flex;align-items:center;gap:6px;">🖨️ Imprimir</button>
+          <button onClick="{{ fecharAlertaNovoPedidoMobile }}" aria-label="Fechar" style="background:rgba(0,0,0,.15);color:#fff;border:none;border-radius:8px;width:30px;height:30px;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+        </div>
+      </div>
+    </sc-if>
+
     <div ref="{{ setScroll }}" style="flex:1;overflow-y:auto;padding:26px 28px 40px;">
 
       <!-- ---------- PEDIDOS ---------- -->
@@ -1675,14 +1692,141 @@ class Component extends DCLogic {
   addDiasIso(iso, n){ const [y,m,d] = iso.split('-').map(Number); const dt = new Date(y, m-1, d); dt.setDate(dt.getDate()+n); return this.isoDate(dt); }
   toggleMostrarSenha(campo){ this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
 
-  // ---- impressão térmica (POS-58, 58mm) ----
-  // Usa um iframe oculto: escreve o recibo nele e chama print() só daquele frame, sem
-  // afetar a tela do Admin. Em Chrome com a flag --kiosk-printing isso sai sem nenhuma
-  // caixa de diálogo, direto pra impressora padrão do Windows.
+  // ---- impressão térmica (POS-58, 58mm / 80mm e Mobile / RawBT) ----
+  isDispositivoMovel(){
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent || '') || (window.innerWidth <= 768 && 'ontouchstart' in window);
+  }
+  tocarAlertaNovoPedido(){
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = this._audioCtx || (this._audioCtx = new AudioCtx());
+      if (ctx.state === 'suspended') ctx.resume();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
+      osc.frequency.setValueAtTime(880, ctx.currentTime + 0.12); // A5
+      gain.gain.setValueAtTime(0.3, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.45);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.45);
+      if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+    } catch (e) {}
+  }
   escapeHtml(str){
     return String(str == null ? '' : str).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
   }
-  imprimirHTML(corpoHtml){
+  gerarTextoReciboPedido(p){
+    if (!p) return '';
+    const SEP = '================================';
+    const nomeFantasia = (this.state.tenantNome || 'BEL DO FRANGO').toUpperCase();
+    const rawItens = p.itensImpressao || (p.itens || []).map(it => ({ q: it.q || it.quantidade || 1, nome: it.n || it.nome || 'Item', ad: it.ad || '', obs: it.obs || '' }));
+    const itensTxt = rawItens.map(it => {
+      let linha = it.q + 'x ' + it.nome;
+      if (it.ad) linha += '\n   + ' + it.ad;
+      if (it.obs) linha += '\n   obs: ' + it.obs;
+      return linha;
+    }).join('\n');
+    const e = p.enderecoFull || {};
+    const enderecoStr = p.endereco || '';
+    let endTxt = '';
+    if (p.tipoRaw === 'ENTREGA' || p.tipo === 'Entrega') {
+      if (e.rua) {
+        endTxt = 'Endereço: ' + [e.rua, e.numero].filter(Boolean).join(', ') + (e.complemento ? ' (' + e.complemento + ')' : '') + '\nBairro: ' + (e.bairro || '') + (e.cidade ? ' - ' + e.cidade : '');
+      } else if (enderecoStr) {
+        endTxt = 'Endereço: ' + enderecoStr;
+      }
+    }
+    const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    const tipoLabel = (p.tipo || 'ENTREGA').toUpperCase();
+
+    return [
+      nomeFantasia,
+      'PEDIDO ' + (p.id || '') + ' — ' + tipoLabel,
+      SEP,
+      'Cliente: ' + (p.cliente || 'Cliente') + (p.telefone ? '\nTel: ' + p.telefone : ''),
+      endTxt,
+      SEP,
+      itensTxt,
+      SEP,
+      'Subtotal: ' + this.fmt(p.subtotal || 0),
+      p.taxaEntrega ? ('Taxa Entrega: ' + this.fmt(p.taxaEntrega)) : '',
+      'TOTAL: ' + this.fmt(p.total || 0),
+      SEP,
+      'Pagamento: ' + (p.pgto || 'Não informado'),
+      agora,
+      '\n\n\n'
+    ].filter(Boolean).join('\n');
+  }
+  gerarTextoReciboMesa(mesa){
+    const SEP = '================================';
+    const nomeFantasia = (this.state.tenantNome || 'BEL DO FRANGO').toUpperCase();
+    const itensTxt = (mesa.itens || []).map(it => (it.quantidade + 'x ' + it.nome + ' - ' + this.fmt(it.quantidade * it.precoUnitario))).join('\n');
+    const agora = new Date().toLocaleString('pt-BR', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+    return [
+      nomeFantasia,
+      'MESA ' + mesa.numero + (mesa.clienteNome ? ' — ' + mesa.clienteNome : ''),
+      SEP,
+      itensTxt,
+      SEP,
+      'TOTAL: ' + this.fmt(mesa.total),
+      agora,
+      '\n\n\n'
+    ].join('\n');
+  }
+  imprimirHTML(corpoHtml, textoPuro, tituloDoc){
+    const isMobile = this.isDispositivoMovel();
+    const titulo = tituloDoc || 'Recibo';
+    
+    // Suporte RawBT / Impressora Bluetooth no Mobile
+    const prefRawbt = localStorage.getItem('bf_preferir_rawbt') === 'true';
+    if (isMobile && prefRawbt && textoPuro) {
+      try {
+        const b64 = btoa(unescape(encodeURIComponent(textoPuro)));
+        window.location.href = 'rawbt:data:text/plain;base64,' + b64;
+        return;
+      } catch (e) {}
+    }
+
+    if (isMobile) {
+      // Mobile: abre janela limpa responsiva com botão de toque e auto-print
+      const win = window.open('', '_blank');
+      if (win) {
+        win.document.open();
+        win.document.write(
+          '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+          '<title>' + this.escapeHtml(titulo) + '</title>' +
+          '<style>' +
+          '@page{ size:58mm auto; margin:0; }' +
+          'body{ width:48mm; margin:0 auto; padding:4mm 2mm; font-family:\'Courier New\',monospace; font-size:13px; font-weight:700; line-height:1.4; color:#000; }' +
+          '.c{ text-align:center; } .r{ text-align:right; } .b{ font-weight:900; }' +
+          '.linha{ margin:5px 0; white-space:pre; }' +
+          '.esp{ height:8px; }' +
+          '.lin{ display:flex; justify-content:space-between; gap:6px; }' +
+          '.tit{ font-size:16px; }' +
+          '.btn-print{ display:block; width:100%; margin:15px 0; padding:14px; background:#2D9E60; color:#fff; font-size:16px; font-weight:bold; border:none; border-radius:10px; cursor:pointer; }' +
+          '.btn-rawbt{ display:block; width:100%; margin:8px 0; padding:12px; background:#0284C7; color:#fff; font-size:14px; font-weight:bold; border:none; border-radius:10px; text-decoration:none; text-align:center; }' +
+          '@media print { .no-print { display:none !important; } }' +
+          '</style></head><body>' +
+          '<div class="no-print">' +
+          '<button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR RECIBO</button>' +
+          (textoPuro ? '<a class="btn-rawbt" href="rawbt:data:text/plain;base64,' + btoa(unescape(encodeURIComponent(textoPuro))) + '">📱 Imprimir via RawBT (Bluetooth)</a>' : '') +
+          '<hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>' +
+          '</div>' +
+          corpoHtml +
+          '<script>' +
+          'setTimeout(function(){ try { window.focus(); window.print(); } catch(e){} }, 350);' +
+          '<\/script></body></html>'
+        );
+        win.document.close();
+        return;
+      }
+    }
+
+    // Desktop: iframe oculto para impressão silenciosa (--kiosk-printing)
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed'; iframe.style.right = '0'; iframe.style.bottom = '0';
     iframe.style.width = '0'; iframe.style.height = '0'; iframe.style.border = '0';
@@ -1702,8 +1846,10 @@ class Component extends DCLogic {
     );
     doc.close();
     setTimeout(() => {
-      iframe.contentWindow.focus();
-      iframe.contentWindow.print();
+      try {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+      } catch (err) {}
       setTimeout(() => iframe.remove(), 1000);
     }, 250);
   }
@@ -1721,7 +1867,8 @@ class Component extends DCLogic {
       '<div class="lin b">TOTAL <span>' + this.fmt(mesa.total) + '</span></div>' +
       '<div class="esp"></div>' +
       '<div class="c" style="font-size:10px;">' + agora + '</div>';
-    this.imprimirHTML(html);
+    const texto = this.gerarTextoReciboMesa(mesa);
+    this.imprimirHTML(html, texto, 'Mesa ' + mesa.numero);
   }
   imprimirReciboPedido(p){
     if (!p) return;
@@ -1760,7 +1907,8 @@ class Component extends DCLogic {
       '<div><span class="b">Pagamento:</span> ' + this.escapeHtml(p.pgto || 'Não informado') + '</div>' +
       '<div class="esp"></div>' +
       '<div class="c" style="font-size:10px;">REIMPRESSÃO · ' + agora + '</div>';
-    this.imprimirHTML(html);
+    const texto = this.gerarTextoReciboPedido(p);
+    this.imprimirHTML(html, texto, 'Pedido ' + p.id);
   }
   // Acompanha o maior id de pedido já visto pra imprimir só pedidos de ENTREGA genuinamente
   // novos (nunca os que já existiam quando essa aba abriu) — guarda no localStorage pra
@@ -1772,7 +1920,22 @@ class Component extends DCLogic {
     if (raw === null) { localStorage.setItem(this.CHAVE_ULTIMO_PEDIDO_IMPRESSO, String(maiorIdAtual)); return; }
     const ultimoImpresso = parseInt(raw, 10);
     const novosEntrega = mapeados.filter((p) => p.tipoRaw === 'ENTREGA' && p.rawId > ultimoImpresso).sort((a, b) => a.rawId - b.rawId);
-    novosEntrega.forEach((p) => this.imprimirReciboPedido(p));
+    
+    if (novosEntrega.length > 0) {
+      this.tocarAlertaNovoPedido();
+      const ultimoNovo = novosEntrega[novosEntrega.length - 1];
+      if (this.isDispositivoMovel()) {
+        this.setState({
+          alertaNovoPedidoMobile: {
+            id: ultimoNovo.id,
+            cliente: ultimoNovo.cliente,
+            total: this.fmt(ultimoNovo.total),
+            raw: ultimoNovo
+          }
+        });
+      }
+      novosEntrega.forEach((p) => this.imprimirReciboPedido(p));
+    }
     if (maiorIdAtual > ultimoImpresso) localStorage.setItem(this.CHAVE_ULTIMO_PEDIDO_IMPRESSO, String(maiorIdAtual));
   }
   iniciarPollPedidos(){
@@ -3852,6 +4015,18 @@ class Component extends DCLogic {
       navCaixa:navStyle(s.view==='caixa'), navVendas:navStyle(s.view==='vendas'), navEntregadores:navStyle(s.view==='entregadores'), navCaixaEntregadores:navStyle(s.view==='caixaentregadores'),
       navGarcons:navStyle(s.view==='garcons'), navAtendentes:navStyle(s.view==='atendentes'), navEmpresas:navStyle(s.view==='empresas'),
       hasNovos: novosCount > 0, novosCount:String(novosCount),
+
+      hasAlertaNovoPedidoMobile: !!s.alertaNovoPedidoMobile,
+      alertaNovoPedidoId: s.alertaNovoPedidoMobile ? s.alertaNovoPedidoMobile.id : '',
+      alertaNovoPedidoCliente: s.alertaNovoPedidoMobile ? s.alertaNovoPedidoMobile.cliente : '',
+      alertaNovoPedidoTotal: s.alertaNovoPedidoMobile ? s.alertaNovoPedidoMobile.total : '',
+      imprimirAlertaNovoPedidoMobile: () => {
+        if (s.alertaNovoPedidoMobile && s.alertaNovoPedidoMobile.raw) {
+          this.imprimirReciboPedido(s.alertaNovoPedidoMobile.raw);
+        }
+        this.setState({ alertaNovoPedidoMobile: null });
+      },
+      fecharAlertaNovoPedidoMobile: () => this.setState({ alertaNovoPedidoMobile: null }),
 
       pageTitle, pageSubtitle,
       showSearch: s.view === 'pedidos' || s.view === 'produtos',
