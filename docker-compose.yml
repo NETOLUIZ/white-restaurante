@@ -61,6 +61,7 @@ services:
       SEED_ATENDENTE_SENHA: ${SEED_ATENDENTE_SENHA:-}
       SEED_SUPER_EMAIL: ${SEED_SUPER_EMAIL:-}
       SEED_SUPER_SENHA: ${SEED_SUPER_SENHA:-}
+      GAME_JWT_SECRET: ${GAME_JWT_SECRET:-saas_pipes_internal_secure_hmac_secret_2026}
     volumes:
       - uploads_data:/app/uploads
     expose:
