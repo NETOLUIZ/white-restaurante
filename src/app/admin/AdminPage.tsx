@@ -163,13 +163,19 @@ export const AdminPage: React.FC = () => {
 
     const textoFormatado = String(textoPuro || '').replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
     const b64 = typeof window !== 'undefined' ? btoa(unescape(encodeURIComponent(textoFormatado))) : '';
+    const intentDirect = 'intent:#Intent;action=ru.a402d.rawbtprinter.action.PRINT_RAWBT;package=ru.a402d.rawbtprinter;S.data=' + b64 + ';end;';
 
     if (isMobile) {
       if (b64) {
         try {
-          window.location.href = 'rawbt:data:text/plain;charset=utf-8;base64,' + b64;
+          window.location.href = intentDirect;
           return;
-        } catch (e) {}
+        } catch (e) {
+          try {
+            window.location.href = 'rawbt:data:text/plain;charset=utf-8;base64,' + b64;
+            return;
+          } catch (err) {}
+        }
       }
 
       const win = window.open('', '_blank');
@@ -199,15 +205,15 @@ export const AdminPage: React.FC = () => {
               .tit { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
               .sep { border-bottom: 1px dashed #000; margin: 6px 0; }
               .destaque { font-size: 11px; text-align: center; margin-top: 8px; font-weight: bold; }
-              .btn-print { display: block; width: 100%; margin: 15px 0; padding: 14px; background: #2D9E60; color: #fff; font-size: 16px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; }
-              .btn-rawbt { display: block; width: 100%; margin: 8px 0; padding: 12px; background: #0284C7; color: #fff; font-size: 14px; font-weight: bold; border: none; border-radius: 10px; text-decoration: none; text-align: center; }
+              .btn-print { display: block; width: 100%; margin: 12px 0 6px; padding: 14px; background: #2D9E60; color: #fff; font-size: 15px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; }
+              .btn-rawbt { display: block; width: 100%; margin: 6px 0; padding: 12px; background: #D97706; color: #fff; font-size: 13.5px; font-weight: bold; border: none; border-radius: 10px; text-decoration: none; text-align: center; }
               @media print { .no-print { display: none !important; } }
             </style>
           </head>
           <body>
             <div class="no-print">
-              <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR RECIBO</button>
-              <a class="btn-rawbt" href="rawbt:data:text/plain;charset=utf-8;base64,${b64}">📱 Imprimir via RawBT (Bluetooth)</a>
+              <a class="btn-rawbt" href="${intentDirect}">⚡ IMPRIMIR DIRETO NO RAWBT</a>
+              <button class="btn-print" onclick="window.print()">🖨️ Imprimir Navegador</button>
               <hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>
             </div>
             <div class="c tit">BEL DO FRANGO</div>

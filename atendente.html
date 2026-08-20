@@ -1185,19 +1185,28 @@ class Component extends DCLogic {
     const titulo = tituloDoc || 'Cupom';
 
     // Suporte RawBT / Impressão Térmica Bluetooth no Mobile
-    // Utiliza formato base64 com charset utf-8 e quebras CRLF (\r\n) para descarregar o buffer da impressora térmica
+    // Usa a Intent oficial ru.a402d.rawbtprinter.action.PRINT_RAWBT para impressão direta sem preview
     if (isMobile && textoPuro) {
       try {
         const textoFormatado = String(textoPuro).replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
         const b64 = btoa(unescape(encodeURIComponent(textoFormatado)));
-        window.location.href = 'rawbt:data:text/plain;charset=utf-8;base64,' + b64;
+        const intentDirect = 'intent:#Intent;action=ru.a402d.rawbtprinter.action.PRINT_RAWBT;package=ru.a402d.rawbtprinter;S.data=' + b64 + ';end;';
+        window.location.href = intentDirect;
         return;
-      } catch (e) {}
+      } catch (e) {
+        try {
+          const textoFormatado = String(textoPuro).replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
+          const b64 = btoa(unescape(encodeURIComponent(textoFormatado)));
+          window.location.href = 'rawbt:data:text/plain;charset=utf-8;base64,' + b64;
+          return;
+        } catch (err) {}
+      }
     }
 
     if (isMobile) {
       const textoFormatado = String(textoPuro || '').replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
       const b64 = textoPuro ? btoa(unescape(encodeURIComponent(textoFormatado))) : '';
+      const intentDirect = 'intent:#Intent;action=ru.a402d.rawbtprinter.action.PRINT_RAWBT;package=ru.a402d.rawbtprinter;S.data=' + b64 + ';end;';
       // Mobile fallback: abre janela limpa responsiva com botão de toque e auto-print
       const win = window.open('', '_blank');
       if (win) {
@@ -1213,13 +1222,13 @@ class Component extends DCLogic {
           '.esp{ height:8px; }' +
           '.lin{ display:flex; justify-content:space-between; gap:6px; }' +
           '.tit{ font-size:16px; }' +
-          '.btn-print{ display:block; width:100%; margin:15px 0; padding:14px; background:#2D9E60; color:#fff; font-size:16px; font-weight:bold; border:none; border-radius:10px; cursor:pointer; }' +
-          '.btn-rawbt{ display:block; width:100%; margin:8px 0; padding:12px; background:#0284C7; color:#fff; font-size:14px; font-weight:bold; border:none; border-radius:10px; text-decoration:none; text-align:center; }' +
+          '.btn-print{ display:block; width:100%; margin:12px 0 6px; padding:14px; background:#2D9E60; color:#fff; font-size:15px; font-weight:bold; border:none; border-radius:10px; cursor:pointer; }' +
+          '.btn-rawbt{ display:block; width:100%; margin:6px 0; padding:12px; background:#0284C7; color:#fff; font-size:13.5px; font-weight:bold; border:none; border-radius:10px; text-decoration:none; text-align:center; }' +
           '@media print { .no-print { display:none !important; } }' +
           '</style></head><body>' +
           '<div class="no-print">' +
-          '<button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR CUPOM</button>' +
-          (b64 ? '<a class="btn-rawbt" href="rawbt:data:text/plain;charset=utf-8;base64,' + b64 + '">📱 Imprimir via RawBT (Bluetooth)</a>' : '') +
+          (b64 ? '<a class="btn-rawbt" style="background:#D97706;" href="' + intentDirect + '">⚡ IMPRIMIR DIRETO NO RAWBT</a>' : '') +
+          '<button class="btn-print" onclick="window.print()">🖨️ Imprimir Navegador</button>' +
           '<hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>' +
           '</div>' +
           corpoHtml +
