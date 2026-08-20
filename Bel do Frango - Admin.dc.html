@@ -190,7 +190,10 @@
         <input value="{{ search }}" onChange="{{ onSearch }}" placeholder="{{ searchPlaceholder }}" aria-label="Buscar" style="flex:1;border:none;background:none;outline:none;font-size:14px;"/>
       </div>
       </sc-if>
-      <div style="margin-left:auto;display:flex;align-items:center;gap:14px;flex:none;">
+      <div style="margin-left:auto;display:flex;align-items:center;gap:12px;flex:none;">
+        <button onClick="{{ testarImpressaoRawBT }}" title="Testar Impressão Térmica / RawBT" style="background:#E0F2FE;color:#0284C7;border:1px solid #BAE6FD;border-radius:10px;padding:7px 12px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;">
+          <span>🖨️</span><span>Testar Impressão</span>
+        </button>
         <div class="admin-headerdate" style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#1D1009;white-space:nowrap;">{{ todayDate }}</div><div style="font-size:11px;color:#8C8075;white-space:nowrap;">{{ openLabel }}</div></div>
         <span style="width:10px;height:10px;border-radius:50%;background:#2D9E60;box-shadow:0 0 0 4px rgba(45,158,96,.16);flex:none;"></span>
       </div>
@@ -1912,34 +1915,55 @@ class Component extends DCLogic {
       '<div class="c" style="font-size:10px;">REIMPRESSÃO · ' + agora + '</div>';
     const texto = this.gerarTextoReciboPedido(p);
     this.imprimirHTML(html, texto, 'Pedido ' + p.id);
+  testarImpressaoRawBT(){
+    const nome = (this.state.tenantNome || 'BEL DO FRANGO').toUpperCase();
+    const agora = new Date().toLocaleString('pt-BR');
+    const texto = [
+      '================================',
+      '        ' + nome,
+      '   TESTE DE IMPRESSAO RAWBT',
+      '================================',
+      'Data/Hora: ' + agora,
+      'Status: CONEXAO OK',
+      'Dispositivo: ' + (this.isDispositivoMovel() ? 'Mobile' : 'Desktop'),
+      '--------------------------------',
+      'Se voce esta lendo este teste,',
+      'sua impressora termica esta',
+      'conectada e pronta para imprimir!',
+      '================================',
+      '\r\n\r\n\r\n\r\n'
+    ].join('\r\n');
+    this.imprimirHTML('<div>TESTE RAWBT OK</div>', texto, 'Teste Impressão');
+    this.showToast('Enviando teste de impressão...');
   }
-  // Acompanha o maior id de pedido já visto pra imprimir só pedidos de ENTREGA genuinamente
-  // novos (nunca os que já existiam quando essa aba abriu) — guarda no localStorage pra
-  // sobreviver a um F5. Mesa/Retirada não auto-imprimem aqui (mesa imprime ao "Fechar conta").
+
+  // Acompanha o maior id de pedido já visto pra imprimir pedidos novos automaticamente
   CHAVE_ULTIMO_PEDIDO_IMPRESSO = 'bf_admin_ultimo_pedido_impresso';
   verificarImpressaoAutomaticaDelivery(mapeados){
+    if (!mapeados || !mapeados.length) return;
     const raw = localStorage.getItem(this.CHAVE_ULTIMO_PEDIDO_IMPRESSO);
     const maiorIdAtual = mapeados.reduce((m, p) => Math.max(m, p.rawId), 0);
-    if (raw === null) { localStorage.setItem(this.CHAVE_ULTIMO_PEDIDO_IMPRESSO, String(maiorIdAtual)); return; }
-    const ultimoImpresso = parseInt(raw, 10);
-    const novosEntrega = mapeados.filter((p) => p.tipoRaw === 'ENTREGA' && p.rawId > ultimoImpresso).sort((a, b) => a.rawId - b.rawId);
-    
-    if (novosEntrega.length > 0) {
-      this.tocarAlertaNovoPedido();
-      const ultimoNovo = novosEntrega[novosEntrega.length - 1];
-      if (this.isDispositivoMovel()) {
-        this.setState({
-          alertaNovoPedidoMobile: {
-            id: ultimoNovo.id,
-            cliente: ultimoNovo.cliente,
-            total: this.fmt(ultimoNovo.total),
-            raw: ultimoNovo
-          }
-        });
-      }
-      novosEntrega.forEach((p) => this.imprimirReciboPedido(p));
+    if (raw === null) {
+      localStorage.setItem(this.CHAVE_ULTIMO_PEDIDO_IMPRESSO, String(maiorIdAtual));
+      return;
     }
-    if (maiorIdAtual > ultimoImpresso) localStorage.setItem(this.CHAVE_ULTIMO_PEDIDO_IMPRESSO, String(maiorIdAtual));
+    const ultimoImpresso = parseInt(raw, 10);
+    const novos = mapeados.filter((p) => p.rawId > ultimoImpresso && p.status !== 'cancelado').sort((a, b) => a.rawId - b.rawId);
+    
+    if (novos.length > 0) {
+      this.tocarAlertaNovoPedido();
+      const ultimoNovo = novos[novos.length - 1];
+      this.setState({
+        alertaNovoPedidoMobile: {
+          id: ultimoNovo.id,
+          cliente: ultimoNovo.cliente,
+          total: this.fmt(ultimoNovo.total),
+          raw: ultimoNovo
+        }
+      });
+      novos.forEach((p) => this.imprimirReciboPedido(p));
+      localStorage.setItem(this.CHAVE_ULTIMO_PEDIDO_IMPRESSO, String(maiorIdAtual));
+    }
   }
   iniciarPollPedidos(){
     clearInterval(this._pedidosPoll);
@@ -4030,6 +4054,7 @@ class Component extends DCLogic {
         this.setState({ alertaNovoPedidoMobile: null });
       },
       fecharAlertaNovoPedidoMobile: () => this.setState({ alertaNovoPedidoMobile: null }),
+      testarImpressaoRawBT: () => this.testarImpressaoRawBT(),
 
       pageTitle, pageSubtitle,
       showSearch: s.view === 'pedidos' || s.view === 'produtos',
