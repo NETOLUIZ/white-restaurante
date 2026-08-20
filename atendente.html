@@ -1184,15 +1184,20 @@ class Component extends DCLogic {
     const isMobile = this.isDispositivoMovel();
     const titulo = tituloDoc || 'Cupom';
 
-    // Suporte RawBT / Impressão Térmica Bluetooth no Mobile (automático via rawbt://)
+    // Suporte RawBT / Impressão Térmica Bluetooth no Mobile
+    // Utiliza formato base64 com charset utf-8 e quebras CRLF (\r\n) para descarregar o buffer da impressora térmica
     if (isMobile && textoPuro) {
       try {
-        window.location.href = "rawbt://" + encodeURIComponent(textoPuro);
+        const textoFormatado = String(textoPuro).replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
+        const b64 = btoa(unescape(encodeURIComponent(textoFormatado)));
+        window.location.href = 'rawbt:data:text/plain;charset=utf-8;base64,' + b64;
         return;
       } catch (e) {}
     }
 
     if (isMobile) {
+      const textoFormatado = String(textoPuro || '').replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
+      const b64 = textoPuro ? btoa(unescape(encodeURIComponent(textoFormatado))) : '';
       // Mobile fallback: abre janela limpa responsiva com botão de toque e auto-print
       const win = window.open('', '_blank');
       if (win) {
@@ -1214,7 +1219,7 @@ class Component extends DCLogic {
           '</style></head><body>' +
           '<div class="no-print">' +
           '<button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR CUPOM</button>' +
-          (textoPuro ? '<a class="btn-rawbt" href="rawbt://' + encodeURIComponent(textoPuro) + '">📱 Imprimir via RawBT (Bluetooth)</a>' : '') +
+          (b64 ? '<a class="btn-rawbt" href="rawbt:data:text/plain;charset=utf-8;base64,' + b64 + '">📱 Imprimir via RawBT (Bluetooth)</a>' : '') +
           '<hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>' +
           '</div>' +
           corpoHtml +

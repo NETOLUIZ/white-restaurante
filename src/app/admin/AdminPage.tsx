@@ -161,12 +161,13 @@ export const AdminPage: React.FC = () => {
       .filter(Boolean)
       .join('\n');
 
-    const b64 = typeof window !== 'undefined' ? btoa(unescape(encodeURIComponent(textoPuro))) : '';
+    const textoFormatado = String(textoPuro || '').replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
+    const b64 = typeof window !== 'undefined' ? btoa(unescape(encodeURIComponent(textoFormatado))) : '';
 
     if (isMobile) {
-      if (textoPuro) {
+      if (b64) {
         try {
-          window.location.href = 'rawbt://' + encodeURIComponent(textoPuro);
+          window.location.href = 'rawbt:data:text/plain;charset=utf-8;base64,' + b64;
           return;
         } catch (e) {}
       }
@@ -206,7 +207,7 @@ export const AdminPage: React.FC = () => {
           <body>
             <div class="no-print">
               <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR RECIBO</button>
-              <a class="btn-rawbt" href="rawbt://${encodeURIComponent(textoPuro)}">📱 Imprimir via RawBT (Bluetooth)</a>
+              <a class="btn-rawbt" href="rawbt:data:text/plain;charset=utf-8;base64,${b64}">📱 Imprimir via RawBT (Bluetooth)</a>
               <hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>
             </div>
             <div class="c tit">BEL DO FRANGO</div>
