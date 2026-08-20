@@ -692,7 +692,13 @@ class Component extends DCLogic {
     const res = await fetch(this.apiBase + path, { credentials: 'include', ...opts, headers });
     let data = null;
     try { data = await res.json(); } catch (e) { /* resposta sem corpo (ex: 204) */ }
-    if (!res.ok) { const erro = new Error((data && data.erro) || ('Erro ' + res.status)); erro.status = res.status; throw erro; }
+    if (!res.ok) {
+      if (res.status === 401 && path !== '/super/login') {
+        sessionStorage.removeItem(this.STORAGE_KEY);
+        this.setState({ superAdmin: null, screen: 'login' });
+      }
+      const erro = new Error((data && data.erro) || ('Erro ' + res.status)); erro.status = res.status; throw erro;
+    }
     return data;
   }
   apiGet(path) { return this.apiCall(path, { method: 'GET' }); }
