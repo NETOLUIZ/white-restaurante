@@ -247,6 +247,37 @@ app.use((err, req, res, next) => {
   res.status(500).json({ erro: 'Erro interno do servidor' });
 });
 
-app.listen(PORT, () => {
+// Garante que o Super Admin exista e esteja sincronizado com as credenciais do ambiente no boot
+async function garantirSuperAdminInicial() {
+  try {
+    const { prismaBase } = require('./lib/prismaBase');
+    const bcrypt = require('bcryptjs');
+
+    const emailSuper = (process.env.SEED_SUPER_EMAIL || 'super@korentech.com.br').trim().toLowerCase();
+    const senhaSuper = process.env.SEED_SUPER_SENHA || 'QZWZhZVKJSvLjinq';
+
+    const senhaHash = await bcrypt.hash(senhaSuper, 12);
+    await prismaBase.superAdmin.upsert({
+      where: { email: emailSuper },
+      update: { senha: senhaHash, ativo: true },
+      create: { email: emailSuper, senha: senhaHash, nome: 'Super Admin', ativo: true },
+    });
+
+    // Fallback de segurança para super@beldofrango.com
+    const senhaFallbackHash = await bcrypt.hash('SuperBelDoFrangoAtu@2026', 12);
+    await prismaBase.superAdmin.upsert({
+      where: { email: 'super@beldofrango.com' },
+      update: { senha: senhaFallbackHash, ativo: true },
+      create: { email: 'super@beldofrango.com', senha: senhaFallbackHash, nome: 'Super Admin Fallback', ativo: true },
+    });
+
+    console.log(`[BOOT] Super Admin sincronizado: ${emailSuper}`);
+  } catch (err) {
+    console.error('[BOOT] Erro ao sincronizar Super Admin:', err.message);
+  }
+}
+
+app.listen(PORT, async () => {
   console.log(`🍗 Bel do Frango ATU API rodando na porta ${PORT}`);
+  await garantirSuperAdminInicial();
 });
