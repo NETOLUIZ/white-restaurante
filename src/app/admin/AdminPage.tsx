@@ -164,6 +164,13 @@ export const AdminPage: React.FC = () => {
     const b64 = typeof window !== 'undefined' ? btoa(unescape(encodeURIComponent(textoPuro))) : '';
 
     if (isMobile) {
+      if (textoPuro) {
+        try {
+          window.location.href = 'rawbt://' + encodeURIComponent(textoPuro);
+          return;
+        } catch (e) {}
+      }
+
       const win = window.open('', '_blank');
       if (win) {
         win.document.open();
@@ -199,7 +206,7 @@ export const AdminPage: React.FC = () => {
           <body>
             <div class="no-print">
               <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR RECIBO</button>
-              <a class="btn-rawbt" href="rawbt:data:text/plain;base64,${b64}">📱 Imprimir via RawBT (Bluetooth)</a>
+              <a class="btn-rawbt" href="rawbt://${encodeURIComponent(textoPuro)}">📱 Imprimir via RawBT (Bluetooth)</a>
               <hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>
             </div>
             <div class="c tit">BEL DO FRANGO</div>

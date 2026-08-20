@@ -1781,18 +1781,16 @@ class Component extends DCLogic {
     const isMobile = this.isDispositivoMovel();
     const titulo = tituloDoc || 'Recibo';
     
-    // Suporte RawBT / Impressora Bluetooth no Mobile
-    const prefRawbt = localStorage.getItem('bf_preferir_rawbt') === 'true';
-    if (isMobile && prefRawbt && textoPuro) {
+    // Suporte RawBT / Impressão Térmica Bluetooth no Mobile (automático via rawbt://)
+    if (isMobile && textoPuro) {
       try {
-        const b64 = btoa(unescape(encodeURIComponent(textoPuro)));
-        window.location.href = 'rawbt:data:text/plain;base64,' + b64;
+        window.location.href = "rawbt://" + encodeURIComponent(textoPuro);
         return;
       } catch (e) {}
     }
 
     if (isMobile) {
-      // Mobile: abre janela limpa responsiva com botão de toque e auto-print
+      // Mobile fallback: abre janela limpa responsiva com botão de toque e auto-print
       const win = window.open('', '_blank');
       if (win) {
         win.document.open();
@@ -1813,7 +1811,7 @@ class Component extends DCLogic {
           '</style></head><body>' +
           '<div class="no-print">' +
           '<button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR RECIBO</button>' +
-          (textoPuro ? '<a class="btn-rawbt" href="rawbt:data:text/plain;base64,' + btoa(unescape(encodeURIComponent(textoPuro))) + '">📱 Imprimir via RawBT (Bluetooth)</a>' : '') +
+          (textoPuro ? '<a class="btn-rawbt" href="rawbt://' + encodeURIComponent(textoPuro) + '">📱 Imprimir via RawBT (Bluetooth)</a>' : '') +
           '<hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>' +
           '</div>' +
           corpoHtml +
