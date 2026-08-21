@@ -68,11 +68,19 @@ export const AdminPage: React.FC = () => {
           .join(' - ')
       : 'Retirada no balcão';
 
-    const items = (pedido.itens || []).map((it) => {
-      const nome = it.produto?.nome || 'Produto';
-      const q = Number(it.quantidade || 1);
-      const unitPrice = Number(it.preco || it.produto?.preco || 0);
-      const totalPrice = unitPrice * q;
+    const items = (pedido.itens || []).map((it: any) => {
+      const nome = it.produto?.nome || it.nome || 'Produto';
+      const q = Number(it.quantidade || it.q || 1);
+      const unitPrice = Number(
+        it.precoUnitario != null ? it.precoUnitario :
+        (it.preco != null ? it.preco :
+        (it.produto?.preco != null ? it.produto.preco :
+        (it.p != null ? it.p : 0)))
+      );
+      const totalPrice = Number(
+        it.precoTotal != null ? it.precoTotal :
+        (it.totalPrice != null ? it.totalPrice : (unitPrice * q))
+      );
       return {
         name: nome,
         quantity: q,

@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Atendente — Bel do Frango</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="shortcut icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <script src="scripts/support.js"></script>
 <script src="scripts/tema.js"></script>
 <script src="scripts/navigation.js"></script>
@@ -1249,14 +1252,23 @@ class Component extends DCLogic {
   }
   gerarOrderPayloadBalcao({ codigo, itens, total, formaPagamentoLabel }){
     const items = (itens || []).map((it) => {
-      const q = Number(it.quantidade || 1);
-      const unitPrice = Number(it.precoUnitario || 0);
+      const q = Number(it.quantidade || it.q || 1);
+      const unitPrice = Number(
+        it.precoUnitario != null ? it.precoUnitario :
+        (it.p != null ? it.p :
+        (it.preco != null ? it.preco :
+        (it.unitPrice != null ? it.unitPrice : 0)))
+      );
+      const totalPrice = Number(
+        it.precoTotal != null ? it.precoTotal :
+        (it.totalPrice != null ? it.totalPrice : (unitPrice * q))
+      );
       return {
-        name: it.nome || 'Produto',
+        name: it.nome || it.n || 'Produto',
         quantity: q,
         unitPrice: unitPrice,
-        totalPrice: unitPrice * q,
-        notes: it.obs || ''
+        totalPrice: totalPrice,
+        notes: it.obs || it.observacoes || ''
       };
     });
     const rawIdStr = String(codigo || '').replace(/^#BF/i, '').replace(/^#/i, '');

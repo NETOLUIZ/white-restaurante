@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bel do Frango — Delivery</title>
-<link rel="icon" href="assets/logo tranparente.png">
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="shortcut icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <!-- Leaflet (OpenStreetMap) carregado antes do runtime para garantir que window.L já exista no componentDidMount. -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -258,7 +260,7 @@
     <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="5">
       <button onClick="{{ cat.onClick }}" style="flex:none;display:flex;flex-direction:column;align-items:center;gap:9px;background:none;border:none;cursor:pointer;width:72px;">
         <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;overflow:hidden;border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);"><img sc-camel-src="{{ cat.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--botao-primario-fundo, #D62828)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" opacity=".55"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="11" r="2"/><path d="M21 16l-4.5-4.5a2 2 0 0 0-2.8 0L5 19"/></svg></div></sc-if>
+        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;"><img src="assets/logo.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div></sc-if>
         <span style="font-size:12px;font-weight:600;color:#C0271A;text-align:center;line-height:1.1;">{{ cat.label }}</span>
       </button>
     </sc-for>
@@ -273,7 +275,7 @@
       <sc-for list="{{ searchResultsHome }}" as="p" hint-placeholder-count="4">
         <div class="bf-card" onClick="{{ p.onOpen }}" style="{{ p.cardStyle }}">
           <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="{{ p.fotoTileStyle }}"><img sc-camel-src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-          <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#A01818;opacity:.75;letter-spacing:.06em;">{{ p.tileLabel }}</span></div></sc-if>
+          <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><img src="assets/logo.png" alt="" style="width:100%;height:100%;max-width:54px;max-height:54px;object-fit:contain;margin:auto;display:block;"/></div></sc-if>
           <div style="{{ p.bodyStyle }}">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
@@ -310,7 +312,7 @@
       <sc-for list="{{ homeFeatured }}" as="p" hint-placeholder-count="4">
         <div class="bf-card" onClick="{{ p.onOpen }}" style="{{ p.cardStyle }}">
           <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="{{ p.fotoTileStyle }}"><img sc-camel-src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-          <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><span style="font-family:'DM Mono',monospace;font-size:9px;color:#A01818;opacity:.75;letter-spacing:.06em;">{{ p.tileLabel }}</span></div></sc-if>
+          <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><img src="assets/logo.png" alt="" style="width:100%;height:100%;max-width:54px;max-height:54px;object-fit:contain;margin:auto;display:block;"/></div></sc-if>
           <div style="{{ p.bodyStyle }}">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
@@ -1058,7 +1060,7 @@
 <sc-if value="{{ showBottom }}" hint-placeholder-val="{{ false }}">
 <div id="bf-bottom-nav" style="display:flex;background:var(--nav-inferior-fundo, #fff);border-top:1px solid rgba(29,16,9,.07);padding:8px 6px calc(8px + env(safe-area-inset-bottom));flex:none;box-shadow:0 -4px 18px rgba(29,16,9,.05);">
   <button onClick="{{ goHome }}" style="{{ navHomeStyle }}">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V10"/></svg>
+    <img src="assets/logo.png" alt="Início" style="width:24px;height:24px;object-fit:contain;display:block;"/>
     <span style="font-size:11px;font-weight:600;color:{{ navHomeTextStyle.color }};">Início</span>
   </button>
   <button onClick="{{ goMenu }}" style="{{ navMenuStyle }}">

@@ -3,6 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin — Bel do Frango</title>
+<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="shortcut icon" type="image/png" href="assets/logo.png">
+<link rel="apple-touch-icon" href="assets/logo.png">
 <script src="scripts/support.js"></script>
 <script src="scripts/tema.js"></script>
 <!-- Runtime DC/React para renderização dos componentes. -->
@@ -37,12 +41,39 @@
   @keyframes adToast{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
   @keyframes adRing{to{transform:rotate(360deg);}}
   .admin-hamburger{ display:none; }
+
+  /* Responsividade para Tabelas, Cards e Layouts */
+  .admin-table-wrap {
+    background: #FFFBF3;
+    border: 1px solid rgba(29,16,9,.07);
+    border-radius: 18px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: 0 5px 16px rgba(29,16,9,.05);
+    width: 100%;
+  }
+
   @media (max-width: 860px){
     .admin-sidebar{ position:fixed !important; top:0; left:0; bottom:0; transform:translateX(-100%); transition:transform .25s ease; z-index:55; box-shadow:0 0 30px rgba(0,0,0,.3); }
     .admin-sidebar.open{ transform:translateX(0); }
     .admin-hamburger{ display:flex !important; }
-    .admin-header{ padding:14px 16px !important; gap:12px !important; }
+    .admin-header{ padding:12px 14px !important; gap:10px !important; }
     .admin-subtitle, .admin-headerdate{ display:none !important; }
+    .admin-main-padding{ padding: 14px 12px 30px !important; }
+    .admin-kpi-grid{ grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+    .admin-stats-4col{ grid-template-columns: repeat(2, 1fr) !important; gap: 10px !important; }
+    .admin-split-2col{ grid-template-columns: 1fr !important; gap: 14px !important; }
+    .admin-actions-row{ flex-wrap: wrap !important; gap: 8px !important; }
+    .admin-table-inner-pedidos{ min-width: 740px !important; }
+    .admin-table-inner-produtos{ min-width: 700px !important; }
+    .admin-table-inner-empresas{ min-width: 760px !important; }
+    .admin-table-inner-entregadores{ min-width: 620px !important; }
+    .admin-table-inner-caixa-entregadores{ min-width: 620px !important; }
+  }
+
+  @media (max-width: 480px){
+    .admin-kpi-grid{ grid-template-columns: 1fr !important; }
+    .admin-stats-4col{ grid-template-columns: 1fr !important; }
   }
 </style>
 </helmet>
@@ -210,12 +241,12 @@
       </div>
     </sc-if>
 
-    <div ref="{{ setScroll }}" style="flex:1;overflow-y:auto;padding:26px 28px 40px;">
+    <div ref="{{ setScroll }}" class="admin-main-padding" style="flex:1;overflow-y:auto;padding:26px 28px 40px;">
 
       <!-- ---------- PEDIDOS ---------- -->
       <sc-if value="{{ isPedidos }}" hint-placeholder-val="{{ true }}">
       <div style="animation:adIn .25s ease-out;">
-        <div style="{{ kpiGridStyle }}">
+        <div class="admin-kpi-grid" style="{{ kpiGridStyle }}">
           <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
             <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:16px 18px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
               <div style="display:flex;align-items:center;gap:8px;color:#8C8075;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;"><span style="{{ k.dotStyle }}"></span>{{ k.label }}</div>
@@ -232,33 +263,35 @@
           </div>
         </div>
 
-        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-          <div style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 220px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
-            <span>Pedido</span><span>Cliente / Itens</span><span>Tipo</span><span>Total</span><span>Status</span><span style="text-align:right;">Ações</span>
-          </div>
-          <sc-for list="{{ orderRows }}" as="o" hint-placeholder-count="5">
-            <div onClick="{{ o.onOpen }}" style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 220px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;{{ o.rowBg }}">
-              <div><div style="font-family:'DM Mono',monospace;font-weight:500;font-size:13px;">{{ o.id }}</div><div style="font-size:11px;color:#8C8075;margin-top:2px;">{{ o.hora }}</div></div>
-              <div style="min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ o.cliente }}</div><div style="font-size:12px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ o.itensResumo }}</div></div>
-              <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#6B2E12;font-weight:600;"><span style="{{ o.tipoIconStyle }}">{{ o.tipoIcon }}</span>{{ o.tipo }}</div>
-              <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:#D97706;">{{ o.totalFmt }}</div>
-              <div><span style="{{ o.badgeStyle }}">{{ o.statusLabel }}</span></div>
-              <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;">
-                <button onClick="{{ o.onImprimir }}" title="Reimprimir recibo" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:9px;padding:7px 10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir</button>
-                <sc-if value="{{ o.canAdvance }}" hint-placeholder-val="{{ false }}"><button onClick="{{ o.onAdvance }}" style="background:#D97706;color:#fff;border:none;border-radius:10px;padding:9px 13px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">{{ o.advanceLabel }}</button></sc-if>
-                <sc-if value="{{ o.showEntregadorSelect }}" hint-placeholder-val="{{ false }}">
-                  <select onChange="{{ o.onAtribuirEntregador }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:9px;padding:7px 10px;font-size:12px;color:#1D1009;cursor:pointer;max-width:148px;">
-                    <option value="">— Entregador —</option>
-                    <sc-for list="{{ o.entregadorOptions }}" as="opt" hint-placeholder-count="2">
-                      <option value="{{ opt.value }}" selected="{{ opt.selected }}">{{ opt.label }}</option>
-                    </sc-for>
-                  </select>
-                </sc-if>
-                <sc-if value="{{ o.isDone }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;color:#2D9E60;font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{{ o.doneLabel }}</span></sc-if>
-              </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-inner-pedidos">
+            <div style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 220px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+              <span>Pedido</span><span>Cliente / Itens</span><span>Tipo</span><span>Total</span><span>Status</span><span style="text-align:right;">Ações</span>
             </div>
-          </sc-for>
-          <sc-if value="{{ ordersEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum pedido neste filtro.</div></sc-if>
+            <sc-for list="{{ orderRows }}" as="o" hint-placeholder-count="5">
+              <div onClick="{{ o.onOpen }}" style="display:grid;grid-template-columns:108px 1.8fr 1fr 110px 120px 220px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;{{ o.rowBg }}">
+                <div><div style="font-family:'DM Mono',monospace;font-weight:500;font-size:13px;">{{ o.id }}</div><div style="font-size:11px;color:#8C8075;margin-top:2px;">{{ o.hora }}</div></div>
+                <div style="min-width:0;"><div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ o.cliente }}</div><div style="font-size:12px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ o.itensResumo }}</div></div>
+                <div style="display:flex;align-items:center;gap:6px;font-size:13px;color:#6B2E12;font-weight:600;"><span style="{{ o.tipoIconStyle }}">{{ o.tipoIcon }}</span>{{ o.tipo }}</div>
+                <div style="font-family:'DM Mono',monospace;font-weight:500;font-size:15px;color:#D97706;">{{ o.totalFmt }}</div>
+                <div><span style="{{ o.badgeStyle }}">{{ o.statusLabel }}</span></div>
+                <div style="display:flex;align-items:center;justify-content:flex-end;gap:6px;">
+                  <button onClick="{{ o.onImprimir }}" title="Reimprimir recibo" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:9px;padding:7px 10px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:4px;white-space:nowrap;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>Imprimir</button>
+                  <sc-if value="{{ o.canAdvance }}" hint-placeholder-val="{{ false }}"><button onClick="{{ o.onAdvance }}" style="background:#D97706;color:#fff;border:none;border-radius:10px;padding:9px 13px;font-weight:700;font-size:12px;cursor:pointer;white-space:nowrap;">{{ o.advanceLabel }}</button></sc-if>
+                  <sc-if value="{{ o.showEntregadorSelect }}" hint-placeholder-val="{{ false }}">
+                    <select onChange="{{ o.onAtribuirEntregador }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:9px;padding:7px 10px;font-size:12px;color:#1D1009;cursor:pointer;max-width:148px;">
+                      <option value="">— Entregador —</option>
+                      <sc-for list="{{ o.entregadorOptions }}" as="opt" hint-placeholder-count="2">
+                        <option value="{{ opt.value }}" selected="{{ opt.selected }}">{{ opt.label }}</option>
+                      </sc-for>
+                    </select>
+                  </sc-if>
+                  <sc-if value="{{ o.isDone }}" hint-placeholder-val="{{ false }}"><span style="display:flex;align-items:center;gap:5px;color:#2D9E60;font-size:12px;font-weight:700;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>{{ o.doneLabel }}</span></sc-if>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ ordersEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum pedido neste filtro.</div></sc-if>
+          </div>
         </div>
       </div>
       </sc-if>
@@ -266,7 +299,7 @@
       <!-- ---------- PRODUTOS ---------- -->
       <sc-if value="{{ isProdutos }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
+        <div class="admin-actions-row" style="display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap;">
           <div style="display:flex;gap:7px;flex-wrap:wrap;">
             <sc-for list="{{ catTabs }}" as="c" hint-placeholder-count="7">
               <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
@@ -301,10 +334,11 @@
           </div>
         </sc-if>
 
-        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-          <div style="display:grid;grid-template-columns:62px 2.4fr 1fr 110px 130px 96px 70px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
-            <span></span><span>Produto</span><span>Categoria</span><span>Preço</span><span>Estoque</span><span>Status</span><span style="text-align:right;">Editar</span>
-          </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-inner-produtos">
+            <div style="display:grid;grid-template-columns:62px 2.4fr 1fr 110px 130px 96px 70px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+              <span></span><span>Produto</span><span>Categoria</span><span>Preço</span><span>Estoque</span><span>Status</span><span style="text-align:right;">Editar</span>
+            </div>
           <sc-for list="{{ productRows }}" as="p" hint-placeholder-count="6">
             <div onClick="{{ p.onEdit }}" style="display:grid;grid-template-columns:62px 2.4fr 1fr 110px 130px 96px 70px;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;cursor:pointer;">
               <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:48px;height:48px;border-radius:11px;overflow:hidden;flex:none;"><img sc-camel-src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
@@ -324,6 +358,7 @@
             </div>
           </sc-for>
           <sc-if value="{{ productsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum produto encontrado.</div></sc-if>
+          </div>
         </div>
       </div>
       </sc-if>
@@ -848,7 +883,7 @@
             <span style="width:12px;height:12px;border-radius:50%;background:#2D9E60;box-shadow:0 0 0 5px rgba(45,158,96,.2);flex:none;"></span>
             <div style="flex:1;"><div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;color:#1D7A48;">Caixa aberto</div><div style="font-size:13px;color:#2D9E60;">Desde {{ caixaAbertoEm }} · valor inicial {{ caixaInicialFmt }}</div></div>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;">
+          <div class="admin-stats-4col" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;">
             <sc-for list="{{ caixaBreakdown }}" as="c" hint-placeholder-count="4">
               <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:15px 16px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
                 <div style="display:flex;align-items:center;gap:7px;color:#8C8075;font-size:12px;font-weight:600;"><span style="width:9px;height:9px;border-radius:3px;background:{{ c.color }};display:inline-block;"></span>{{ c.label }}</div>
@@ -878,9 +913,9 @@
 
         <sc-if value="{{ isEntregadorDraft }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px;background:#FFFBF3;border:1px solid rgba(29,16,9,.08);border-radius:14px;padding:14px;">
-            <div style="display:flex;gap:8px;">
-              <input value="{{ entregadorDraftNome }}" onChange="{{ onEntregadorDraftNome }}" placeholder="Nome do entregador" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
-              <input value="{{ entregadorDraftEmail }}" onChange="{{ onEntregadorDraftEmail }}" placeholder="email@exemplo.com" style="flex:1;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <input value="{{ entregadorDraftNome }}" onChange="{{ onEntregadorDraftNome }}" placeholder="Nome do entregador" style="flex:1;min-width:180px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <input value="{{ entregadorDraftEmail }}" onChange="{{ onEntregadorDraftEmail }}" placeholder="email@exemplo.com" style="flex:1;min-width:180px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
             </div>
             <div style="position:relative;">
               <input type="{{ tipoEntregadorDraftSenha }}" value="{{ entregadorDraftSenha }}" onChange="{{ onEntregadorDraftSenha }}" placeholder="{{ entregadorSenhaPlaceholder }}" style="width:100%;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 42px 10px 13px;font-size:14px;outline:none;"/>
@@ -896,19 +931,21 @@
           </div>
         </sc-if>
 
-        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-          <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
-            <span>Nome</span><span>Email (login)</span><span></span><span style="text-align:right;">Status</span>
-          </div>
-          <sc-for list="{{ entregadorRows }}" as="e" hint-placeholder-count="3">
-            <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:14px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
-              <div style="font-weight:700;font-size:14px;">{{ e.nome }}</div>
-              <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ e.email }}</span>
-              <button onClick="{{ e.onEdit }}" aria-label="Editar entregador" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
-              <div style="display:flex;justify-content:flex-end;"><button onClick="{{ e.onToggle }}" style="{{ e.toggleStyle }}"><span style="{{ e.knobStyle }}"></span></button></div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-inner-entregadores">
+            <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+              <span>Nome</span><span>Email (login)</span><span></span><span style="text-align:right;">Status</span>
             </div>
-          </sc-for>
-          <sc-if value="{{ entregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
+            <sc-for list="{{ entregadorRows }}" as="e" hint-placeholder-count="3">
+              <div style="display:grid;grid-template-columns:2fr 2fr 40px 90px;gap:14px;padding:14px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+                <div style="font-weight:700;font-size:14px;">{{ e.nome }}</div>
+                <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ e.email }}</span>
+                <button onClick="{{ e.onEdit }}" aria-label="Editar entregador" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                <div style="display:flex;justify-content:flex-end;"><button onClick="{{ e.onToggle }}" style="{{ e.toggleStyle }}"><span style="{{ e.knobStyle }}"></span></button></div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ entregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
+          </div>
         </div>
       </div>
       </sc-if>
@@ -916,10 +953,11 @@
       <!-- ---------- CAIXA DOS ENTREGADORES ---------- -->
       <sc-if value="{{ isCaixaEntregadores }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;">
-        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
-          <div style="display:grid;grid-template-columns:2fr 1.2fr 300px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
-            <span>Entregador</span><span>Saldo a Acertar (Dinheiro)</span><span style="text-align:right;">Ações de Caixa</span>
-          </div>
+        <div class="admin-table-wrap">
+          <div class="admin-table-inner-caixa-entregadores">
+            <div style="display:grid;grid-template-columns:2fr 1.2fr 300px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+              <span>Entregador</span><span>Saldo a Acertar (Dinheiro)</span><span style="text-align:right;">Ações de Caixa</span>
+            </div>
           <sc-for list="{{ caixaEntregadorRows }}" as="ce" hint-placeholder-count="3">
             <div style="display:grid;grid-template-columns:2fr 1.2fr 300px;gap:14px;padding:15px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
               <div style="font-weight:700;font-size:14px;">{{ ce.nome }}</div>
@@ -936,6 +974,7 @@
             </div>
           </sc-for>
           <sc-if value="{{ caixaEntregadoresEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum entregador cadastrado.</div></sc-if>
+          </div>
         </div>
       </div>
       </sc-if>
@@ -1071,31 +1110,33 @@
           </div>
         </sc-if>
 
-        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:26px;">
-          <div style="display:grid;grid-template-columns:1.8fr 1.1fr 70px 110px 100px 34px 90px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
-            <span>Nome</span><span>Login</span><span>Cota/dia</span><span>Marmita</span><span></span><span></span><span style="text-align:right;">Status</span>
-          </div>
-          <sc-for list="{{ empresaRows }}" as="emp" hint-placeholder-count="3">
-            <div style="border-top:1px solid rgba(29,16,9,.06);padding:14px 20px;">
-              <div style="display:grid;grid-template-columns:1.8fr 1.1fr 70px 110px 100px 34px 90px;gap:14px;align-items:center;">
-                <div style="font-weight:700;font-size:14px;">{{ emp.nome }}</div>
-                <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ emp.login }}</span>
-                <span style="font-family:'DM Mono',monospace;font-size:13px;">{{ emp.cotaDiaria }}</span>
-                <span style="font-size:12px;color:#8C8075;">{{ emp.valorMarmitaFmt }}</span>
-                <button onClick="{{ emp.onFazerPedido }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#7A1209;border-radius:8px;padding:7px 10px;font-weight:700;font-size:11.5px;cursor:pointer;white-space:nowrap;">Fazer pedido</button>
-                <button onClick="{{ emp.onEdit }}" aria-label="Editar empresa" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
-                <div style="display:flex;justify-content:flex-end;"><button onClick="{{ emp.onToggle }}" style="{{ emp.toggleStyle }}"><span style="{{ emp.knobStyle }}"></span></button></div>
-              </div>
-              <sc-if value="{{ emp.hasFuncionariosSalvos }}" hint-placeholder-val="{{ false }}">
-                <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
-                  <sc-for list="{{ emp.funcionariosSalvosChips }}" as="f" hint-placeholder-count="2">
-                    <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(29,16,9,.12);background:#fff;color:#6B2E12;border-radius:999px;padding:4px 6px 4px 11px;font-size:12px;font-weight:600;">{{ f.nome }}<button onClick="{{ f.onRemover }}" aria-label="Remover funcionário salvo" style="background:#F6F1E7;border:none;color:#8C8075;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:1;">×</button></span>
-                  </sc-for>
-                </div>
-              </sc-if>
+        <div class="admin-table-wrap" style="margin-bottom:26px;">
+          <div class="admin-table-inner-empresas">
+            <div style="display:grid;grid-template-columns:1.8fr 1.1fr 70px 110px 100px 34px 90px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+              <span>Nome</span><span>Login</span><span>Cota/dia</span><span>Marmita</span><span></span><span></span><span style="text-align:right;">Status</span>
             </div>
-          </sc-for>
-          <sc-if value="{{ empresasEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhuma empresa cadastrada.</div></sc-if>
+            <sc-for list="{{ empresaRows }}" as="emp" hint-placeholder-count="3">
+              <div style="border-top:1px solid rgba(29,16,9,.06);padding:14px 20px;">
+                <div style="display:grid;grid-template-columns:1.8fr 1.1fr 70px 110px 100px 34px 90px;gap:14px;align-items:center;">
+                  <div style="font-weight:700;font-size:14px;">{{ emp.nome }}</div>
+                  <span style="font-family:'DM Mono',monospace;font-size:12.5px;color:#8C8075;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ emp.login }}</span>
+                  <span style="font-family:'DM Mono',monospace;font-size:13px;">{{ emp.cotaDiaria }}</span>
+                  <span style="font-size:12px;color:#8C8075;">{{ emp.valorMarmitaFmt }}</span>
+                  <button onClick="{{ emp.onFazerPedido }}" style="background:#FFF3DC;border:1px solid #F2C078;color:#7A1209;border-radius:8px;padding:7px 10px;font-weight:700;font-size:11.5px;cursor:pointer;white-space:nowrap;">Fazer pedido</button>
+                  <button onClick="{{ emp.onEdit }}" aria-label="Editar empresa" style="background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg></button>
+                  <div style="display:flex;justify-content:flex-end;"><button onClick="{{ emp.onToggle }}" style="{{ emp.toggleStyle }}"><span style="{{ emp.knobStyle }}"></span></button></div>
+                </div>
+                <sc-if value="{{ emp.hasFuncionariosSalvos }}" hint-placeholder-val="{{ false }}">
+                  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+                    <sc-for list="{{ emp.funcionariosSalvosChips }}" as="f" hint-placeholder-count="2">
+                      <span style="display:inline-flex;align-items:center;gap:6px;border:1px solid rgba(29,16,9,.12);background:#fff;color:#6B2E12;border-radius:999px;padding:4px 6px 4px 11px;font-size:12px;font-weight:600;">{{ f.nome }}<button onClick="{{ f.onRemover }}" aria-label="Remover funcionário salvo" style="background:#F6F1E7;border:none;color:#8C8075;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:1;">×</button></span>
+                    </sc-for>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-for>
+            <sc-if value="{{ empresasEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhuma empresa cadastrada.</div></sc-if>
+          </div>
         </div>
 
         <!-- ---------- FAZER PEDIDO EM NOME DA EMPRESA (admin) ---------- -->
@@ -1276,7 +1317,7 @@
           <button onClick="{{ vendasOnHoje }}" style="flex:none;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:10px;padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;">Hoje</button>
         </div>
 
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
+        <div class="admin-stats-4col" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;">
           <sc-for list="{{ vendasKpis }}" as="k" hint-placeholder-count="4">
             <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:16px;padding:16px 18px;box-shadow:0 4px 14px rgba(29,16,9,.04);">
               <div style="display:flex;align-items:center;gap:8px;color:#8C8075;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;"><span style="{{ k.dotStyle }}"></span>{{ k.label }}</div>
@@ -1285,7 +1326,7 @@
           </sc-for>
         </div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
+        <div class="admin-split-2col" style="display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start;">
           <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
             <div style="padding:16px 20px;border-bottom:1px solid rgba(29,16,9,.06);display:flex;align-items:center;gap:9px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D97706" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="20" x2="6" y2="14"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="18" y1="20" x2="18" y2="10"/></svg><h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:16px;margin:0;">Vendidos <span style="color:#8C8075;font-weight:600;">— {{ vendasDataLabel }}</span></h3></div>
             <div style="display:grid;grid-template-columns:1fr 78px 100px;gap:10px;padding:11px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#8C8075;"><span>Produto</span><span style="text-align:center;">Qtd</span><span style="text-align:right;">Receita</span></div>
@@ -1933,8 +1974,16 @@ class Component extends DCLogic {
     const items = rawItens.map(it => {
       const nome = it.n || it.nome || 'Produto';
       const q = Number(it.q || it.quantidade || 1);
-      const unitPrice = Number(it.p || it.precoUnitario || 0);
-      const totalPrice = Number((it.preco && !it.p && !it.precoUnitario) ? it.preco : (unitPrice * q));
+      const unitPrice = Number(
+        it.precoUnitario != null ? it.precoUnitario :
+        (it.p != null ? it.p :
+        (it.preco != null ? it.preco :
+        (it.unitPrice != null ? it.unitPrice : 0)))
+      );
+      const totalPrice = Number(
+        it.precoTotal != null ? it.precoTotal :
+        (it.totalPrice != null ? it.totalPrice : (unitPrice * q))
+      );
       const notesArr = [it.ad, it.obs].filter(Boolean);
       return {
         name: nome,
@@ -2260,12 +2309,12 @@ class Component extends DCLogic {
       hora: new Date(o.createdAt).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
       status: statusMap[o.statusEntrega] || 'novo',
       entregadorId: o.entregadorId || null,
-      itens: (o.itens || []).map((it) => ({ n:it.nome, q:it.quantidade, p:it.precoUnitario, ad: this.resumoAdicionais(it.adicionais) })),
+      itens: (o.itens || []).map((it) => ({ n:it.nome, q:it.quantidade, p:it.precoUnitario, precoUnitario:it.precoUnitario, ad: this.resumoAdicionais(it.adicionais) })),
       criadoEm: o.createdAt,
       // ---- usado só pra impressão automática do recibo de delivery (ver imprimirReciboPedido) ----
       tipoRaw: o.tipo, telefone: o.telefone || '', enderecoFull: end,
       subtotal: o.subtotal, taxaEntrega: o.taxaEntrega, total: o.total,
-      itensImpressao: (o.itens || []).map((it) => ({ nome:it.nome, q:it.quantidade, obs:it.observacoes || '', ad: this.resumoAdicionais(it.adicionais) }))
+      itensImpressao: (o.itens || []).map((it) => ({ nome:it.nome, q:it.quantidade, p:it.precoUnitario, precoUnitario:it.precoUnitario, obs:it.observacoes || '', ad: this.resumoAdicionais(it.adicionais) }))
     };
   }
   async carregarPedidos(){
