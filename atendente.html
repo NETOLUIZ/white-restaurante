@@ -1388,7 +1388,13 @@ class Component extends DCLogic {
     const rawIdStr = String(codigo || '').replace(/^#BF/i, '').replace(/^#/i, '');
     const rawIdNum = parseInt(rawIdStr.replace(/\D/g, ''), 10) || 0;
     const agora = new Date().toLocaleString('pt-BR');
-    const storeName = (this.state.tenant && this.state.tenant.nome) ? this.state.tenant.nome : 'Bel do Frango';
+    const tenantSlug = this.state.tenantSlug ||
+      (this.state.tenant && this.state.tenant.slug) ||
+      localStorage.getItem('tenantSlug') ||
+      localStorage.getItem('tenant') ||
+      ((this.state.tenant && this.state.tenant.nome) ? this.state.tenant.nome.toLowerCase().replace(/[^a-z0-9]/g, '') : 'beldofrango');
+
+    const storeName = tenantSlug || (this.state.tenant && this.state.tenant.nome) || 'beldofrango';
     const storePhone = (this.state.tenant && this.state.tenant.telefone) ? this.state.tenant.telefone : '';
     const paymentMethodStr = String(formaPagamentoLabel || 'Não informado');
 
@@ -1416,9 +1422,30 @@ class Component extends DCLogic {
       idNum: rawIdNum,
       id_num: rawIdNum,
 
+      slug: tenantSlug,
+      tenantSlug: tenantSlug,
+      tenant_slug: tenantSlug,
+      tenant: tenantSlug,
+
       storeName: storeName,
+      store_name: storeName,
       nomeLoja: storeName,
       nome_loja: storeName,
+      nomeFantasia: storeName,
+      nome_fantasia: storeName,
+      appName: storeName,
+      app_name: storeName,
+      header: storeName,
+      headerTitle: storeName,
+      header_title: storeName,
+      titulo: storeName,
+      title: storeName,
+      name: storeName,
+      nome: storeName,
+      empresa: storeName,
+      loja: storeName,
+      restaurante: storeName,
+      sistema: tenantSlug,
       storePhone: storePhone,
       telefoneLoja: storePhone,
       telefone_loja: storePhone,

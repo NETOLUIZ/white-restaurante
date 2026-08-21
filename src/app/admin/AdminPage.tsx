@@ -218,6 +218,9 @@ export const AdminPage: React.FC = () => {
     const totalFmt = totalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const idVal = rawIdNum || rawIdStr;
 
+    const tenantSlug = pedido.tenantSlug || pedido.tenant_slug || pedido.slug || 'beldofrango';
+    const storeName = tenantSlug || 'beldofrango';
+
     return {
       id: idVal,
       orderId: idVal,
@@ -239,9 +242,31 @@ export const AdminPage: React.FC = () => {
       idNum: rawIdNum,
       id_num: rawIdNum,
 
-      storeName: 'Bel do Frango',
-      nomeLoja: 'Bel do Frango',
-      nome_loja: 'Bel do Frango',
+      slug: tenantSlug,
+      tenantSlug: tenantSlug,
+      tenant_slug: tenantSlug,
+      tenant: tenantSlug,
+
+      storeName: storeName,
+      store_name: storeName,
+      nomeLoja: storeName,
+      nome_loja: storeName,
+      nomeFantasia: storeName,
+      nome_fantasia: storeName,
+      appName: storeName,
+      app_name: storeName,
+      header: storeName,
+      headerTitle: storeName,
+      header_title: storeName,
+      titulo: storeName,
+      title: storeName,
+      name: storeName,
+      nome: storeName,
+      empresa: storeName,
+      loja: storeName,
+      restaurante: storeName,
+      sistema: tenantSlug,
+
       storePhone: '',
       telefoneLoja: '',
       telefone_loja: '',
