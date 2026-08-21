@@ -9,6 +9,18 @@ import { Header } from '../../components/layout/Header';
 import { useAuth } from '../../hooks/useAuth';
 import { formatarMoeda, formatarDataHora } from '../../utils/formatters';
 
+declare global {
+  interface Window {
+    TemNaAreaPrinter?: {
+      printOrder: (payloadJson: string) => void;
+      openNativeSettings: () => void;
+    };
+  }
+}
+
+const isNativeAndroidApp = (): boolean =>
+  typeof window !== 'undefined' && typeof window.TemNaAreaPrinter !== 'undefined';
+
 export const AdminPage: React.FC = () => {
   const { usuario, logout } = useAuth();
   const [pedidos, setPedidos] = useState<Pedido[]>([]);
@@ -16,6 +28,84 @@ export const AdminPage: React.FC = () => {
   const [filtroStatus, setFiltroStatus] = useState<string>('todos');
   const [busca, setBusca] = useState<string>('');
   const [pedidoSelecionado, setPedidoSelecionado] = useState<Pedido | null>(null);
+  const [autoPrint, setAutoPrint] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('bf_admin_auto_print') !== 'false';
+    }
+    return true;
+  });
+
+  const toggleAutoPrint = () => {
+    setAutoPrint((prev) => {
+      const novo = !prev;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('bf_admin_auto_print', String(novo));
+      }
+      return novo;
+    });
+  };
+
+  const configurarImpressoraBluetooth = () => {
+    if (isNativeAndroidApp() && typeof window.TemNaAreaPrinter?.openNativeSettings === 'function') {
+      try {
+        window.TemNaAreaPrinter.openNativeSettings();
+      } catch (err) {
+        console.error('Erro ao abrir configurações da impressora:', err);
+      }
+    }
+  };
+
+  const gerarOrderPayload = (pedido: Pedido) => {
+    const end = pedido.endereco;
+    const enderecoStr = end
+      ? [
+          [end.rua, end.numero].filter(Boolean).join(', '),
+          end.complemento ? `(${end.complemento})` : '',
+          end.bairro,
+          end.cidade,
+        ]
+          .filter(Boolean)
+          .join(' - ')
+      : 'Retirada no balcão';
+
+    const items = (pedido.itens || []).map((it) => {
+      const nome = it.produto?.nome || 'Produto';
+      const q = Number(it.quantidade || 1);
+      const unitPrice = Number(it.preco || it.produto?.preco || 0);
+      const totalPrice = unitPrice * q;
+      return {
+        name: nome,
+        quantity: q,
+        unitPrice: unitPrice,
+        totalPrice: totalPrice,
+        notes: it.observacoes || '',
+      };
+    });
+
+    const rawId = String(pedido.id || '').replace(/^#BF/i, '').replace(/^#/i, '');
+    const dataCriacao = pedido.criado_em
+      ? new Date(pedido.criado_em).toLocaleString('pt-BR')
+      : new Date().toLocaleString('pt-BR');
+
+    return {
+      id: rawId,
+      storeName: 'Bel do Frango',
+      storePhone: '',
+      createdAt: dataCriacao,
+      customerName: pedido.clienteId ? `Cliente ${pedido.clienteId}` : 'Cliente',
+      customerPhone: '',
+      deliveryType: pedido.endereco ? 'DELIVERY' : 'RETIRADA',
+      address: enderecoStr,
+      items: items,
+      subtotal: Number(pedido.subtotal || 0),
+      deliveryFee: Number(pedido.taxa_entrega || 0),
+      discount: 0,
+      total: Number(pedido.total || 0),
+      paymentMethod: 'Não informado',
+      changeFor: 0,
+      notes: pedido.observacoes || '',
+    };
+  };
 
   // Carrega pedidos iniciais (simulados/API)
   useEffect(() => {
@@ -111,9 +201,19 @@ export const AdminPage: React.FC = () => {
   }, []);
 
   /**
-   * Função para imprimir ou re-imprimir o recibo do pedido em impressora térmica (58mm/80mm e Mobile/RawBT)
+   * Função para imprimir ou re-imprimir o recibo do pedido em impressora térmica (58mm/80mm e Mobile)
    */
   const reImprimirRecibo = (pedido: Pedido) => {
+    if (isNativeAndroidApp() && typeof window.TemNaAreaPrinter?.printOrder === 'function') {
+      try {
+        const payload = gerarOrderPayload(pedido);
+        window.TemNaAreaPrinter.printOrder(JSON.stringify(payload));
+        return;
+      } catch (err) {
+        console.error('Erro ao imprimir via TemNaAreaPrinter:', err);
+      }
+    }
+
     const isMobile =
       /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent || '') ||
       (window.innerWidth <= 768 && 'ontouchstart' in window);
@@ -142,42 +242,7 @@ export const AdminPage: React.FC = () => {
       ? `${pedido.endereco.rua}, ${pedido.endereco.numero}${pedido.endereco.complemento ? ' - ' + pedido.endereco.complemento : ''} - ${pedido.endereco.bairro}`
       : 'Retirada no balcão';
 
-    const textoPuro = [
-      'BEL DO FRANGO',
-      `PEDIDO ${pedido.id}`,
-      '================================',
-      `Endereço: ${endereco}`,
-      '================================',
-      ...(pedido.itens || []).map((it) => `${it.quantidade}x ${it.produto?.nome || 'Item'}`),
-      '================================',
-      `Subtotal: ${formatarMoeda(pedido.subtotal)}`,
-      pedido.taxa_entrega ? `Taxa Entrega: ${formatarMoeda(pedido.taxa_entrega)}` : '',
-      `TOTAL: ${formatarMoeda(pedido.total)}`,
-      '================================',
-      '*** REIMPRESSÃO ***',
-      agora,
-      '\n\n\n',
-    ]
-      .filter(Boolean)
-      .join('\n');
-
-    const textoFormatado = String(textoPuro || '').replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
-    const b64 = typeof window !== 'undefined' ? btoa(unescape(encodeURIComponent(textoFormatado))) : '';
-    const intentDirect = 'intent:#Intent;action=ru.a402d.rawbtprinter.action.PRINT_RAWBT;package=ru.a402d.rawbtprinter;S.data=' + b64 + ';end;';
-
     if (isMobile) {
-      if (b64) {
-        try {
-          window.location.href = intentDirect;
-          return;
-        } catch (e) {
-          try {
-            window.location.href = 'rawbt:data:text/plain;charset=utf-8;base64,' + b64;
-            return;
-          } catch (err) {}
-        }
-      }
-
       const win = window.open('', '_blank');
       if (win) {
         win.document.open();
@@ -205,15 +270,13 @@ export const AdminPage: React.FC = () => {
               .tit { font-size: 15px; font-weight: bold; margin-bottom: 4px; }
               .sep { border-bottom: 1px dashed #000; margin: 6px 0; }
               .destaque { font-size: 11px; text-align: center; margin-top: 8px; font-weight: bold; }
-              .btn-print { display: block; width: 100%; margin: 12px 0 6px; padding: 14px; background: #2D9E60; color: #fff; font-size: 15px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; }
-              .btn-rawbt { display: block; width: 100%; margin: 6px 0; padding: 12px; background: #D97706; color: #fff; font-size: 13.5px; font-weight: bold; border: none; border-radius: 10px; text-decoration: none; text-align: center; }
+              .btn-print { display: block; width: 100%; margin: 12px 0; padding: 14px; background: #2D9E60; color: #fff; font-size: 15px; font-weight: bold; border: none; border-radius: 10px; cursor: pointer; }
               @media print { .no-print { display: none !important; } }
             </style>
           </head>
           <body>
             <div class="no-print">
-              <a class="btn-rawbt" href="${intentDirect}">⚡ IMPRIMIR DIRETO NO RAWBT</a>
-              <button class="btn-print" onclick="window.print()">🖨️ Imprimir Navegador</button>
+              <button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR RECIBO</button>
               <hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>
             </div>
             <div class="c tit">BEL DO FRANGO</div>
@@ -354,7 +417,27 @@ export const AdminPage: React.FC = () => {
             <p className="text-sm text-amber-800/80">Gerencie e re-imprima cupons de atendimento em tempo real</p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center flex-wrap gap-3">
+            {isNativeAndroidApp() && (
+              <button
+                onClick={configurarImpressoraBluetooth}
+                className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs px-3.5 py-2.5 rounded-xl shadow-sm transition-all"
+              >
+                <span>🖨️</span>
+                <span>Configurar Impressora</span>
+              </button>
+            )}
+
+            <label className="flex items-center gap-2 text-xs font-semibold text-amber-950 bg-white border border-amber-200 px-3 py-2 rounded-xl cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={autoPrint}
+                onChange={toggleAutoPrint}
+                className="w-4 h-4 text-amber-600 rounded focus:ring-amber-500"
+              />
+              <span>Auto-imprimir</span>
+            </label>
+
             <input
               type="text"
               placeholder="Buscar por ID, bairro ou item..."

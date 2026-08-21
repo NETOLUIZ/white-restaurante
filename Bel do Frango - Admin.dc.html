@@ -167,10 +167,6 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><circle cx="12" cy="16" r="1.4"/></svg>
         <span style="flex:1;text-align:left;">Trocar senha</span>
       </button>
-      <button onClick="{{ testarImpressaoRawBT }}" style="display:flex;align-items:center;gap:12px;width:100%;border:none;cursor:pointer;border-radius:12px;padding:12px 14px;font-weight:700;font-size:14.5px;text-align:left;background:rgba(2,132,199,.18);color:#38BDF8;margin-top:6px;">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-        <span style="flex:1;text-align:left;">Testar Impressora</span>
-      </button>
     </nav>
 
     <div style="margin-top:auto;border-top:1px solid rgba(244,230,207,.12);padding-top:14px;display:flex;align-items:center;gap:11px;">
@@ -188,9 +184,11 @@
         <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;margin:0;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ pageTitle }}</h1>
         <p class="admin-subtitle" style="margin:3px 0 0;font-size:13px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ pageSubtitle }}</p>
       </div>
-      <button onClick="{{ testarImpressaoRawBT }}" title="Testar Impressão RawBT" style="flex:none;background:#0284C7;color:#fff;border:none;border-radius:10px;padding:8px 12px;font-weight:800;font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(2,132,199,.25);">
-        <span>🖨️</span><span>Testar</span>
-      </button>
+      <sc-if value="{{ isNativeAndroidApp }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ configurarImpressoraNativa }}" title="Configurar Impressora Bluetooth" style="flex:none;background:#0284C7;color:#fff;border:none;border-radius:10px;padding:8px 12px;font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(2,132,199,.25);">
+          <span>🖨️</span><span>Impressora</span>
+        </button>
+      </sc-if>
       <div class="admin-headerdate" style="text-align:right;"><div style="font-family:'DM Mono',monospace;font-size:13px;font-weight:500;color:#1D1009;white-space:nowrap;">{{ todayDate }}</div><div style="font-size:11px;color:#8C8075;white-space:nowrap;">{{ openLabel }}</div></div>
       <span style="width:10px;height:10px;border-radius:50%;background:#2D9E60;box-shadow:0 0 0 4px rgba(45,158,96,.16);flex:none;"></span>
     </header>
@@ -232,9 +230,6 @@
               <button onClick="{{ t.onClick }}" style="{{ t.style }}">{{ t.label }}<sc-if value="{{ t.showCount }}" hint-placeholder-val="{{ false }}"><span style="{{ t.countStyle }}">{{ t.count }}</span></sc-if></button>
             </sc-for>
           </div>
-          <button onClick="{{ testarImpressaoRawBT }}" style="background:#E0F2FE;color:#0284C7;border:1px solid #BAE6FD;border-radius:10px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;white-space:nowrap;">
-            <span>🖨️</span><span>Testar Impressão RawBT</span>
-          </button>
         </div>
 
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;overflow:hidden;box-shadow:0 5px 16px rgba(29,16,9,.05);">
@@ -664,6 +659,26 @@
       <!-- ---------- CAIXA ---------- -->
       <sc-if value="{{ isCaixa }}" hint-placeholder-val="{{ false }}">
       <div style="animation:adIn .25s ease-out;max-width:760px;">
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:4px;flex-wrap:wrap;">
+            <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0;">Impressora Térmica & Pedidos</h3>
+            <sc-if value="{{ isNativeAndroidApp }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ configurarImpressoraNativa }}" style="background:#0284C7;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-weight:700;font-size:12.5px;cursor:pointer;display:flex;align-items:center;gap:6px;box-shadow:0 2px 8px rgba(2,132,199,.25);">
+                <span>🖨️</span><span>Configurar Impressora Bluetooth</span>
+              </button>
+            </sc-if>
+          </div>
+          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Configure como os recibos são impressos no painel e aplicativo Android.</p>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#F6F1E7;border-radius:13px;padding:13px 15px;gap:12px;">
+            <div>
+              <div style="font-weight:700;font-size:14px;color:#1D1009;">Imprimir novos pedidos automaticamente</div>
+              <div style="font-size:12px;color:#8C8075;">Envia pedidos novos diretamente para a impressora assim que chegam no painel</div>
+            </div>
+            <button onClick="{{ toggleAutoPrint }}" style="{{ autoPrintToggleStyle }}" aria-label="Alternar impressão automática"><span style="{{ autoPrintKnobStyle }}"></span></button>
+          </div>
+        </div>
+
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
           <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Endereço da Loja / Estabelecimento</h3>
           <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Exibido para os clientes quando escolhem "Retirar no local" no checkout.</p>
@@ -1696,7 +1711,7 @@ class Component extends DCLogic {
   addDiasIso(iso, n){ const [y,m,d] = iso.split('-').map(Number); const dt = new Date(y, m-1, d); dt.setDate(dt.getDate()+n); return this.isoDate(dt); }
   toggleMostrarSenha(campo){ this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
 
-  // ---- impressão térmica (POS-58, 58mm / 80mm e Mobile / RawBT) ----
+  // ---- impressão térmica (POS-58, 58mm / 80mm e Mobile) ----
   isDispositivoMovel(){
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent || '') || (window.innerWidth <= 768 && 'ontouchstart' in window);
   }
@@ -1784,31 +1799,9 @@ class Component extends DCLogic {
   imprimirHTML(corpoHtml, textoPuro, tituloDoc){
     const isMobile = this.isDispositivoMovel();
     const titulo = tituloDoc || 'Recibo';
-    
-    // Suporte RawBT / Impressão Térmica Bluetooth no Mobile
-    // Usa a Intent oficial ru.a402d.rawbtprinter.action.PRINT_RAWBT para impressão direta sem tela intermediária de preview
-    if (isMobile && textoPuro) {
-      try {
-        const textoFormatado = String(textoPuro).replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
-        const b64 = btoa(unescape(encodeURIComponent(textoFormatado)));
-        const intentDirect = 'intent:#Intent;action=ru.a402d.rawbtprinter.action.PRINT_RAWBT;package=ru.a402d.rawbtprinter;S.data=' + b64 + ';end;';
-        window.location.href = intentDirect;
-        return;
-      } catch (e) {
-        try {
-          const textoFormatado = String(textoPuro).replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
-          const b64 = btoa(unescape(encodeURIComponent(textoFormatado)));
-          window.location.href = 'rawbt:data:text/plain;charset=utf-8;base64,' + b64;
-          return;
-        } catch (err) {}
-      }
-    }
 
     if (isMobile) {
-      const textoFormatado = String(textoPuro || '').replace(/\r?\n/g, '\r\n') + '\r\n\r\n\r\n\r\n';
-      const b64 = textoPuro ? btoa(unescape(encodeURIComponent(textoFormatado))) : '';
-      const intentDirect = 'intent:#Intent;action=ru.a402d.rawbtprinter.action.PRINT_RAWBT;package=ru.a402d.rawbtprinter;S.data=' + b64 + ';end;';
-      // Mobile fallback: abre janela limpa responsiva com botão de toque e auto-print
+      // Mobile: abre janela limpa responsiva com botão de toque e auto-print
       const win = window.open('', '_blank');
       if (win) {
         win.document.open();
@@ -1823,13 +1816,11 @@ class Component extends DCLogic {
           '.esp{ height:8px; }' +
           '.lin{ display:flex; justify-content:space-between; gap:6px; }' +
           '.tit{ font-size:16px; }' +
-          '.btn-print{ display:block; width:100%; margin:12px 0 6px; padding:14px; background:#2D9E60; color:#fff; font-size:15px; font-weight:bold; border:none; border-radius:10px; cursor:pointer; }' +
-          '.btn-rawbt{ display:block; width:100%; margin:6px 0; padding:12px; background:#0284C7; color:#fff; font-size:13.5px; font-weight:bold; border:none; border-radius:10px; text-decoration:none; text-align:center; }' +
+          '.btn-print{ display:block; width:100%; margin:12px 0; padding:14px; background:#2D9E60; color:#fff; font-size:15px; font-weight:bold; border:none; border-radius:10px; cursor:pointer; }' +
           '@media print { .no-print { display:none !important; } }' +
           '</style></head><body>' +
           '<div class="no-print">' +
-          (b64 ? '<a class="btn-rawbt" style="background:#D97706;" href="' + intentDirect + '">⚡ IMPRIMIR DIRETO NO RAWBT</a>' : '') +
-          '<button class="btn-print" onclick="window.print()">🖨️ Imprimir Navegador</button>' +
+          '<button class="btn-print" onclick="window.print()">🖨️ IMPRIMIR RECIBO</button>' +
           '<hr style="margin:12px 0; border:none; border-top:1px dashed #ccc;"/>' +
           '</div>' +
           corpoHtml +
@@ -1886,8 +1877,122 @@ class Component extends DCLogic {
     const texto = this.gerarTextoReciboMesa(mesa);
     this.imprimirHTML(html, texto, 'Mesa ' + mesa.numero);
   }
+  isNativeAndroidApp(){
+    return typeof window !== 'undefined' && typeof window.TemNaAreaPrinter !== 'undefined';
+  }
+  isAutoPrintAtivo(){
+    return typeof window !== 'undefined' && localStorage.getItem('bf_admin_auto_print') !== 'false';
+  }
+  toggleAutoPrint(){
+    const atual = this.isAutoPrintAtivo();
+    const novo = !atual;
+    localStorage.setItem('bf_admin_auto_print', String(novo));
+    this.setState({ autoPrintAtivo: novo });
+    this.showToast(novo ? 'Impressão automática ativada!' : 'Impressão automática desativada.');
+  }
+  configurarImpressoraNativa(){
+    if (this.isNativeAndroidApp() && typeof window.TemNaAreaPrinter.openNativeSettings === 'function') {
+      try {
+        window.TemNaAreaPrinter.openNativeSettings();
+      } catch (e) {
+        console.error('Erro ao abrir configurações da impressora:', e);
+        this.showToast('Erro ao abrir configurações da impressora.');
+      }
+    } else {
+      this.showToast('Configuração disponível apenas no aplicativo Android.');
+    }
+  }
+  gerarOrderPayload(p){
+    if (!p) return null;
+    const isEntrega = p.tipoRaw === 'ENTREGA' || p.tipo === 'Entrega' || p.tipo === 'DELIVERY';
+    const isRetirada = p.tipoRaw === 'RETIRADA' || p.tipo === 'Retirada';
+    const isMesa = p.tipoRaw === 'MESA' || p.tipo === 'Mesa';
+    
+    let deliveryType = 'DELIVERY';
+    if (isRetirada) deliveryType = 'RETIRADA';
+    else if (isMesa) deliveryType = 'MESA';
+
+    const e = p.enderecoFull || (typeof p.endereco === 'object' && p.endereco ? p.endereco : {});
+    let addressStr = '';
+    if (typeof p.endereco === 'string' && p.endereco) {
+      addressStr = p.endereco;
+    } else if (e && (e.rua || e.bairro || e.cidade)) {
+      addressStr = [
+        [e.rua, e.numero].filter(Boolean).join(', '),
+        e.complemento ? '(' + e.complemento + ')' : '',
+        e.bairro,
+        [e.cidade, e.uf].filter(Boolean).join('/')
+      ].filter(Boolean).join(' - ');
+    } else if (deliveryType === 'RETIRADA') {
+      addressStr = 'Retirada no balcão';
+    } else if (deliveryType === 'MESA' && (p.mesa || p.num)) {
+      addressStr = 'Mesa ' + (p.mesa || p.num);
+    }
+
+    const rawItens = p.itensImpressao || p.itens || [];
+    const items = rawItens.map(it => {
+      const nome = it.n || it.nome || 'Produto';
+      const q = Number(it.q || it.quantidade || 1);
+      const unitPrice = Number(it.p || it.precoUnitario || 0);
+      const totalPrice = Number((it.preco && !it.p && !it.precoUnitario) ? it.preco : (unitPrice * q));
+      const notesArr = [it.ad, it.obs].filter(Boolean);
+      return {
+        name: nome,
+        quantity: q,
+        unitPrice: unitPrice,
+        totalPrice: totalPrice,
+        notes: notesArr.join(' | ') || ''
+      };
+    });
+
+    const rawIdStr = String(p.rawId || p.id || '').replace(/^#BF/i, '').replace(/^#/i, '');
+    let dataCriacao = '';
+    try {
+      const d = p.criadoEm || p.createdAt;
+      dataCriacao = d ? new Date(d).toLocaleString('pt-BR') : new Date().toLocaleString('pt-BR');
+    } catch (err) {
+      dataCriacao = new Date().toLocaleString('pt-BR');
+    }
+
+    const storeName = this.state.tenantNome || (this.state.tenant && this.state.tenant.nome) || 'Bel do Frango';
+    const storePhone = this.state.tenantTelefone || (this.state.tenant && this.state.tenant.telefone) || '';
+
+    return {
+      id: rawIdStr,
+      storeName: storeName,
+      storePhone: storePhone,
+      createdAt: dataCriacao,
+      customerName: p.cliente || p.nomeCliente || 'Cliente',
+      customerPhone: p.telefone || '',
+      deliveryType: deliveryType,
+      address: addressStr,
+      items: items,
+      subtotal: Number(p.subtotal || 0),
+      deliveryFee: Number(p.taxaEntrega || p.taxa_entrega || 0),
+      discount: Number(p.desconto || 0),
+      total: Number(p.total || 0),
+      paymentMethod: String(p.pgto || p.formaPagamento || 'Não informado'),
+      changeFor: Number(p.trocoPara || p.changeFor || 0),
+      notes: String(p.observacoes || '')
+    };
+  }
   imprimirReciboPedido(p){
     if (!p) return;
+
+    // Se estiver rodando dentro do aplicativo Android nativo "Tem na Área", envia para a bridge nativa
+    if (this.isNativeAndroidApp() && typeof window.TemNaAreaPrinter.printOrder === 'function') {
+      try {
+        const orderPayload = this.gerarOrderPayload(p);
+        if (orderPayload) {
+          window.TemNaAreaPrinter.printOrder(JSON.stringify(orderPayload));
+          return;
+        }
+      } catch (err) {
+        console.error('Erro ao imprimir via TemNaAreaPrinter:', err);
+      }
+    }
+
+    // Fallback: impressão HTML padrão
     const SEP = '<div class="linha">================================</div>';
     const rawItens = p.itensImpressao || (p.itens || []).map(it => ({ q: it.q || it.quantidade || 1, nome: it.n || it.nome || 'Item', ad: it.ad || '', obs: it.obs || '' }));
     const itensHtml = rawItens.map((it) =>
@@ -1925,26 +2030,6 @@ class Component extends DCLogic {
       '<div class="c" style="font-size:10px;">REIMPRESSÃO · ' + agora + '</div>';
     const texto = this.gerarTextoReciboPedido(p);
     this.imprimirHTML(html, texto, 'Pedido ' + p.id);
-  testarImpressaoRawBT(){
-    const nome = (this.state.tenantNome || 'BEL DO FRANGO').toUpperCase();
-    const agora = new Date().toLocaleString('pt-BR');
-    const texto = [
-      '================================',
-      '        ' + nome,
-      '   TESTE DE IMPRESSAO RAWBT',
-      '================================',
-      'Data/Hora: ' + agora,
-      'Status: CONEXAO OK',
-      'Dispositivo: ' + (this.isDispositivoMovel() ? 'Mobile' : 'Desktop'),
-      '--------------------------------',
-      'Se voce esta lendo este teste,',
-      'sua impressora termica esta',
-      'conectada e pronta para imprimir!',
-      '================================',
-      '\r\n\r\n\r\n\r\n'
-    ].join('\r\n');
-    this.imprimirHTML('<div>TESTE RAWBT OK</div>', texto, 'Teste Impressão');
-    this.showToast('Enviando teste de impressão...');
   }
 
   // Acompanha o maior id de pedido já visto pra imprimir pedidos novos automaticamente
@@ -1971,7 +2056,9 @@ class Component extends DCLogic {
           raw: ultimoNovo
         }
       });
-      novos.forEach((p) => this.imprimirReciboPedido(p));
+      if (this.isAutoPrintAtivo()) {
+        novos.forEach((p) => this.imprimirReciboPedido(p));
+      }
       localStorage.setItem(this.CHAVE_ULTIMO_PEDIDO_IMPRESSO, String(maiorIdAtual));
     }
   }
@@ -3557,6 +3644,11 @@ class Component extends DCLogic {
       fechamentoHora: f ? f.hora : '', fechamentoRecebido: f ? this.fmt(f.recebido) : '', fechamentoEmCaixa: f ? this.fmt(f.emCaixa) : '',
       horarioDiasRows: this.horarioDiasRows(),
       salvarHorarioFuncionamento:() => this.salvarHorarioFuncionamento(),
+      isNativeAndroidApp: this.isNativeAndroidApp(),
+      autoPrintToggleStyle: this.toggleStyle(this.isAutoPrintAtivo()),
+      autoPrintKnobStyle: this.knobStyle(),
+      toggleAutoPrint: () => this.toggleAutoPrint(),
+      configurarImpressoraNativa: () => this.configurarImpressoraNativa(),
     };
   }
   /** Uma linha por dia da semana pro editor de horário de funcionamento (ver draft em horarioParaDraft/draftParaHorarioFuncionamento). */
@@ -4064,13 +4156,18 @@ class Component extends DCLogic {
         this.setState({ alertaNovoPedidoMobile: null });
       },
       fecharAlertaNovoPedidoMobile: () => this.setState({ alertaNovoPedidoMobile: null }),
-      testarImpressaoRawBT: () => this.testarImpressaoRawBT(),
 
       pageTitle, pageSubtitle,
       showSearch: s.view === 'pedidos' || s.view === 'produtos',
       searchPlaceholder: s.view === 'produtos' ? 'Buscar produto...' : 'Buscar pedido ou cliente...',
       search:s.search, onSearch:(e) => this.setState({ search:e.target.value }),
       todayDate: this.formatarDataHoje(), openLabel:'Aberto agora',
+
+      isNativeAndroidApp: this.isNativeAndroidApp(),
+      configurarImpressoraNativa: () => this.configurarImpressoraNativa(),
+      toggleAutoPrint: () => this.toggleAutoPrint(),
+      autoPrintToggleStyle: this.toggleStyle(this.isAutoPrintAtivo()),
+      autoPrintKnobStyle: this.knobStyle(),
 
       isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha', isBackup: s.view==='backup',
       isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isCaixaEntregadores: s.view==='caixaentregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes', isEmpresas: s.view==='empresas',
