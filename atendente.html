@@ -1304,35 +1304,81 @@ class Component extends DCLogic {
       }
 
       const notesStr = String(it.obs || it.observacoes || '');
-      const unitPriceFmt = unitPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const totalPriceFmt = totalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const unitPriceNum = Number(unitPrice.toFixed(2));
+      const totalPriceNum = Number(totalPrice.toFixed(2));
+      const unitPriceCents = Math.round(unitPriceNum * 100);
+      const totalPriceCents = Math.round(totalPriceNum * 100);
+      const unitPriceFmt = unitPriceNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const totalPriceFmt = totalPriceNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
       return {
         name: nome,
         nome: nome,
+        productName: nome,
+        product_name: nome,
+        nomeProduto: nome,
+        nome_produto: nome,
+
         quantity: q,
         quantidade: q,
         qtd: q,
         q: q,
-        unitPrice: unitPrice,
-        unit_price: unitPrice,
-        precoUnitario: unitPrice,
-        preco_unitario: unitPrice,
-        preco: unitPrice,
-        price: unitPrice,
-        valorUnitario: unitPrice,
-        valor: unitPrice,
+        amount: q,
+
+        total: totalPriceNum,
+        total_item: totalPriceNum,
+        item_total: totalPriceNum,
+        totalItem: totalPriceNum,
+        itemTotal: totalPriceNum,
+        totalPrice: totalPriceNum,
+        total_price: totalPriceNum,
+        priceTotal: totalPriceNum,
+        price_total: totalPriceNum,
+        precoTotal: totalPriceNum,
+        preco_total: totalPriceNum,
+        totalPreco: totalPriceNum,
+        total_preco: totalPriceNum,
+        valorTotal: totalPriceNum,
+        valor_total: totalPriceNum,
+        totalValor: totalPriceNum,
+        total_valor: totalPriceNum,
+        valorItem: totalPriceNum,
+        valor_item: totalPriceNum,
+        itemValor: totalPriceNum,
+        item_valor: totalPriceNum,
+        subtotal: totalPriceNum,
+
+        price: unitPriceNum,
+        preco: unitPriceNum,
+        valor: unitPriceNum,
+        val: unitPriceNum,
+        unitPrice: unitPriceNum,
+        unit_price: unitPriceNum,
+        priceUnit: unitPriceNum,
+        price_unit: unitPriceNum,
+        precoUnitario: unitPriceNum,
+        preco_unitario: unitPriceNum,
+        valorUnitario: unitPriceNum,
+        valor_unitario: unitPriceNum,
+
+        totalCents: totalPriceCents,
+        total_cents: totalPriceCents,
+        precoCents: totalPriceCents,
+        preco_cents: totalPriceCents,
+        priceCents: totalPriceCents,
+        price_cents: totalPriceCents,
+
+        totalStr: totalPriceFmt,
+        total_str: totalPriceFmt,
+        precoStr: totalPriceFmt,
+        preco_str: totalPriceFmt,
+        priceStr: totalPriceFmt,
+        price_str: totalPriceFmt,
         unitPriceFmt: unitPriceFmt,
         precoUnitarioFmt: unitPriceFmt,
-        totalPrice: totalPrice,
-        total_price: totalPrice,
-        precoTotal: totalPrice,
-        preco_total: totalPrice,
-        total: totalPrice,
-        priceTotal: totalPrice,
-        valorTotal: totalPrice,
         totalPriceFmt: totalPriceFmt,
         precoTotalFmt: totalPriceFmt,
+
         notes: notesStr,
         obs: notesStr,
         observacoes: notesStr
@@ -1340,51 +1386,94 @@ class Component extends DCLogic {
     });
 
     const rawIdStr = String(codigo || '').replace(/^#BF/i, '').replace(/^#/i, '');
+    const rawIdNum = parseInt(rawIdStr.replace(/\D/g, ''), 10) || 0;
     const agora = new Date().toLocaleString('pt-BR');
     const storeName = (this.state.tenant && this.state.tenant.nome) ? this.state.tenant.nome : 'Bel do Frango';
     const storePhone = (this.state.tenant && this.state.tenant.telefone) ? this.state.tenant.telefone : '';
     const paymentMethodStr = String(formaPagamentoLabel || 'Não informado');
 
     const totalFmt = totalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const idVal = rawIdNum || rawIdStr;
 
     return {
-      id: rawIdStr,
-      codigo: rawIdStr,
+      id: idVal,
+      orderId: idVal,
+      order_id: idVal,
+      pedidoId: idVal,
+      pedido_id: idVal,
+      idPedido: idVal,
+      id_pedido: idVal,
+      codigo: idVal,
+      codigoPedido: idVal,
+      codigo_pedido: idVal,
+      num: idVal,
+      numero: idVal,
+      numeroPedido: idVal,
+      numero_pedido: idVal,
+
+      idStr: String(rawIdStr),
+      id_str: String(rawIdStr),
+      idNum: rawIdNum,
+      id_num: rawIdNum,
+
       storeName: storeName,
       nomeLoja: storeName,
+      nome_loja: storeName,
       storePhone: storePhone,
       telefoneLoja: storePhone,
+      telefone_loja: storePhone,
+
       createdAt: agora,
       criadoEm: agora,
+      criado_em: agora,
+      data: agora,
+
       customerName: 'Balcão',
       nomeCliente: 'Balcão',
+      nome_cliente: 'Balcão',
       cliente: 'Balcão',
       customerPhone: '',
       telefoneCliente: '',
+      telefone_cliente: '',
       telefone: '',
+
       deliveryType: 'RETIRADA',
       tipoEntrega: 'RETIRADA',
+      tipo_entrega: 'RETIRADA',
       tipo: 'RETIRADA',
       address: 'Retirada no balcão',
       endereco: 'Retirada no balcão',
+
       items: items,
       itens: items,
+      products: items,
+      produtos: items,
+      pedidoItens: items,
+      pedido_itens: items,
+
       subtotal: totalNum,
       subtotalFmt: totalFmt,
       deliveryFee: 0,
       taxaEntrega: 0,
+      taxa_entrega: 0,
       taxa: 0,
       discount: 0,
       desconto: 0,
       total: totalNum,
       totalGeral: totalNum,
+      total_geral: totalNum,
       totalFmt: totalFmt,
+
       paymentMethod: paymentMethodStr,
       formaPagamento: paymentMethodStr,
+      forma_pagamento: paymentMethodStr,
       pgto: paymentMethodStr,
+
       changeFor: 0,
       trocoPara: 0,
+      troco_para: 0,
       troco: 0,
+
       notes: '',
       observacoes: '',
       obs: ''

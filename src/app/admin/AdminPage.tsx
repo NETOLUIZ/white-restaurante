@@ -125,42 +125,89 @@ export const AdminPage: React.FC = () => {
       }
 
       const notesStr = String(it.observacoes || it.obs || '');
-      const unitPriceFmt = unitPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-      const totalPriceFmt = totalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const unitPriceNum = Number(unitPrice.toFixed(2));
+      const totalPriceNum = Number(totalPrice.toFixed(2));
+      const unitPriceCents = Math.round(unitPriceNum * 100);
+      const totalPriceCents = Math.round(totalPriceNum * 100);
+      const unitPriceFmt = unitPriceNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const totalPriceFmt = totalPriceNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
       return {
         name: nome,
         nome: nome,
+        productName: nome,
+        product_name: nome,
+        nomeProduto: nome,
+        nome_produto: nome,
+
         quantity: q,
         quantidade: q,
         qtd: q,
         q: q,
-        unitPrice: unitPrice,
-        unit_price: unitPrice,
-        precoUnitario: unitPrice,
-        preco_unitario: unitPrice,
-        preco: unitPrice,
-        price: unitPrice,
-        valorUnitario: unitPrice,
-        valor: unitPrice,
+        amount: q,
+
+        total: totalPriceNum,
+        total_item: totalPriceNum,
+        item_total: totalPriceNum,
+        totalItem: totalPriceNum,
+        itemTotal: totalPriceNum,
+        totalPrice: totalPriceNum,
+        total_price: totalPriceNum,
+        priceTotal: totalPriceNum,
+        price_total: totalPriceNum,
+        precoTotal: totalPriceNum,
+        preco_total: totalPriceNum,
+        totalPreco: totalPriceNum,
+        total_preco: totalPriceNum,
+        valorTotal: totalPriceNum,
+        valor_total: totalPriceNum,
+        totalValor: totalPriceNum,
+        total_valor: totalPriceNum,
+        valorItem: totalPriceNum,
+        valor_item: totalPriceNum,
+        itemValor: totalPriceNum,
+        item_valor: totalPriceNum,
+        subtotal: totalPriceNum,
+
+        price: unitPriceNum,
+        preco: unitPriceNum,
+        valor: unitPriceNum,
+        val: unitPriceNum,
+        unitPrice: unitPriceNum,
+        unit_price: unitPriceNum,
+        priceUnit: unitPriceNum,
+        price_unit: unitPriceNum,
+        precoUnitario: unitPriceNum,
+        preco_unitario: unitPriceNum,
+        valorUnitario: unitPriceNum,
+        valor_unitario: unitPriceNum,
+
+        totalCents: totalPriceCents,
+        total_cents: totalPriceCents,
+        precoCents: totalPriceCents,
+        preco_cents: totalPriceCents,
+        priceCents: totalPriceCents,
+        price_cents: totalPriceCents,
+
+        totalStr: totalPriceFmt,
+        total_str: totalPriceFmt,
+        precoStr: totalPriceFmt,
+        preco_str: totalPriceFmt,
+        priceStr: totalPriceFmt,
+        price_str: totalPriceFmt,
         unitPriceFmt: unitPriceFmt,
         precoUnitarioFmt: unitPriceFmt,
-        totalPrice: totalPrice,
-        total_price: totalPrice,
-        precoTotal: totalPrice,
-        preco_total: totalPrice,
-        total: totalPrice,
-        priceTotal: totalPrice,
-        valorTotal: totalPrice,
         totalPriceFmt: totalPriceFmt,
         precoTotalFmt: totalPriceFmt,
+
         notes: notesStr,
         obs: notesStr,
         observacoes: notesStr
       };
     });
 
-    const rawId = String(pedido.id || '').replace(/^#BF/i, '').replace(/^#/i, '');
+    const rawIdStr = String(pedido.id || '').replace(/^#BF/i, '').replace(/^#/i, '');
+    const rawIdNum = parseInt(rawIdStr.replace(/\D/g, ''), 10) || 0;
     const dataCriacao = pedido.criado_em || pedido.createdAt || pedido.criadoEm
       ? new Date(pedido.criado_em || pedido.createdAt || pedido.criadoEm).toLocaleString('pt-BR')
       : new Date().toLocaleString('pt-BR');
@@ -169,45 +216,87 @@ export const AdminPage: React.FC = () => {
     const deliveryType = pedido.endereco ? 'DELIVERY' : 'RETIRADA';
     const subtotalFmt = subtotalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const totalFmt = totalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const idVal = rawIdNum || rawIdStr;
 
     return {
-      id: rawId,
-      codigo: rawId,
+      id: idVal,
+      orderId: idVal,
+      order_id: idVal,
+      pedidoId: idVal,
+      pedido_id: idVal,
+      idPedido: idVal,
+      id_pedido: idVal,
+      codigo: idVal,
+      codigoPedido: idVal,
+      codigo_pedido: idVal,
+      num: idVal,
+      numero: idVal,
+      numeroPedido: idVal,
+      numero_pedido: idVal,
+
+      idStr: String(rawIdStr),
+      id_str: String(rawIdStr),
+      idNum: rawIdNum,
+      id_num: rawIdNum,
+
       storeName: 'Bel do Frango',
       nomeLoja: 'Bel do Frango',
+      nome_loja: 'Bel do Frango',
       storePhone: '',
       telefoneLoja: '',
+      telefone_loja: '',
+
       createdAt: dataCriacao,
       criadoEm: dataCriacao,
+      criado_em: dataCriacao,
+      data: dataCriacao,
+
       customerName: customerName,
       nomeCliente: customerName,
+      nome_cliente: customerName,
       cliente: customerName,
       customerPhone: '',
       telefoneCliente: '',
+      telefone_cliente: '',
       telefone: '',
+
       deliveryType: deliveryType,
       tipoEntrega: deliveryType,
+      tipo_entrega: deliveryType,
       tipo: deliveryType,
       address: enderecoStr,
       endereco: enderecoStr,
+
       items: items,
       itens: items,
+      products: items,
+      produtos: items,
+      pedidoItens: items,
+      pedido_itens: items,
+
       subtotal: subtotalNum,
       subtotalFmt: subtotalFmt,
       deliveryFee: deliveryFeeNum,
       taxaEntrega: deliveryFeeNum,
+      taxa_entrega: deliveryFeeNum,
       taxa: deliveryFeeNum,
       discount: discountNum,
       desconto: discountNum,
       total: totalNum,
       totalGeral: totalNum,
+      total_geral: totalNum,
       totalFmt: totalFmt,
+
       paymentMethod: 'Não informado',
       formaPagamento: 'Não informado',
+      forma_pagamento: 'Não informado',
       pgto: 'Não informado',
+
       changeFor: 0,
       trocoPara: 0,
+      troco_para: 0,
       troco: 0,
+
       notes: pedido.observacoes || '',
       observacoes: pedido.observacoes || '',
       obs: pedido.observacoes || ''
