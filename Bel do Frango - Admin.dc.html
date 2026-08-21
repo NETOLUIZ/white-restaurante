@@ -1970,27 +1970,97 @@ class Component extends DCLogic {
       addressStr = 'Mesa ' + (p.mesa || p.num);
     }
 
+    const subtotalNum = Number(p.subtotal || 0);
+    const deliveryFeeNum = Number(p.taxaEntrega || p.taxa_entrega || 0);
+    const discountNum = Number(p.desconto || 0);
+    const totalNum = Number(p.total || (subtotalNum + deliveryFeeNum - discountNum));
+
     const rawItens = p.itensImpressao || p.itens || [];
+    const itemsCount = rawItens.length;
+
     const items = rawItens.map(it => {
-      const nome = it.n || it.nome || 'Produto';
-      const q = Number(it.q || it.quantidade || 1);
-      const unitPrice = Number(
-        it.precoUnitario != null ? it.precoUnitario :
-        (it.p != null ? it.p :
-        (it.preco != null ? it.preco :
-        (it.unitPrice != null ? it.unitPrice : 0)))
-      );
-      const totalPrice = Number(
-        it.precoTotal != null ? it.precoTotal :
-        (it.totalPrice != null ? it.totalPrice : (unitPrice * q))
-      );
+      const nome = it.n || it.nome || (it.produto ? it.produto.nome : (it.tamanhoMarmita ? it.tamanhoMarmita.nome : 'Produto'));
+      const q = Number(it.q || it.quantidade || it.quantity || 1);
+      
+      let unitPrice = 0;
+      const unitCandidates = [
+        it.precoUnitario, it.precoUnitarioCongelado, it.p, it.preco, it.price,
+        it.unitPrice, it.valor, it.val, it.valorUnitario, it.produto?.preco, it.tamanhoMarmita?.preco
+      ];
+      for (const c of unitCandidates) {
+        if (c != null && c !== '') {
+          const n = Number(c);
+          if (!isNaN(n) && n > 0) { unitPrice = n; break; }
+        }
+      }
+      if (unitPrice === 0) {
+        const totalCandidates = [it.precoTotal, it.totalPrice, it.total, it.subtotal, it.valorTotal];
+        for (const c of totalCandidates) {
+          if (c != null && c !== '') {
+            const n = Number(c);
+            if (!isNaN(n) && n > 0 && q > 0) { unitPrice = Number((n / q).toFixed(2)); break; }
+          }
+        }
+      }
+      if (unitPrice === 0 && subtotalNum > 0 && itemsCount > 0 && q > 0) {
+        if (itemsCount === 1) unitPrice = Number((subtotalNum / q).toFixed(2));
+      }
+      if (unitPrice === 0) {
+        for (const c of unitCandidates) {
+          if (c != null && c !== '') {
+            const n = Number(c);
+            if (!isNaN(n)) { unitPrice = n; break; }
+          }
+        }
+      }
+
+      let totalPrice = 0;
+      const itemTotalCandidates = [it.precoTotal, it.totalPrice, it.total, it.valorTotal];
+      for (const c of itemTotalCandidates) {
+        if (c != null && c !== '') {
+          const n = Number(c);
+          if (!isNaN(n) && n > 0) { totalPrice = n; break; }
+        }
+      }
+      if (totalPrice === 0) {
+        totalPrice = Number((unitPrice * q).toFixed(2));
+      }
+
       const notesArr = [it.ad, it.obs].filter(Boolean);
+      const notesStr = notesArr.join(' | ') || '';
+
+      const unitPriceFmt = unitPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const totalPriceFmt = totalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
       return {
         name: nome,
+        nome: nome,
         quantity: q,
+        quantidade: q,
+        qtd: q,
+        q: q,
         unitPrice: unitPrice,
+        unit_price: unitPrice,
+        precoUnitario: unitPrice,
+        preco_unitario: unitPrice,
+        preco: unitPrice,
+        price: unitPrice,
+        valorUnitario: unitPrice,
+        valor: unitPrice,
+        unitPriceFmt: unitPriceFmt,
+        precoUnitarioFmt: unitPriceFmt,
         totalPrice: totalPrice,
-        notes: notesArr.join(' | ') || ''
+        total_price: totalPrice,
+        precoTotal: totalPrice,
+        preco_total: totalPrice,
+        total: totalPrice,
+        priceTotal: totalPrice,
+        valorTotal: totalPrice,
+        totalPriceFmt: totalPriceFmt,
+        precoTotalFmt: totalPriceFmt,
+        notes: notesStr,
+        obs: notesStr,
+        observacoes: notesStr
       };
     });
 
@@ -2005,24 +2075,56 @@ class Component extends DCLogic {
 
     const storeName = this.state.tenantNome || (this.state.tenant && this.state.tenant.nome) || 'Bel do Frango';
     const storePhone = this.state.tenantTelefone || (this.state.tenant && this.state.tenant.telefone) || '';
+    const customerName = p.cliente || p.nomeCliente || 'Cliente';
+    const customerPhone = p.telefone || '';
+    const paymentMethodStr = String(p.pgto || p.formaPagamento || 'Não informado');
+    const changeForNum = Number(p.trocoPara || p.changeFor || 0);
+    const notesStr = String(p.observacoes || '');
+
+    const subtotalFmt = subtotalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const totalFmt = totalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     return {
       id: rawIdStr,
+      codigo: rawIdStr,
       storeName: storeName,
+      nomeLoja: storeName,
       storePhone: storePhone,
+      telefoneLoja: storePhone,
       createdAt: dataCriacao,
-      customerName: p.cliente || p.nomeCliente || 'Cliente',
-      customerPhone: p.telefone || '',
+      criadoEm: dataCriacao,
+      customerName: customerName,
+      nomeCliente: customerName,
+      cliente: customerName,
+      customerPhone: customerPhone,
+      telefoneCliente: customerPhone,
+      telefone: customerPhone,
       deliveryType: deliveryType,
+      tipoEntrega: deliveryType,
+      tipo: deliveryType,
       address: addressStr,
+      endereco: addressStr,
       items: items,
-      subtotal: Number(p.subtotal || 0),
-      deliveryFee: Number(p.taxaEntrega || p.taxa_entrega || 0),
-      discount: Number(p.desconto || 0),
-      total: Number(p.total || 0),
-      paymentMethod: String(p.pgto || p.formaPagamento || 'Não informado'),
-      changeFor: Number(p.trocoPara || p.changeFor || 0),
-      notes: String(p.observacoes || '')
+      itens: items,
+      subtotal: subtotalNum,
+      subtotalFmt: subtotalFmt,
+      deliveryFee: deliveryFeeNum,
+      taxaEntrega: deliveryFeeNum,
+      taxa: deliveryFeeNum,
+      discount: discountNum,
+      desconto: discountNum,
+      total: totalNum,
+      totalGeral: totalNum,
+      totalFmt: totalFmt,
+      paymentMethod: paymentMethodStr,
+      formaPagamento: paymentMethodStr,
+      pgto: paymentMethodStr,
+      changeFor: changeForNum,
+      trocoPara: changeForNum,
+      troco: changeForNum,
+      notes: notesStr,
+      observacoes: notesStr,
+      obs: notesStr
     };
   }
   imprimirReciboPedido(p){

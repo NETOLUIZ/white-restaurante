@@ -68,50 +68,149 @@ export const AdminPage: React.FC = () => {
           .join(' - ')
       : 'Retirada no balcão';
 
-    const items = (pedido.itens || []).map((it: any) => {
-      const nome = it.produto?.nome || it.nome || 'Produto';
-      const q = Number(it.quantidade || it.q || 1);
-      const unitPrice = Number(
-        it.precoUnitario != null ? it.precoUnitario :
-        (it.preco != null ? it.preco :
-        (it.produto?.preco != null ? it.produto.preco :
-        (it.p != null ? it.p : 0)))
-      );
-      const totalPrice = Number(
-        it.precoTotal != null ? it.precoTotal :
-        (it.totalPrice != null ? it.totalPrice : (unitPrice * q))
-      );
+    const subtotalNum = Number(pedido.subtotal || 0);
+    const deliveryFeeNum = Number(pedido.taxa_entrega || pedido.taxaEntrega || 0);
+    const discountNum = Number(pedido.desconto || 0);
+    const totalNum = Number(pedido.total || (subtotalNum + deliveryFeeNum - discountNum));
+
+    const rawItens = pedido.itens || [];
+    const itemsCount = rawItens.length;
+
+    const items = rawItens.map((it: any) => {
+      const nome = it.produto?.nome || it.nome || it.n || (it.tamanhoMarmita?.nome) || 'Produto';
+      const q = Number(it.quantidade || it.q || it.quantity || 1);
+      
+      let unitPrice = 0;
+      const unitCandidates = [
+        it.precoUnitario, it.precoUnitarioCongelado, it.p, it.preco, it.price,
+        it.unitPrice, it.valor, it.val, it.valorUnitario, it.produto?.preco, it.tamanhoMarmita?.preco
+      ];
+      for (const c of unitCandidates) {
+        if (c != null && c !== '') {
+          const n = Number(c);
+          if (!isNaN(n) && n > 0) { unitPrice = n; break; }
+        }
+      }
+      if (unitPrice === 0) {
+        const totalCandidates = [it.precoTotal, it.totalPrice, it.total, it.subtotal, it.valorTotal];
+        for (const c of totalCandidates) {
+          if (c != null && c !== '') {
+            const n = Number(c);
+            if (!isNaN(n) && n > 0 && q > 0) { unitPrice = Number((n / q).toFixed(2)); break; }
+          }
+        }
+      }
+      if (unitPrice === 0 && subtotalNum > 0 && itemsCount > 0 && q > 0) {
+        if (itemsCount === 1) unitPrice = Number((subtotalNum / q).toFixed(2));
+      }
+      if (unitPrice === 0) {
+        for (const c of unitCandidates) {
+          if (c != null && c !== '') {
+            const n = Number(c);
+            if (!isNaN(n)) { unitPrice = n; break; }
+          }
+        }
+      }
+
+      let totalPrice = 0;
+      const itemTotalCandidates = [it.precoTotal, it.totalPrice, it.total, it.valorTotal];
+      for (const c of itemTotalCandidates) {
+        if (c != null && c !== '') {
+          const n = Number(c);
+          if (!isNaN(n) && n > 0) { totalPrice = n; break; }
+        }
+      }
+      if (totalPrice === 0) {
+        totalPrice = Number((unitPrice * q).toFixed(2));
+      }
+
+      const notesStr = String(it.observacoes || it.obs || '');
+      const unitPriceFmt = unitPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const totalPriceFmt = totalPrice.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
       return {
         name: nome,
+        nome: nome,
         quantity: q,
+        quantidade: q,
+        qtd: q,
+        q: q,
         unitPrice: unitPrice,
+        unit_price: unitPrice,
+        precoUnitario: unitPrice,
+        preco_unitario: unitPrice,
+        preco: unitPrice,
+        price: unitPrice,
+        valorUnitario: unitPrice,
+        valor: unitPrice,
+        unitPriceFmt: unitPriceFmt,
+        precoUnitarioFmt: unitPriceFmt,
         totalPrice: totalPrice,
-        notes: it.observacoes || '',
+        total_price: totalPrice,
+        precoTotal: totalPrice,
+        preco_total: totalPrice,
+        total: totalPrice,
+        priceTotal: totalPrice,
+        valorTotal: totalPrice,
+        totalPriceFmt: totalPriceFmt,
+        precoTotalFmt: totalPriceFmt,
+        notes: notesStr,
+        obs: notesStr,
+        observacoes: notesStr
       };
     });
 
     const rawId = String(pedido.id || '').replace(/^#BF/i, '').replace(/^#/i, '');
-    const dataCriacao = pedido.criado_em
-      ? new Date(pedido.criado_em).toLocaleString('pt-BR')
+    const dataCriacao = pedido.criado_em || pedido.createdAt || pedido.criadoEm
+      ? new Date(pedido.criado_em || pedido.createdAt || pedido.criadoEm).toLocaleString('pt-BR')
       : new Date().toLocaleString('pt-BR');
+
+    const customerName = pedido.clienteId ? `Cliente ${pedido.clienteId}` : (pedido.cliente || pedido.nomeCliente || 'Cliente');
+    const deliveryType = pedido.endereco ? 'DELIVERY' : 'RETIRADA';
+    const subtotalFmt = subtotalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const totalFmt = totalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     return {
       id: rawId,
+      codigo: rawId,
       storeName: 'Bel do Frango',
+      nomeLoja: 'Bel do Frango',
       storePhone: '',
+      telefoneLoja: '',
       createdAt: dataCriacao,
-      customerName: pedido.clienteId ? `Cliente ${pedido.clienteId}` : 'Cliente',
+      criadoEm: dataCriacao,
+      customerName: customerName,
+      nomeCliente: customerName,
+      cliente: customerName,
       customerPhone: '',
-      deliveryType: pedido.endereco ? 'DELIVERY' : 'RETIRADA',
+      telefoneCliente: '',
+      telefone: '',
+      deliveryType: deliveryType,
+      tipoEntrega: deliveryType,
+      tipo: deliveryType,
       address: enderecoStr,
+      endereco: enderecoStr,
       items: items,
-      subtotal: Number(pedido.subtotal || 0),
-      deliveryFee: Number(pedido.taxa_entrega || 0),
-      discount: 0,
-      total: Number(pedido.total || 0),
+      itens: items,
+      subtotal: subtotalNum,
+      subtotalFmt: subtotalFmt,
+      deliveryFee: deliveryFeeNum,
+      taxaEntrega: deliveryFeeNum,
+      taxa: deliveryFeeNum,
+      discount: discountNum,
+      desconto: discountNum,
+      total: totalNum,
+      totalGeral: totalNum,
+      totalFmt: totalFmt,
       paymentMethod: 'Não informado',
+      formaPagamento: 'Não informado',
+      pgto: 'Não informado',
       changeFor: 0,
+      trocoPara: 0,
+      troco: 0,
       notes: pedido.observacoes || '',
+      observacoes: pedido.observacoes || '',
+      obs: pedido.observacoes || ''
     };
   };
 
