@@ -83,7 +83,6 @@ services:
       - ./index.html:/usr/share/nginx/html/index.html:ro
       - "./Bel do Frango - Admin.dc.html:/usr/share/nginx/html/Bel do Frango - Admin.dc.html:ro"
       - "./Bel do Frango - Sistema.dc.html:/usr/share/nginx/html/Bel do Frango - Sistema.dc.html:ro"
-      - "./Bel do Frango.dc.html:/usr/share/nginx/html/Bel do Frango.dc.html:ro"
       - ./entregador.html:/usr/share/nginx/html/entregador.html:ro
       - ./garcom.html:/usr/share/nginx/html/garcom.html:ro
       - ./atendente.html:/usr/share/nginx/html/atendente.html:ro

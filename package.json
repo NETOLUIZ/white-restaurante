@@ -1,30 +1,14 @@
 {
-  "name": "bel-do-frango",
+  "name": "white-restaurante-saas",
   "version": "1.0.0",
   "private": true,
-  "description": "Sistema completo Bel do Frango: Delivery, Salão, Admin e KDS",
+  "description": "SaaS multi-tenant para restaurantes: storefront, admin, entregador, garçom, atendente, empresa e super admin",
   "main": "index.html",
   "scripts": {
     "start": "node scripts/dev-server.js",
-    "serve": "npm run start",
-    "build": "echo 'Build setup needed - configure with your build tool'",
-    "lint": "eslint src/**/*.{ts,tsx}",
-    "type-check": "tsc --noEmit"
+    "serve": "npm run start"
   },
   "devDependencies": {
-    "live-server": "^1.2.2",
-    "playwright": "^1.61.1"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "live-server": "^1.2.2"
   }
 }
