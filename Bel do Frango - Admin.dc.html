@@ -2416,6 +2416,8 @@ class Component extends DCLogic {
           raw: ultimoNovo
         }
       });
+      clearTimeout(this._alertaNovoPedidoTimer);
+      this._alertaNovoPedidoTimer = setTimeout(() => this.setState({ alertaNovoPedidoMobile: null }), 8000);
       if (this.isAutoPrintAtivo()) {
         novos.forEach((p) => this.imprimirReciboPedido(p));
       }
