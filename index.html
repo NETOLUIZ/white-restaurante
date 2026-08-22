@@ -2094,19 +2094,19 @@ class Component extends DCLogic {
 
     const rootStyle = {
       minHeight:'100vh', display:'flex',
-      alignItems: (isDesktop && !wide) ? 'center' : 'flex-start',
-      justifyContent: (isDesktop && !wide) ? 'center' : 'flex-start',
+      alignItems: isDesktop ? 'center' : 'flex-start',
+      justifyContent: 'center',
       padding: (isDesktop && !wide) ? '26px' : '0',
       background: (isDesktop && !wide) ? 'radial-gradient(900px 520px at 50% 0%, #C0271A 0%, #7A1209 55%, #3A0A06 100%)' : 'var(--cor-fundo, #FFF6D6)',
       fontFamily: "'Plus Jakarta Sans',system-ui,sans-serif"
     };
     const shellStyle = {
       width:'100%',
-      maxWidth: (isDesktop && !wide) ? '440px' : '100%',
+      maxWidth: wide ? '1280px' : (isDesktop ? '440px' : '100%'),
       height: wide ? '100vh' : (isDesktop ? 'min(880px, 94vh)' : '100dvh'),
       background:'var(--cor-fundo, #FFF6D6)', display:'flex', flexDirection:'column', overflow:'hidden',
       borderRadius: (isDesktop && !wide) ? '30px' : '0',
-      boxShadow: (isDesktop && !wide) ? '0 40px 90px rgba(0,0,0,.45)' : 'none',
+      boxShadow: wide ? '0 0 0 1px rgba(0,0,0,.06), 0 20px 60px rgba(0,0,0,.08)' : (isDesktop ? '0 40px 90px rgba(0,0,0,.45)' : 'none'),
       position:'relative'
     };
 
