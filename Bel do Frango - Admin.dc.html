@@ -2050,41 +2050,41 @@ class Component extends DCLogic {
         q: q,
         amount: q,
 
-        total: totalPriceNum,
-        total_item: totalPriceNum,
-        item_total: totalPriceNum,
-        totalItem: totalPriceNum,
-        itemTotal: totalPriceNum,
-        totalPrice: totalPriceNum,
-        total_price: totalPriceNum,
-        priceTotal: totalPriceNum,
-        price_total: totalPriceNum,
-        precoTotal: totalPriceNum,
-        preco_total: totalPriceNum,
-        totalPreco: totalPriceNum,
-        total_preco: totalPriceNum,
-        valorTotal: totalPriceNum,
-        valor_total: totalPriceNum,
-        totalValor: totalPriceNum,
-        total_valor: totalPriceNum,
-        valorItem: totalPriceNum,
-        valor_item: totalPriceNum,
-        itemValor: totalPriceNum,
-        item_valor: totalPriceNum,
-        subtotal: totalPriceNum,
+        total: totalPriceFmt,
+        total_item: totalPriceFmt,
+        item_total: totalPriceFmt,
+        totalItem: totalPriceFmt,
+        itemTotal: totalPriceFmt,
+        totalPrice: totalPriceFmt,
+        total_price: totalPriceFmt,
+        priceTotal: totalPriceFmt,
+        price_total: totalPriceFmt,
+        precoTotal: totalPriceFmt,
+        preco_total: totalPriceFmt,
+        totalPreco: totalPriceFmt,
+        total_preco: totalPriceFmt,
+        valorTotal: totalPriceFmt,
+        valor_total: totalPriceFmt,
+        totalValor: totalPriceFmt,
+        total_valor: totalPriceFmt,
+        valorItem: totalPriceFmt,
+        valor_item: totalPriceFmt,
+        itemValor: totalPriceFmt,
+        item_valor: totalPriceFmt,
+        subtotal: totalPriceFmt,
 
-        price: unitPriceNum,
-        preco: unitPriceNum,
-        valor: unitPriceNum,
-        val: unitPriceNum,
-        unitPrice: unitPriceNum,
-        unit_price: unitPriceNum,
-        priceUnit: unitPriceNum,
-        price_unit: unitPriceNum,
-        precoUnitario: unitPriceNum,
-        preco_unitario: unitPriceNum,
-        valorUnitario: unitPriceNum,
-        valor_unitario: unitPriceNum,
+        price: unitPriceFmt,
+        preco: unitPriceFmt,
+        valor: unitPriceFmt,
+        val: unitPriceFmt,
+        unitPrice: unitPriceFmt,
+        unit_price: unitPriceFmt,
+        priceUnit: unitPriceFmt,
+        price_unit: unitPriceFmt,
+        precoUnitario: unitPriceFmt,
+        preco_unitario: unitPriceFmt,
+        valorUnitario: unitPriceFmt,
+        valor_unitario: unitPriceFmt,
 
         totalCents: totalPriceCents,
         total_cents: totalPriceCents,
@@ -2138,6 +2138,9 @@ class Component extends DCLogic {
 
     const subtotalFmt = subtotalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     const totalFmt = totalNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const deliveryFeeFmt = deliveryFeeNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const discountFmt = discountNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const changeForFmt = changeForNum.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
     const idVal = rawIdNum || rawIdStr;
 
@@ -2218,17 +2221,21 @@ class Component extends DCLogic {
       pedidoItens: items,
       pedido_itens: items,
 
-      subtotal: subtotalNum,
+      subtotal: subtotalFmt,
+      subtotalNum: subtotalNum,
       subtotalFmt: subtotalFmt,
-      deliveryFee: deliveryFeeNum,
-      taxaEntrega: deliveryFeeNum,
-      taxa_entrega: deliveryFeeNum,
-      taxa: deliveryFeeNum,
-      discount: discountNum,
-      desconto: discountNum,
-      total: totalNum,
-      totalGeral: totalNum,
-      total_geral: totalNum,
+      deliveryFee: deliveryFeeFmt,
+      deliveryFeeNum: deliveryFeeNum,
+      taxaEntrega: deliveryFeeFmt,
+      taxa_entrega: deliveryFeeFmt,
+      taxa: deliveryFeeFmt,
+      discount: discountFmt,
+      discountNum: discountNum,
+      desconto: discountFmt,
+      total: totalFmt,
+      totalNum: totalNum,
+      totalGeral: totalFmt,
+      total_geral: totalFmt,
       totalFmt: totalFmt,
 
       paymentMethod: paymentMethodStr,
@@ -2236,10 +2243,11 @@ class Component extends DCLogic {
       forma_pagamento: paymentMethodStr,
       pgto: paymentMethodStr,
 
-      changeFor: changeForNum,
-      trocoPara: changeForNum,
-      troco_para: changeForNum,
-      troco: changeForNum,
+      changeFor: changeForFmt,
+      changeForNum: changeForNum,
+      trocoPara: changeForFmt,
+      troco_para: changeForFmt,
+      troco: changeForFmt,
 
       notes: notesStr,
       observacoes: notesStr,
@@ -2254,7 +2262,9 @@ class Component extends DCLogic {
       try {
         const orderPayload = this.gerarOrderPayload(p);
         if (orderPayload) {
-          window.TemNaAreaPrinter.printOrder(JSON.stringify(orderPayload));
+          const _json = JSON.stringify(orderPayload);
+          console.log('[TEM_NA_AREA_AUDIT] printOrder payload:', _json);
+          window.TemNaAreaPrinter.printOrder(_json);
           return;
         }
       } catch (err) {
