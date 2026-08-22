@@ -4003,12 +4003,14 @@ class Component extends DCLogic {
     const soldMap = {};
     ordersDoDia.forEach(o => o.itens.forEach(it => {
       if (!soldMap[it.n]) soldMap[it.n] = { qty:0, rev:0 };
-      soldMap[it.n].qty += it.q; soldMap[it.n].rev += it.p * it.q;
+      const unitPrice = Number(it.preco) || Number(it.p) || 0;
+      soldMap[it.n].qty += it.q; soldMap[it.n].rev += unitPrice * it.q;
     }));
     const soldRows = Object.keys(soldMap).map(n => ({ name:n, qty:String(soldMap[n].qty), revFmt:this.fmt(soldMap[n].rev), _q:soldMap[n].qty }))
       .sort((a,b) => b._q - a._q);
     const totalItens = Object.values(soldMap).reduce((a,x) => a + x.qty, 0);
-    const totalReceita = Object.values(soldMap).reduce((a,x) => a + x.rev, 0);
+    // Usa o.total (inclui taxa de entrega) em vez de recalcular pelos itens
+    const totalReceita = ordersDoDia.reduce((a, o) => a + Number(o.total), 0);
     const lowCount = s.products.filter(p => p.stock <= 5).length;
 
     const estoqueRows = s.products.slice().sort((a,b) => a.stock - b.stock).map(p => {
