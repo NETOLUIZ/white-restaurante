@@ -799,6 +799,23 @@
         </button>
       </div>
 
+      <!-- Dados pessoais inline (apenas visitantes sem cadastro) -->
+      <sc-if value="{{ semUsuario }}" hint-placeholder-val="{{ false }}">
+        <div style="background:var(--cor-card,#fff);border:1px solid var(--card-cor-borda,rgba(29,16,9,.08));border-radius:18px;padding:16px;box-shadow:0 4px 12px rgba(29,16,9,.04);margin-bottom:12px;">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0 0 12px;color:var(--cor-texto,#1D1009);">Seus dados</h3>
+          <div style="display:flex;flex-direction:column;gap:10px;">
+            <div>
+              <label style="{{ labelStyle2 }}">Nome *</label>
+              <input value="{{ cadNome }}" onChange="{{ onCadNome }}" placeholder="Seu nome completo" style="{{ inputStyle2 }}"/>
+            </div>
+            <div>
+              <label style="{{ labelStyle2 }}">Telefone *</label>
+              <input type="tel" value="{{ cadTelefone }}" onChange="{{ onCadTelefone }}" placeholder="(11) 99999-9999" style="{{ inputStyle2 }}"/>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
       <!-- OPÇÃO 1: RECEBER NO SEU ENDEREÇO -->
       <sc-if value="{{ isPedidoEntrega }}" hint-placeholder-val="{{ true }}">
         <div style="background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:18px;padding:16px;box-shadow:0 4px 12px rgba(29,16,9,.04);">
@@ -1689,14 +1706,15 @@ class Component extends DCLogic {
     // isso só evita a viagem até o servidor pra descobrir que a loja está fechada.
     if (!s.lojaAberta) { this.showToast('A loja está fechada no momento. Volte no horário de funcionamento.'); return; }
     const usuario = s.usuario;
-    if (!usuario || !usuario.nome || !usuario.telefone) {
-      this.showToast('Complete seu cadastro (nome e telefone) antes de pedir');
-      this.goCadastro();
-      return;
-    }
-    if (s.pedidoTipo !== 'retirada' && !(usuario.endereco && usuario.endereco.rua)) {
-      this.showToast('Complete seu endereço de entrega antes de pedir');
-      this.goCadastro();
+    const nomeCliente = (usuario && usuario.nome) || s.cadastro.nome;
+    const telefone = (usuario && usuario.telefone) || s.cadastro.telefone;
+    if (!nomeCliente) { this.showToast('Informe seu nome para continuar'); return; }
+    if (!telefone) { this.showToast('Informe seu telefone para continuar'); return; }
+    const enderecoSalvo = (usuario && usuario.endereco && usuario.endereco.rua) ? usuario.endereco : null;
+    const enderecoInline = s.cadastro.rua ? { cep: s.cadastro.cep, rua: s.cadastro.rua, numero: s.cadastro.numero, complemento: s.cadastro.complemento, bairro: s.cadastro.bairro, cidade: s.cadastro.cidade, uf: s.cadastro.uf } : null;
+    const enderecoParaPedido = enderecoSalvo || enderecoInline;
+    if (s.pedidoTipo !== 'retirada' && !enderecoParaPedido) {
+      this.showToast('Informe seu endereço de entrega para continuar');
       return;
     }
     const itens = Object.entries(s.cart).map(([id, v]) => {
@@ -1708,10 +1726,10 @@ class Component extends DCLogic {
     if (itens.length === 0) { this.showToast('Seu carrinho está vazio'); return; }
 
     const payload = {
-      nomeCliente: usuario.nome,
-      telefone: usuario.telefone,
+      nomeCliente,
+      telefone,
       tipo: s.pedidoTipo === 'retirada' ? 'RETIRADA' : 'ENTREGA',
-      endereco: s.pedidoTipo === 'retirada' ? null : usuario.endereco,
+      endereco: s.pedidoTipo === 'retirada' ? null : enderecoParaPedido,
       itens,
       formaPagamento: s.payment === 'pix' ? 'PIX' : s.payment === 'money' ? 'DINHEIRO' : 'CARTAO',
     };
