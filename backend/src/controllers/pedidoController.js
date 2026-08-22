@@ -277,6 +277,18 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
     // Log sem dado pessoal (LGPD) — só ids e valores, nunca telefone/endereço completos.
     console.log(`[pedido] criado id=${pedido.id} clienteId=${cliente?.id ?? null} total=${total}`);
 
+    // Decrementar estoque de cada produto comprado (marmitas e produtos vendidos por peso não têm estoque unitário).
+    const decrementos = itensValidados
+      .filter((iv) => iv.produtoId !== null && !produtosPorId.get(iv.produtoId)?.vendidoPorPeso)
+      .reduce((acc, iv) => { acc[iv.produtoId] = (acc[iv.produtoId] || 0) + iv.quantidade; return acc; }, {});
+    if (Object.keys(decrementos).length > 0) {
+      await Promise.all(
+        Object.entries(decrementos).map(([produtoId, qtd]) =>
+          req.prisma.produto.update({ where: { id: Number(produtoId) }, data: { estoque: { decrement: qtd } } }),
+        ),
+      );
+    }
+
     // PIX com Mercado Pago configurado (Configuracao.mercadoPagoAccessToken) vira
     // cobrança real com QR Code + confirmação automática via webhook; sem token
     // configurado, PIX continua só informativo (comportamento de sempre — nunca
