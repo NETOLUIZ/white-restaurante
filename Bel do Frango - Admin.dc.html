@@ -2540,12 +2540,12 @@ class Component extends DCLogic {
       hora: new Date(o.createdAt).toLocaleTimeString('pt-BR', { hour:'2-digit', minute:'2-digit' }),
       status: statusMap[o.statusEntrega] || 'novo',
       entregadorId: o.entregadorId || null,
-      itens: (o.itens || []).map((it) => ({ n:it.nome, q:it.quantidade, p:it.precoUnitario, precoUnitario:it.precoUnitario, ad: this.resumoAdicionais(it.adicionais) })),
+      itens: (o.itens || []).map((it) => ({ n:it.nome, q:it.quantidade, p:it.precoUnitario, precoUnitario:it.precoUnitario, preco:it.precoAtual, ad: this.resumoAdicionais(it.adicionais) })),
       criadoEm: o.createdAt,
       // ---- usado só pra impressão automática do recibo de delivery (ver imprimirReciboPedido) ----
       tipoRaw: o.tipo, telefone: o.telefone || '', enderecoFull: end,
       subtotal: o.subtotal, taxaEntrega: o.taxaEntrega, total: o.total,
-      itensImpressao: (o.itens || []).map((it) => ({ nome:it.nome, q:it.quantidade, p:it.precoUnitario, precoUnitario:it.precoUnitario, obs:it.observacoes || '', ad: this.resumoAdicionais(it.adicionais) }))
+      itensImpressao: (o.itens || []).map((it) => ({ nome:it.nome, q:it.quantidade, p:it.precoUnitario, precoUnitario:it.precoUnitario, preco:it.precoAtual, obs:it.observacoes || '', ad: this.resumoAdicionais(it.adicionais) }))
     };
   }
   async carregarPedidos(){

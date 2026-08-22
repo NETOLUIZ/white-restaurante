@@ -521,6 +521,7 @@ async function listarAdmin(req, res) {
           quantidade: item.quantidade,
           observacoes: item.observacoes,
           precoUnitario: item.precoUnitarioCongelado,
+          precoAtual: item.produto?.preco ?? item.tamanhoMarmita?.preco ?? null,
         })),
       })),
     );
