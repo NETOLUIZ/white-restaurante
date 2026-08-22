@@ -2566,8 +2566,11 @@ class Component extends DCLogic {
   async carregarPedidos(){
     const pedidos = await this.apiGet('/admin/pedidos');
     const mapeados = pedidos.map((o) => this.mapPedido(o));
+    const prevMaxId = this.state.orders.reduce((m, o) => Math.max(m, o.rawId), 0);
+    const newMaxId = mapeados.reduce((m, o) => Math.max(m, o.rawId), 0);
     this.setState({ orders: mapeados });
     this.verificarImpressaoAutomaticaDelivery(mapeados);
+    if (newMaxId > prevMaxId) this.carregarProdutos().catch(() => {});
   }
   mapBanner(b){
     return { id:b.id, badge:b.selo, titulo:b.titulo, subtitulo:b.descricao, active:b.ativo, ctaLabel:b.ctaLabel, ctaTipo:b.ctaTipo, produtoId:b.produtoId, ordem:b.ordem };
