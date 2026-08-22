@@ -50,7 +50,7 @@ const uploadFoto = multer({
 /** Multer configurado para fotos de banner — salva em uploads/{tenantId}/banners. */
 const uploadFotoBanner = multer({
   storage: criarStorage('banners'),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB — banners podem vir direto de câmera
   fileFilter(req, file, cb) {
     if (!TIPOS_PERMITIDOS.has(file.mimetype)) {
       return cb(new Error('Tipo de arquivo não permitido — envie JPG, PNG, WEBP ou GIF'));
