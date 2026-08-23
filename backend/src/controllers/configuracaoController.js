@@ -77,6 +77,9 @@ async function atualizar(req, res) {
     if (req.body.capaUrl !== undefined) {
       data.capaUrl = req.body.capaUrl ? String(req.body.capaUrl) : null;
     }
+    if (req.body.pixQrCodeUrl !== undefined) {
+      data.pixQrCodeUrl = req.body.pixQrCodeUrl ? String(req.body.pixQrCodeUrl) : null;
+    }
     if (req.body.mercadoPagoAccessToken !== undefined) {
       const token = String(req.body.mercadoPagoAccessToken).trim();
       data.mercadoPagoAccessToken = token || null; // string vazia = desliga a integração

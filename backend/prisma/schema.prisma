@@ -126,6 +126,9 @@ model Configuracao {
   /// confirmação automática via webhook); ausente = PIX continua só
   /// informativo, como sempre foi (ver pedidoController.criar).
   mercadoPagoAccessToken String?
+  /// URL (base64 data URI) do QR Code PIX estático da loja — exibido no PDV
+  /// do atendente quando a forma de pagamento PIX é selecionada.
+  pixQrCodeUrl         String?
   updatedAt            DateTime @updatedAt
 }
 
