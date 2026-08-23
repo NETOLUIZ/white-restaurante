@@ -2442,6 +2442,7 @@ class Component extends DCLogic {
         this.setState(s => ({
           screen:'checkout',
           checkoutStep: 1,
+          pedidoTipo: 'entrega',
           cadastro: {
             ...s.cadastro,
             rua: e.rua || s.cadastro.rua,
