@@ -777,6 +777,18 @@
             </div>
             <button onClick="{{ toggleAutoPrint }}" style="{{ autoPrintToggleStyle }}" aria-label="Alternar impressão automática"><span style="{{ autoPrintKnobStyle }}"></span></button>
           </div>
+
+          <div style="display:flex;align-items:center;justify-content:space-between;background:#F6F1E7;border-radius:13px;padding:13px 15px;gap:12px;margin-top:10px;flex-wrap:wrap;">
+            <div>
+              <div style="font-weight:700;font-size:14px;color:#1D1009;">Tamanho do papel</div>
+              <div style="font-size:12px;color:#8C8075;">Escolha o formato da sua impressora</div>
+            </div>
+            <select value="{{ papelImpressaoValor }}" onChange="{{ onPapelImpressao }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:9px 12px;font-size:13.5px;font-weight:600;color:#1D1009;outline:none;">
+              <sc-for list="{{ papelImpressaoOptions }}" as="op" hint-placeholder-count="3">
+                <option value="{{ op.valor }}">{{ op.label }}</option>
+              </sc-for>
+            </select>
+          </div>
         </div>
 
         <div style="background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);border-radius:18px;padding:18px 20px;box-shadow:0 5px 20px rgba(15,52,96,.35);margin-bottom:18px;">
@@ -1884,7 +1896,8 @@ class Component extends DCLogic {
     const nomeFantasia = (this.state.tenantNome || 'BEL DO FRANGO').toUpperCase();
     const rawItens = p.itensImpressao || (p.itens || []).map(it => ({ q: it.q || it.quantidade || 1, nome: it.n || it.nome || 'Item', ad: it.ad || '', obs: it.obs || '' }));
     const itensTxt = rawItens.map(it => {
-      let linha = it.q + 'x ' + it.nome;
+      const preco = it.p != null ? it.p : it.precoUnitario;
+      let linha = it.q + 'x ' + it.nome + (preco != null ? ' - ' + this.fmt(it.q * preco) : '');
       if (it.ad) linha += '\n   + ' + it.ad;
       if (it.obs) linha += '\n   obs: ' + it.obs;
       return linha;
@@ -1916,6 +1929,7 @@ class Component extends DCLogic {
       'TOTAL: ' + this.fmt(p.total || 0),
       SEP,
       'Pagamento: ' + (p.pgto || 'Não informado'),
+      p.trocoPara ? ('Troco para: ' + this.fmt(p.trocoPara)) : '',
       agora,
       '\n\n\n'
     ].filter(Boolean).join('\n');
@@ -1936,6 +1950,33 @@ class Component extends DCLogic {
       '\n\n\n'
     ].join('\n');
   }
+  CHAVE_PAPEL_IMPRESSAO = 'bf_admin_papel_impressao';
+  PAPEIS_IMPRESSAO = [
+    { valor:'58mm', label:'58mm — bobina térmica pequena' },
+    { valor:'80mm', label:'80mm — bobina térmica padrão' },
+    { valor:'a4', label:'A4 / Carta — impressora comum' },
+  ];
+  getPapelImpressao(){
+    return (typeof window !== 'undefined' && localStorage.getItem(this.CHAVE_PAPEL_IMPRESSAO)) || '58mm';
+  }
+  onPapelImpressao(e){
+    localStorage.setItem(this.CHAVE_PAPEL_IMPRESSAO, e.target.value);
+    this.setState({ papelImpressao: e.target.value });
+    this.showToast('Papel de impressão atualizado');
+  }
+  // Layout de página varia por tipo de impressora — bobina térmica (58/80mm,
+  // sem margem, largura fixa em mm) ou impressora comum (A4/Carta, com margem).
+  estiloPagina(){
+    const papel = this.getPapelImpressao();
+    const fonte = "font-family:'Courier New',monospace; color:#000;";
+    if (papel === '80mm') {
+      return '@page{ size:80mm auto; margin:0; } body{ width:72mm; margin:0 auto; padding:2mm 1mm; ' + fonte + ' font-size:14px; font-weight:700; line-height:1.5; }';
+    }
+    if (papel === 'a4') {
+      return '@page{ size:A4; margin:14mm; } body{ width:100%; max-width:180mm; margin:0 auto; ' + fonte + ' font-size:15px; font-weight:700; line-height:1.6; }';
+    }
+    return '@page{ size:58mm auto; margin:0; } body{ width:48mm; margin:0 auto; padding:2mm 1mm; ' + fonte + ' font-size:13px; font-weight:700; line-height:1.5; }';
+  }
   imprimirHTML(corpoHtml, textoPuro, tituloDoc){
     const isMobile = this.isDispositivoMovel();
     const titulo = tituloDoc || 'Recibo';
@@ -1949,8 +1990,7 @@ class Component extends DCLogic {
           '<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">' +
           '<title>' + this.escapeHtml(titulo) + '</title>' +
           '<style>' +
-          '@page{ size:58mm auto; margin:0; }' +
-          'body{ width:48mm; margin:0 auto; padding:4mm 2mm; font-family:\'Courier New\',monospace; font-size:13px; font-weight:700; line-height:1.4; color:#000; }' +
+          this.estiloPagina() +
           '.c{ text-align:center; } .r{ text-align:right; } .b{ font-weight:900; }' +
           '.linha{ margin:5px 0; white-space:pre; }' +
           '.esp{ height:8px; }' +
@@ -1982,8 +2022,7 @@ class Component extends DCLogic {
     doc.open();
     doc.write(
       '<meta charset="utf-8"><style>' +
-      '@page{ size:58mm auto; margin:0; }' +
-      'body{ width:48mm; margin:0 auto; padding:2mm 1mm; font-family:\'Courier New\',monospace; font-size:13px; font-weight:700; line-height:1.5; color:#000; }' +
+      this.estiloPagina() +
       '.c{ text-align:center; } .r{ text-align:right; } .b{ font-weight:900; }' +
       '.linha{ margin:5px 0; white-space:pre; }' +
       '.esp{ height:8px; }' +
@@ -2374,11 +2413,13 @@ class Component extends DCLogic {
     // Fallback: impressão HTML padrão
     const SEP = '<div class="linha">================================</div>';
     const rawItens = p.itensImpressao || (p.itens || []).map(it => ({ q: it.q || it.quantidade || 1, nome: it.n || it.nome || 'Item', ad: it.ad || '', obs: it.obs || '' }));
-    const itensHtml = rawItens.map((it) =>
-      '<div class="lin"><span>' + this.escapeHtml(it.q) + 'x ' + this.escapeHtml(it.nome) + '</span></div>' +
-      (it.ad ? '<div style="padding-left:8px;font-size:11px;">+ ' + this.escapeHtml(it.ad) + '</div>' : '') +
-      (it.obs ? '<div style="padding-left:8px;font-size:11px;">obs: ' + this.escapeHtml(it.obs) + '</div>' : '')
-    ).join('');
+    const itensHtml = rawItens.map((it) => {
+      const preco = it.p != null ? it.p : it.precoUnitario;
+      return '<div class="lin"><span>' + this.escapeHtml(it.q) + 'x ' + this.escapeHtml(it.nome) + '</span>' +
+        (preco != null ? '<span>' + this.fmt(it.q * preco) + '</span>' : '') + '</div>' +
+        (it.ad ? '<div style="padding-left:8px;font-size:11px;">+ ' + this.escapeHtml(it.ad) + '</div>' : '') +
+        (it.obs ? '<div style="padding-left:8px;font-size:11px;">obs: ' + this.escapeHtml(it.obs) + '</div>' : '');
+    }).join('');
     const e = p.enderecoFull || {};
     const enderecoStr = p.endereco || '';
     const enderecoHtml = (p.tipoRaw === 'ENTREGA' || p.tipo === 'Entrega')
@@ -2405,6 +2446,7 @@ class Component extends DCLogic {
       '<div class="lin b"><span>TOTAL</span><span>' + this.fmt(p.total || 0) + '</span></div>' +
       '<div class="esp"></div>' +
       '<div><span class="b">Pagamento:</span> ' + this.escapeHtml(p.pgto || 'Não informado') + '</div>' +
+      (p.trocoPara ? '<div><span class="b">Troco para:</span> ' + this.fmt(p.trocoPara) + '</div>' : '') +
       '<div class="esp"></div>' +
       '<div class="c" style="font-size:10px;">REIMPRESSÃO · ' + agora + '</div>';
     const texto = this.gerarTextoReciboPedido(p);
@@ -4068,6 +4110,8 @@ class Component extends DCLogic {
       autoPrintToggleStyle: this.toggleStyle(this.isAutoPrintAtivo()),
       autoPrintKnobStyle: this.knobStyle(),
       toggleAutoPrint: () => this.toggleAutoPrint(),
+      papelImpressaoValor: this.getPapelImpressao(), papelImpressaoOptions: this.PAPEIS_IMPRESSAO,
+      onPapelImpressao: (e) => this.onPapelImpressao(e),
       configurarImpressoraNativa: () => this.configurarImpressoraNativa(),
     };
   }
@@ -4591,6 +4635,8 @@ class Component extends DCLogic {
       toggleAutoPrint: () => this.toggleAutoPrint(),
       autoPrintToggleStyle: this.toggleStyle(this.isAutoPrintAtivo()),
       autoPrintKnobStyle: this.knobStyle(),
+      papelImpressaoValor: this.getPapelImpressao(), papelImpressaoOptions: this.PAPEIS_IMPRESSAO,
+      onPapelImpressao: (e) => this.onPapelImpressao(e),
 
       isPedidos: s.view==='pedidos', isProdutos: s.view==='produtos', isCategorias: s.view==='categorias', isMarmitas: s.view==='marmitas', isBanners: s.view==='banners', isMesas: s.view==='mesas', isSenha: s.view==='senha', isBackup: s.view==='backup', isSuporte: s.view==='suporte',
       isCaixa: s.view==='caixa', isVendas: s.view==='vendas', isEntregadores: s.view==='entregadores', isCaixaEntregadores: s.view==='caixaentregadores', isGarcons: s.view==='garcons', isAtendentes: s.view==='atendentes', isEmpresas: s.view==='empresas',

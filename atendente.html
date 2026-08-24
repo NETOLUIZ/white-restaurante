@@ -1618,7 +1618,16 @@ class Component extends DCLogic {
     const produto = this.state.produtos.find((p) => p.codigoBarras && p.codigoBarras === codigo);
     if (!produto) { this.showToast('Nenhum produto encontrado com esse código de barras'); return; }
     if (produto.vendidoPorPeso) this.showToast(produto.nome + ' é vendido por peso — informe os gramas');
-    else { this.carrinhoInc(produto.id); this.showToast(produto.nome + ' adicionado'); }
+    else {
+      this.carrinhoInc(produto.id);
+      this.showToast(produto.nome + ' adicionado');
+      // No mobile as 3 colunas empilham (ver @media max-width:1024px) — sem
+      // rolar até o resumo, o atendente não vê o total somar depois do scan.
+      setTimeout(() => {
+        const resumo = document.querySelector('.pos-col-3');
+        if (resumo) resumo.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 0);
+    }
     this.setState({ buscaProduto: '', selectedCat: produto.categoriaId });
   }
 
