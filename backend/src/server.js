@@ -238,7 +238,10 @@ app.use('/api/pagamentos', pagamentoRoutes);
 // next(err)), então praticamente todo erro que chega aqui veio do multer.
 app.use((err, req, res, next) => {
   if (err instanceof multer.MulterError && err.code === 'LIMIT_FILE_SIZE') {
-    return res.status(400).json({ erro: 'Arquivo muito grande — o limite é 5MB' });
+    // Mensagem genérica de propósito — este handler é compartilhado por
+    // uploads com limites diferentes (produto/banner 10MB, categoria/logo
+    // 5MB, planilha 2MB, ver utils/upload.js), não dá pra cravar um número aqui.
+    return res.status(400).json({ erro: 'Arquivo muito grande' });
   }
   if (err && err.message) {
     return res.status(400).json({ erro: err.message });

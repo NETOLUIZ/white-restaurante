@@ -38,7 +38,7 @@ function criarStorage(subdir, resolverTenantId = (req) => req.tenantId) {
 /** Multer configurado para fotos de produto — salva em uploads/{tenantId}/produtos. */
 const uploadFoto = multer({
   storage: criarStorage('produtos'),
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB — mesmo teto do banner, foto direto de câmera
   fileFilter(req, file, cb) {
     if (!TIPOS_PERMITIDOS.has(file.mimetype)) {
       return cb(new Error('Tipo de arquivo não permitido — envie JPG, PNG, WEBP ou GIF'));
