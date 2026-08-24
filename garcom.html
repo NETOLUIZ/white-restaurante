@@ -495,6 +495,7 @@ class Component extends DCLogic {
     return {
       isLoading: s.screen === 'loading', isLogin: s.screen === 'login', isMesas: s.screen === 'mesas',
       isAbrirMesa: s.screen === 'abrirMesa', isCardapio: s.screen === 'cardapio', isSenha: s.screen === 'senha',
+      logoSrc: s.logoSrc,
 
       nomeGarcom: s.garcom ? (s.garcom.nome || s.garcom.email) : '',
       logout:() => this.logout(), goSenha:() => this.goSenha(),

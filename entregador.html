@@ -331,6 +331,7 @@ class Component extends DCLogic {
     }));
     return {
       isLoading: s.screen === 'loading', isLogin: s.screen === 'login', isPedidos: s.screen === 'pedidos', isSenha: s.screen === 'senha',
+      logoSrc: s.logoSrc,
 
       loginEmail:s.loginForm.email, onLoginEmail:(e) => this.onLoginEmail(e),
       loginSenha:s.loginForm.senha, onLoginSenha:(e) => this.onLoginSenha(e),

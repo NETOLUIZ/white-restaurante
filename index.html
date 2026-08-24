@@ -2425,6 +2425,7 @@ class Component extends DCLogic {
     return {
       rootStyle, shellStyle, gridStyle, pageWrap, categoriesRowStyle,
       isSplash: s.screen === 'splash', splashSrc: localStorage.getItem('bf_custom_splash') || s.logoSrc || 'assets/logo tranparente.png', isHome, isMenu, isCart, isConta, isMainTab,
+      logoSrc: s.logoSrc, logoIconSrc: s.logoIconSrc,
       capaSrc: s.capaSrc || localStorage.getItem('bf_custom_capa') || 'assets/marmita.webp',
       hasSearchHome, semSearchHome, searchResultsHome, homeFeatured,
       isProduct: s.screen === 'product', isCheckout: s.screen === 'checkout', isTracking: s.screen === 'tracking', isCadastro, isMarmita,
