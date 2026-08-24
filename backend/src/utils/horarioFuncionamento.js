@@ -68,21 +68,33 @@ function validarHorarioFuncionamento(valor) {
   return normalizado;
 }
 
+// Fortaleza (America/Fortaleza) é UTC-3 o ano todo — Ceará nunca entrou no
+// horário de verão nem antes dele ser abolido no Brasil (2019), então esse
+// offset fixo não tem exceção sazonal pra tratar.
+const OFFSET_FORTALEZA_MIN = -3 * 60;
+
 /**
  * A loja está aberta agora? `horarioFuncionamento` no formato validado acima.
  * null/undefined = sem restrição cadastrada, sempre aberta (compatível com
- * quem nunca configurou isto). Usa hora local do processo Node — mesmo
- * critério que o resto do projeto usa pra "agora" (ver index.html:saudacao()).
+ * quem nunca configurou isto). Calcula a partir de getUTCHours/getUTCDay +
+ * offset fixo de Fortaleza — a VPS roda em UTC (Etc/UTC), não no fuso da
+ * loja, então getHours()/getDay() do processo Node dariam a hora errada.
  */
 function estaAberto(horarioFuncionamento, agora = new Date()) {
   if (!horarioFuncionamento) return true;
 
-  const dia = DIAS[agora.getDay()];
+  let minutosDoDia = agora.getUTCHours() * 60 + agora.getUTCMinutes() + OFFSET_FORTALEZA_MIN;
+  let diaSemana = agora.getUTCDay();
+  if (minutosDoDia < 0) {
+    minutosDoDia += 24 * 60;
+    diaSemana = (diaSemana + 6) % 7;
+  }
+
+  const dia = DIAS[diaSemana];
   const turnos = horarioFuncionamento[dia];
   if (!Array.isArray(turnos) || turnos.length === 0) return false;
 
-  const minutosAgora = agora.getHours() * 60 + agora.getMinutes();
-  return turnos.some((t) => minutosAgora >= horarioParaMinutos(t.inicio) && minutosAgora <= horarioParaMinutos(t.fim));
+  return turnos.some((t) => minutosDoDia >= horarioParaMinutos(t.inicio) && minutosDoDia <= horarioParaMinutos(t.fim));
 }
 
 module.exports = { DIAS, validarHorarioFuncionamento, estaAberto, ErroValidacaoHorario };

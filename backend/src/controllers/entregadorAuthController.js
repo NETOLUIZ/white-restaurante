@@ -86,6 +86,14 @@ async function alterarSenha(req, res) {
 
     const senhaHash = await bcrypt.hash(String(novaSenha), 12);
     await req.prisma.entregador.update({ where: { id: entregador.id }, data: { senha: senhaHash, senhaAlteradaEm: new Date() } });
+
+    // senhaAlteradaEm invalida qualquer token emitido antes dela — sem reemitir aqui, o
+    // PRÓPRIO cookie que acabou de trocar a senha vira inválido na resposta seguinte,
+    // derrubando a sessão sem aviso.
+    const token = jwt.sign({ id: entregador.id, email: entregador.email, tenantId: req.tenantId }, process.env.JWT_SECRET, {
+      expiresIn: '12h',
+    });
+    res.cookie(NOME_COOKIE, token, opcoesCookie());
     res.json({ ok: true });
   } catch (err) {
     console.error('Erro ao trocar senha do entregador:', err);

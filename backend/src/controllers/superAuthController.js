@@ -87,6 +87,14 @@ async function alterarSenha(req, res) {
 
     const senhaHash = await bcrypt.hash(String(novaSenha), 12);
     await prismaBase.superAdmin.update({ where: { id: superAdmin.id }, data: { senha: senhaHash, senhaAlteradaEm: new Date() } });
+
+    // senhaAlteradaEm invalida qualquer token emitido antes dela (ver tokenAindaValido
+    // em middleware/superAuth.js) — sem reemitir aqui, o PRÓPRIO cookie que acabou de
+    // trocar a senha vira inválido na resposta seguinte, derrubando a sessão sem aviso.
+    const token = jwt.sign({ id: superAdmin.id, email: superAdmin.email, tipo: 'super' }, process.env.JWT_SECRET, {
+      expiresIn: '2h',
+    });
+    res.cookie(NOME_COOKIE, token, opcoesCookie());
     res.json({ ok: true });
   } catch (err) {
     console.error('Erro ao trocar senha do super admin:', err);
