@@ -86,7 +86,7 @@
 <sc-if value="{{ showTop }}" hint-placeholder-val="{{ false }}">
 <div id="bf-top-nav" style="display:flex;align-items:center;gap:18px;padding:16px 26px;background:var(--header-fundo, #F2B705);color:#7A1209;flex:none;">
   <div style="display:flex;align-items:center;gap:12px;margin-right:8px;">
-    <div style="width:42px;height:42px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div>
+    <div style="width:42px;height:42px;flex:none;"><img src="{{ logoSrc }}" alt="" style="width:100%;height:100%;object-fit:contain;"/></div>
     <span style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;letter-spacing:.01em;white-space:nowrap;">Bel do Frango</span>
   </div>
   <!-- Hamburguer — só quando carrinho está aberto no desktop -->
@@ -148,7 +148,7 @@
     <!-- Logo Marca da Loja (Círculo Centralizado com máscara circular perfeita) -->
     <div style="position:relative;display:flex;justify-content:center;margin-top:-48px;z-index:4;">
       <div style="width:96px;height:96px;border-radius:50%;background:#FFF3DC;border:4px solid #F2C078;box-shadow:0 8px 24px rgba(0,0,0,0.22);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:0;transition:transform .2s ease;">
-        <img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
+        <img src="{{ logoSrc }}" alt="Bel do Frango" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>
       </div>
     </div>
 
@@ -260,7 +260,7 @@
     <sc-for list="{{ categories }}" as="cat" hint-placeholder-count="5">
       <button onClick="{{ cat.onClick }}" style="flex:none;display:flex;flex-direction:column;align-items:center;gap:9px;background:none;border:none;cursor:pointer;width:72px;">
         <sc-if value="{{ cat.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;overflow:hidden;border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);"><img sc-camel-src="{{ cat.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;"><img src="assets/logo.png" alt="" style="width:100%;height:100%;object-fit:contain;"/></div></sc-if>
+        <sc-if value="{{ cat.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:66px;height:66px;border-radius:50%;flex:none;background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid rgba(29,16,9,.08);box-shadow:0 6px 16px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;overflow:hidden;padding:6px;"><img src="{{ cat.logoIconSrc }}" alt="" style="width:100%;height:100%;object-fit:contain;"/></div></sc-if>
         <span style="font-size:12px;font-weight:600;color:#C0271A;text-align:center;line-height:1.1;">{{ cat.label }}</span>
       </button>
     </sc-for>
@@ -275,7 +275,7 @@
       <sc-for list="{{ searchResultsHome }}" as="p" hint-placeholder-count="4">
         <div class="bf-card" onClick="{{ p.onOpen }}" style="{{ p.cardStyle }}">
           <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="{{ p.fotoTileStyle }}"><img sc-camel-src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-          <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><img src="assets/logo.png" alt="" style="width:100%;height:100%;max-width:54px;max-height:54px;object-fit:contain;margin:auto;display:block;"/></div></sc-if>
+          <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><img src="{{ p.logoIconSrc }}" alt="" style="width:100%;height:100%;max-width:54px;max-height:54px;object-fit:contain;margin:auto;display:block;"/></div></sc-if>
           <div style="{{ p.bodyStyle }}">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
@@ -312,7 +312,7 @@
       <sc-for list="{{ homeFeatured }}" as="p" hint-placeholder-count="4">
         <div class="bf-card" onClick="{{ p.onOpen }}" style="{{ p.cardStyle }}">
           <sc-if value="{{ p.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="{{ p.fotoTileStyle }}"><img sc-camel-src="{{ p.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
-          <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><img src="assets/logo.png" alt="" style="width:100%;height:100%;max-width:54px;max-height:54px;object-fit:contain;margin:auto;display:block;"/></div></sc-if>
+          <sc-if value="{{ p.semFoto }}" hint-placeholder-val="{{ true }}"><div style="{{ p.tileStyle }}"><img src="{{ p.logoIconSrc }}" alt="" style="width:100%;height:100%;max-width:54px;max-height:54px;object-fit:contain;margin:auto;display:block;"/></div></sc-if>
           <div style="{{ p.bodyStyle }}">
             <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="#F2C078" stroke="#F2C078"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
@@ -349,7 +349,7 @@
 <div style="{{ pageWrap }}">
   <div style="position:sticky;top:0;z-index:5;background:var(--cor-fundo, #FFF6D6);padding:calc(16px + env(safe-area-inset-top)) 18px 6px;">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-      <div style="width:40px;height:40px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div style="width:40px;height:40px;flex:none;"><img src="{{ logoSrc }}" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
       <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;margin:0;flex:1;">{{ labelCardapio }}</h1>
     </div>
     <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(29,16,9,.08);border-radius:15px;padding:0 14px;height:46px;margin-bottom:12px;">
@@ -429,7 +429,7 @@
 <sc-if value="{{ isCart }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Carrinho" style="animation:bfSlideIn .22s cubic-bezier(.16,1,.3,1);padding:calc(16px + env(safe-area-inset-top)) 18px 18px;">
   <div style="display:flex;align-items:center;gap:12px;margin-bottom:18px;">
-    <div style="width:40px;height:40px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+    <div style="width:40px;height:40px;flex:none;"><img src="{{ logoSrc }}" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
     <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:24px;margin:0;">Carrinho</h1>
   </div>
 
@@ -498,7 +498,7 @@
 <sc-if value="{{ isConta }}" hint-placeholder-val="{{ false }}">
 <div data-screen-label="Conta" style="animation:bfSlideIn .22s cubic-bezier(.16,1,.3,1);padding:calc(16px + env(safe-area-inset-top)) 18px 24px;">
   <div style="background:var(--cor-fundo-secundaria, #FFF3DC);border:1px solid #F2C078;border-radius:26px;padding:22px 18px;text-align:center;box-shadow:0 8px 22px rgba(29,16,9,.06);display:flex;align-items:center;justify-content:center;">
-    <img src="assets/logo tranparente.png" alt="Galeteria Bel do Frango — O sabor que você ama" style="width:min(76%,220px);max-height:180px;display:block;margin:0 auto;object-fit:contain;"/>
+    <img src="{{ logoSrc }}" alt="Galeteria Bel do Frango — O sabor que você ama" style="width:min(76%,220px);max-height:180px;display:block;margin:0 auto;object-fit:contain;"/>
   </div>
   <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:21px;margin:22px 2px 4px;">Minha Conta</h1>
   <p style="margin:0 2px;color:#8C8075;font-size:14px;font-family:'DM Mono',monospace;">Bem-vindo ao Bel do Frango</p>
@@ -774,7 +774,7 @@
       <h1 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:18px;margin:0;">{{ checkoutStepTitle }}</h1>
       <div style="font-size:12px;color:#8C8075;font-weight:600;margin-top:1px;">{{ checkoutStepSubtitle }}</div>
     </div>
-    <div style="width:36px;height:36px;flex:none;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+    <div style="width:36px;height:36px;flex:none;"><img src="{{ logoSrc }}" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
   </div>
 
   <!-- Stepper Bar (Etapa 1: Entrega -> Etapa 2: Pagamento) -->
@@ -1196,6 +1196,7 @@ class Component extends DCLogic {
     fav: {},
     hamburgerOpen: false,
     vw: (typeof window !== 'undefined' ? window.innerWidth : 1024),
+    logoSrc: 'assets/logo tranparente.png', logoIconSrc: 'assets/logo.png', // sobrescrito pela logo da tenant quando houver (ver carregarFeatures)
 
     // ---- dados vindos da API pública (sem login) — começam vazios até carregarTudo() ----
     cats: [],
@@ -1351,7 +1352,14 @@ class Component extends DCLogic {
   }
   async carregarFeatures(){
     const config = await this.apiGet('/config');
-    this.setState({ features: config.features || {}, tipoTenant: (config.tenant && config.tenant.tipo) || 'RESTAURANTE' });
+    const logoUrl = config.branding && config.branding.logoUrl ? this.apiBase.replace('/api', '') + config.branding.logoUrl : null;
+    if (logoUrl) {
+      document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').forEach((l) => { l.href = logoUrl; });
+    }
+    this.setState({
+      features: config.features || {}, tipoTenant: (config.tenant && config.tenant.tipo) || 'RESTAURANTE',
+      logoSrc: logoUrl || 'assets/logo tranparente.png', logoIconSrc: logoUrl || 'assets/logo.png'
+    });
   }
   async carregarCategorias(){
     const categorias = await this.apiGet('/categorias');
@@ -2136,7 +2144,7 @@ class Component extends DCLogic {
       return {
         id:p.id, name:p.name, desc:p.desc, rating:p.rating || '—', priceFmt:this.fmt(p.price) + (p.vendidoPorPeso ? '/kg' : ''),
         tag:p.tag, hasTag: !!p.tag, tileStyle, fotoTileStyle, tileLabel:'foto',
-        hasFoto: !!foto, semFoto: !foto, fotoSrc: foto || '',
+        hasFoto: !!foto, semFoto: !foto, fotoSrc: foto || '', logoIconSrc: s.logoIconSrc,
         cardStyle, bodyStyle, descStyle,
         esgotado: !!p.esgotado,
         addBtnStyle: { width:'40px', height:'40px', borderRadius:'13px', border:'none', display:'flex', alignItems:'center', justifyContent:'center',
@@ -2164,7 +2172,7 @@ class Component extends DCLogic {
     const categories = catsVisiveis.map(c => {
       return {
         id:c.id, label:c.label,
-        hasFoto: !!c.foto, semFoto: !c.foto, fotoSrc: c.foto || '',
+        hasFoto: !!c.foto, semFoto: !c.foto, fotoSrc: c.foto || '', logoIconSrc: s.logoIconSrc,
         onClick:() => this.setState({ screen:'menu', selectedCat:c.id, search:'' })
       };
     });
@@ -2416,7 +2424,7 @@ class Component extends DCLogic {
 
     return {
       rootStyle, shellStyle, gridStyle, pageWrap, categoriesRowStyle,
-      isSplash: s.screen === 'splash', splashSrc: localStorage.getItem('bf_custom_splash') || 'assets/logo tranparente.png', isHome, isMenu, isCart, isConta, isMainTab,
+      isSplash: s.screen === 'splash', splashSrc: localStorage.getItem('bf_custom_splash') || s.logoSrc || 'assets/logo tranparente.png', isHome, isMenu, isCart, isConta, isMainTab,
       capaSrc: s.capaSrc || localStorage.getItem('bf_custom_capa') || 'assets/marmita.webp',
       hasSearchHome, semSearchHome, searchResultsHome, homeFeatured,
       isProduct: s.screen === 'product', isCheckout: s.screen === 'checkout', isTracking: s.screen === 'tracking', isCadastro, isMarmita,

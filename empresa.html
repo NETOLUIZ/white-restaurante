@@ -41,7 +41,7 @@
 <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 90% at 50% 0%, #E8820E 0%, #B01818 46%, #5A0A06 100%);">
   <div style="width:100%;max-width:380px;background:#FFF6D6;border-radius:26px;padding:32px 28px;box-shadow:0 30px 70px rgba(0,0,0,.4);animation:emUp .3s ease-out;">
     <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;margin-bottom:22px;">
-      <div style="width:64px;height:64px;"><img src="assets/logo tranparente.png" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
+      <div style="width:64px;height:64px;"><img src="{{ logoSrc }}" alt="Bel do Frango" style="width:100%;height:100%;object-fit:contain;"/></div>
       <div>
         <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:20px;color:#B5161C;">Bel do Frango</div>
         <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:.22em;color:#C0894A;text-transform:uppercase;margin-top:3px;">Acesso da empresa</div>
@@ -67,7 +67,7 @@
 <sc-if value="{{ isPedido }}" hint-placeholder-val="{{ false }}">
 <div style="max-width:1080px;margin:0 auto;animation:emUp .25s ease-out;">
   <div style="background:#D62828;color:#fff;border-radius:0 0 26px 26px;padding:calc(18px + env(safe-area-inset-top)) 20px 20px;margin:0 0 18px;display:flex;align-items:center;gap:12px;">
-    <div style="width:42px;height:42px;flex:none;"><img src="assets/logo tranparente.png" alt="" style="width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);"/></div>
+    <div style="width:42px;height:42px;flex:none;"><img src="{{ logoSrc }}" alt="" style="width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);"/></div>
     <div style="flex:1;min-width:0;">
       <div style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:17px;">{{ nomeEmpresa }}</div>
       <div style="font-size:12px;color:rgba(255,255,255,.8);">Monte os pedidos do dia</div>
@@ -274,8 +274,19 @@ class Component extends DCLogic {
     ultimoResultado: null, // { criados } — mostrado na tela de confirmação
 
     mostrarSenha: {},
+    logoSrc: 'assets/logo tranparente.png', // sobrescrito pela logo da tenant quando houver (ver carregarLogoTenant)
     toast: ''
   };
+
+  // Roda independente de login — a logo da tenant também aparece na tela de login.
+  carregarLogoTenant(){
+    this.apiGet('/config').then((cfg) => {
+      const logoUrl = cfg.branding && cfg.branding.logoUrl ? this.apiBase.replace('/api', '') + cfg.branding.logoUrl : null;
+      if (!logoUrl) return;
+      document.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').forEach((l) => { l.href = logoUrl; });
+      this.setState({ logoSrc: logoUrl });
+    }).catch(() => {});
+  }
 
   toggleMostrarSenha(campo){ this.setState(s => ({ mostrarSenha: { ...s.mostrarSenha, [campo]: !s.mostrarSenha[campo] } })); }
 
@@ -304,6 +315,7 @@ class Component extends DCLogic {
   }
 
   async componentDidMount(){
+    this.carregarLogoTenant();
     // Precisa ser setado ANTES de qualquer outro setState — senão o setState
     // que guarda a "empresa" logo abaixo já dispara um componentDidUpdate
     // "fantasma" que apaga o sessionStorage antes do restaurarTela() ler.
