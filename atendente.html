@@ -511,7 +511,7 @@
     <div class="pos-col-2">
       <div style="display:flex;align-items:center;gap:10px;background:#fff;border:1px solid rgba(29,16,9,.06);border-radius:14px;padding:0 14px;height:46px;box-shadow:0 4px 14px rgba(29,16,9,.04);margin-bottom:14px;flex:none;">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8C8075" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input value="{{ buscaProduto }}" onChange="{{ onBuscaProduto }}" placeholder="Buscar produto no cardápio..." aria-label="Buscar produto" style="flex:1;height:100%;border:none;background:none;font-size:14px;color:#1D1009;outline:none;"/>
+        <input value="{{ buscaProduto }}" onChange="{{ onBuscaProduto }}" onKeyDown="{{ onBuscaKeyDown }}" placeholder="Buscar produto ou ler código de barras..." aria-label="Buscar produto" style="flex:1;height:100%;border:none;background:none;font-size:14px;color:#1D1009;outline:none;"/>
       </div>
 
       <div class="pos-cards-grid-auto">
@@ -1597,6 +1597,18 @@ class Component extends DCLogic {
   }
   novoPedido(){ this.setState({ screen:'pedido', ultimoPedido:null }); }
   onBuscaProduto(e){ this.setState({ buscaProduto: e.target.value }); }
+  // Leitor de código de barras físico (USB/Bluetooth) digita o código e envia
+  // Enter — reconhece o produto pelo codigoBarras e já adiciona ao carrinho.
+  onBuscaKeyDown(e){
+    if (e.key !== 'Enter') return;
+    const codigo = this.state.buscaProduto.trim();
+    if (!codigo) return;
+    const produto = this.state.produtos.find((p) => p.codigoBarras && p.codigoBarras === codigo);
+    if (!produto) { this.showToast('Nenhum produto encontrado com esse código de barras'); return; }
+    if (produto.vendidoPorPeso) this.showToast(produto.nome + ' é vendido por peso — informe os gramas');
+    else { this.carrinhoInc(produto.id); this.showToast(produto.nome + ' adicionado'); }
+    this.setState({ buscaProduto: '', selectedCat: produto.categoriaId });
+  }
 
   // ---- Montar Marmita (Atendente) ----
   abrirMontarMarmita(){
@@ -1724,7 +1736,7 @@ class Component extends DCLogic {
     const busca = s.buscaProduto.trim().toLowerCase();
     const produtosLista = s.produtos
       .filter((p) => p.categoriaId === s.selectedCat)
-      .filter((p) => !busca || p.nome.toLowerCase().includes(busca))
+      .filter((p) => !busca || p.nome.toLowerCase().includes(busca) || (p.codigoBarras && p.codigoBarras.toLowerCase().includes(busca)))
       .map((p) => {
       const qty = s.carrinho[p.id] || 0;
       const fotoSrc = p.foto ? this.apiBase.replace('/api', '') + '/uploads/' + p.foto : '';
