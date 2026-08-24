@@ -247,33 +247,29 @@ app.use((err, req, res, next) => {
   res.status(500).json({ erro: 'Erro interno do servidor' });
 });
 
-// Garante que o Super Admin exista e esteja sincronizado com as credenciais do ambiente no boot
+// Garante que exista pelo menos um Super Admin no boot (bootstrap de banco novo/vazio).
+// Só CRIA quando a conta ainda não existe — nunca sobrescreve a senha de uma conta já
+// existente, senão qualquer troca de senha (pelo painel ou manual) é desfeita no próximo
+// reinício/deploy do backend.
 async function garantirSuperAdminInicial() {
   try {
     const { prismaBase } = require('./lib/prismaBase');
     const bcrypt = require('bcryptjs');
 
-    const emailSuper = (process.env.SEED_SUPER_EMAIL || 'super@korentech.com.br').trim().toLowerCase();
-    const senhaSuper = process.env.SEED_SUPER_SENHA || 'QZWZhZVKJSvLjinq';
+    const contas = [
+      { email: (process.env.SEED_SUPER_EMAIL || 'super@korentech.com.br').trim().toLowerCase(), senha: process.env.SEED_SUPER_SENHA || 'QZWZhZVKJSvLjinq', nome: 'Super Admin' },
+      { email: 'super@beldofrango.com', senha: 'SuperBelDoFrangoAtu@2026', nome: 'Super Admin Fallback' },
+    ];
 
-    const senhaHash = await bcrypt.hash(senhaSuper, 12);
-    await prismaBase.superAdmin.upsert({
-      where: { email: emailSuper },
-      update: { senha: senhaHash, ativo: true },
-      create: { email: emailSuper, senha: senhaHash, nome: 'Super Admin', ativo: true },
-    });
-
-    // Fallback de segurança para super@beldofrango.com
-    const senhaFallbackHash = await bcrypt.hash('SuperBelDoFrangoAtu@2026', 12);
-    await prismaBase.superAdmin.upsert({
-      where: { email: 'super@beldofrango.com' },
-      update: { senha: senhaFallbackHash, ativo: true },
-      create: { email: 'super@beldofrango.com', senha: senhaFallbackHash, nome: 'Super Admin Fallback', ativo: true },
-    });
-
-    console.log(`[BOOT] Super Admin sincronizado: ${emailSuper}`);
+    for (const conta of contas) {
+      const existente = await prismaBase.superAdmin.findUnique({ where: { email: conta.email } });
+      if (existente) continue;
+      const senhaHash = await bcrypt.hash(conta.senha, 12);
+      await prismaBase.superAdmin.create({ data: { email: conta.email, senha: senhaHash, nome: conta.nome, ativo: true } });
+      console.log(`[BOOT] Super Admin criado: ${conta.email}`);
+    }
   } catch (err) {
-    console.error('[BOOT] Erro ao sincronizar Super Admin:', err.message);
+    console.error('[BOOT] Erro ao verificar Super Admin:', err.message);
   }
 }
 
