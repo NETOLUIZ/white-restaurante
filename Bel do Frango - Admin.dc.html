@@ -1970,7 +1970,11 @@ class Component extends DCLogic {
     const papel = this.getPapelImpressao();
     const fonte = "font-family:'Courier New',monospace; color:#000;";
     if (papel === '80mm') {
-      return '@page{ size:80mm auto; margin:0; } body{ width:72mm; margin:0 auto; padding:2mm 1mm; ' + fonte + ' font-size:14px; font-weight:700; line-height:1.5; }';
+      // width:100% em vez de uma largura fixa centralizada (margin:auto) —
+      // o driver de várias impressoras de 80mm relata uma área imprimível
+      // que não bate exatamente com 80mm, e o auto-centering empurra o
+      // conteúdo pra um lado. Preenchendo 100% + padding evita o desvio.
+      return '@page{ size:80mm auto; margin:0; } body{ width:100%; margin:0; padding:2mm 3mm; box-sizing:border-box; ' + fonte + ' font-size:14px; font-weight:700; line-height:1.5; }';
     }
     if (papel === 'a4') {
       return '@page{ size:A4; margin:14mm; } body{ width:100%; max-width:180mm; margin:0 auto; ' + fonte + ' font-size:15px; font-weight:700; line-height:1.6; }';
