@@ -1930,6 +1930,7 @@ class Component extends DCLogic {
       SEP,
       'Pagamento: ' + (p.pgto || 'Não informado'),
       p.trocoPara ? ('Troco para: ' + this.fmt(p.trocoPara)) : '',
+      p.observacoes ? (SEP + '\nObs: ' + p.observacoes) : '',
       agora,
       '\n\n\n'
     ].filter(Boolean).join('\n');
@@ -2451,6 +2452,7 @@ class Component extends DCLogic {
       '<div class="esp"></div>' +
       '<div><span class="b">Pagamento:</span> ' + this.escapeHtml(p.pgto || 'Não informado') + '</div>' +
       (p.trocoPara ? '<div><span class="b">Troco para:</span> ' + this.fmt(p.trocoPara) + '</div>' : '') +
+      (p.observacoes ? (SEP + '<div><span class="b">Obs:</span> ' + this.escapeHtml(p.observacoes) + '</div>') : '') +
       '<div class="esp"></div>' +
       '<div class="c" style="font-size:10px;">REIMPRESSÃO · ' + agora + '</div>';
     const texto = this.gerarTextoReciboPedido(p);
@@ -2692,6 +2694,7 @@ class Component extends DCLogic {
       // ---- usado só pra impressão automática do recibo de delivery (ver imprimirReciboPedido) ----
       tipoRaw: o.tipo, telefone: o.telefone || '', enderecoFull: end,
       subtotal: o.subtotal, taxaEntrega: o.taxaEntrega, total: o.total, trocoPara: o.valorTrocoPara,
+      observacoes: o.observacoes || '',
       itensImpressao: (o.itens || []).map((it) => ({ nome:it.nome, q:it.quantidade, p:it.precoUnitario, precoUnitario:it.precoUnitario, preco:it.precoAtual, obs:it.observacoes || '', ad: this.resumoAdicionais(it.adicionais) }))
     };
   }

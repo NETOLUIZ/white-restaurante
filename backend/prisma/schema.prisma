@@ -387,6 +387,9 @@ model Pedido {
   telefone             String?
   endereco             Json?
   valorTrocoPara       Float?
+  /// Observação geral do pedido (ex: "sem talher, buzinar na chegada") — livre,
+  /// diferente das observações por item (essas ficam em ItemPedido).
+  observacoes          String?
   itens                ItemPedido[]
   avaliacoes           AvaliacaoProduto[]
   cupomId              Int?

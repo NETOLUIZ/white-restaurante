@@ -889,6 +889,11 @@
           </div>
         </div>
       </sc-if>
+
+      <div style="background:var(--cor-card, #fff);border:1px solid var(--card-cor-borda, rgba(29,16,9,.08));border-radius:18px;padding:16px;box-shadow:0 4px 12px rgba(29,16,9,.04);margin-top:12px;">
+        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:14px;margin:0 0 10px;color:var(--cor-texto, #1D1009);">Observações do pedido (opcional)</h3>
+        <textarea value="{{ observacaoGeral }}" onChange="{{ onObservacaoGeral }}" placeholder="Ex: sem talher, buzinar na chegada, troco para R$ 100..." aria-label="Observações do pedido" rows="3" style="width:100%;border:1px solid rgba(29,16,9,.12);background:#fff;border-radius:14px;padding:13px;font-size:14px;color:var(--cor-texto, #1D1009);outline:none;line-height:1.4;"></textarea>
+      </div>
     </sc-if>
 
     <!-- ================ ETAPA 2: PAGAMENTO & RESUMO ================ -->
@@ -1182,6 +1187,7 @@ class Component extends DCLogic {
     search: '',
     detailQty: 1,
     detailObs: '',
+    observacaoGeral: '', // observação do pedido inteiro (diferente de detailObs, que é por item)
     galetoHorarios: [], // janela de horários de retirada (só pra categoria Galetos) — vem de /api/configuracao
     horarioRetirada: null,
     lojaAberta: true, // otimista até carregarConfiguracao() resolver — evita flash de "fechado" no primeiro paint
@@ -1745,6 +1751,7 @@ class Component extends DCLogic {
       itens,
       formaPagamento: s.payment === 'pix' ? 'PIX' : s.payment === 'money' ? 'DINHEIRO' : 'CARTAO',
     };
+    if (s.observacaoGeral && s.observacaoGeral.trim()) payload.observacoes = s.observacaoGeral.trim();
     if (s.payment === 'money' && s.pedidoTipo !== 'retirada') {
       const valorRecebidoNum = parseFloat(String(s.valorRecebido).replace(',', '.'));
       if (valorRecebidoNum > 0) payload.valorTrocoPara = valorRecebidoNum;
@@ -1761,7 +1768,7 @@ class Component extends DCLogic {
         if (!res.ok) throw new Error(data.erro || 'Erro ao enviar pedido');
         this.setState({
           screen:'tracking', placing:false, orderStep:0, pedidoCancelado:false, cart:{}, coupon:'', couponApplied:false, couponMsg:'',
-          valorRecebido:'',
+          valorRecebido:'', observacaoGeral:'',
           pedidoAtual: { codigo:data.codigoAcompanhamento, id:data.id, total:data.total, pix:data.pix || null, pagamentoConfirmado: !data.pix, linkDoJogo: data.linkDoJogo || null },
         });
         this.iniciarAcompanhamento();
@@ -2500,6 +2507,7 @@ class Component extends DCLogic {
       usuarioNome: temUsuario ? u.nome : '', usuarioContato, temEndereco, usuarioEndereco,
       enderecoTitulo, enderecoSub, enderecoCurto,
       enderecoLoja: this.RESTAURANT_ENDERECO,
+      observacaoGeral: s.observacaoGeral, onObservacaoGeral:(e) => this.setState({ observacaoGeral:e.target.value }),
       isPedidoEntrega: s.pedidoTipo === 'entrega', isPedidoRetirada: s.pedidoTipo === 'retirada',
       setTipoEntrega:() => this.setState({ pedidoTipo:'entrega' }),
       setTipoRetirada:() => this.setState({ pedidoTipo:'retirada' }),

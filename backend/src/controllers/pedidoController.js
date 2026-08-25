@@ -119,7 +119,7 @@ class Erro400 extends Error {}
  */
 async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirCliente = true, exigirHorarioFuncionamento = true } = {}) {
   try {
-    const { nomeCliente, telefone, endereco, itens, cupomCodigo, formaPagamento, bairroId } = req.body;
+    const { nomeCliente, telefone, endereco, itens, cupomCodigo, formaPagamento, bairroId, observacoes } = req.body;
     const tipo = req.body.tipo === 'RETIRADA' ? 'RETIRADA' : 'ENTREGA';
 
     if ((exigirCliente && (!nomeCliente || !telefone)) || (tipo === 'ENTREGA' && !endereco) || !Array.isArray(itens) || itens.length === 0) {
@@ -170,6 +170,8 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
     if (itens.length > 50) {
       return res.status(400).json({ erro: 'Pedido excede o número máximo de itens' });
     }
+
+    const observacoesTrim = observacoes ? String(observacoes).trim().slice(0, 500) : null;
 
     const produtoIds = itens.filter((i) => !i.tamanhoMarmitaId).map((i) => parseInt(i.produtoId, 10)).filter(Number.isInteger);
     const proteinaIds = itens.flatMap((i) => i.proteinaIds || []).map((id) => parseInt(id, 10));
@@ -269,6 +271,7 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
         total,
         formaPagamento,
         valorTrocoPara,
+        observacoes: observacoesTrim,
         itens: { create: itensComTenant },
       },
       include: { itens: true },
