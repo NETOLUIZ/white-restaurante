@@ -529,9 +529,15 @@
               <div style="display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px;">
                 <span class="pos-card-price">{{ p.priceFmt }}</span>
                 <sc-if value="{{ p.porPeso }}" hint-placeholder-val="{{ false }}">
-                  <div style="display:flex;align-items:center;gap:4px;">
-                    <input value="{{ p.gramasValue }}" onChange="{{ p.onGramasChange }}" inputmode="numeric" placeholder="g" class="pos-input pos-input-sm" style="width:52px;text-align:center;"/>
-                    <span style="font-size:10px;color:#8C8075;">g</span>
+                  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+                    <div style="display:flex;align-items:center;gap:4px;">
+                      <input value="{{ p.gramasValue }}" onChange="{{ p.onGramasChange }}" inputmode="numeric" placeholder="g" class="pos-input pos-input-sm" style="width:52px;text-align:center;"/>
+                      <span style="font-size:10px;color:#8C8075;">g</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:4px;">
+                      <span style="font-size:10px;color:#8C8075;">R$</span>
+                      <input value="{{ p.valorPesoValue }}" onChange="{{ p.onValorPesoChange }}" inputmode="decimal" placeholder="0,00" class="pos-input pos-input-sm" style="width:52px;text-align:center;"/>
+                    </div>
                   </div>
                 </sc-if>
                 <sc-if value="{{ p.naoPorPeso }}" hint-placeholder-val="{{ true }}">
@@ -1177,6 +1183,14 @@ class Component extends DCLogic {
       return { carrinho };
     });
   }
+  // Mesmo carrinho (gramas), só que a atendente digita quanto quer GASTAR em
+  // R$ (ex: "R$ 40 de carne") em vez de pesar — converte pro preço/kg do
+  // produto e reaproveita carrinhoSetGramas, sem duplicar o estado.
+  carrinhoSetValorPeso(produtoId, valorStr, precoPorKg){
+    const valor = Number(String(valorStr).replace(',', '.').replace(/[^\d.]/g, ''));
+    if (!precoPorKg || !valor) { this.carrinhoSetGramas(produtoId, 0); return; }
+    this.carrinhoSetGramas(produtoId, Math.round((valor / precoPorKg) * 1000));
+  }
   carrinhoRemover(produtoId){
     this.setState(s => {
       const carrinho = { ...s.carrinho };
@@ -1765,6 +1779,7 @@ class Component extends DCLogic {
       return {
         nome:p.nome, priceFmt:this.fmt(p.preco) + (p.vendidoPorPeso ? '/kg' : ''), qty:String(qty), hasQty: qty > 0,
         porPeso, naoPorPeso: !porPeso, gramasValue: qty > 0 ? String(qty) : '',
+        valorPesoValue: qty > 0 ? (qty / 1000 * p.preco).toFixed(2).replace('.', ',') : '',
         hasFoto: !!fotoSrc, semFoto: !fotoSrc, fotoSrc,
         cardClass: 'pos-prod-card' + (qty > 0 ? ' selected' : ''), isSelecionado: qty > 0,
         // Card inteiro clicável só quando dá pra "adicionar 1" sem ambiguidade — item por
@@ -1773,7 +1788,8 @@ class Component extends DCLogic {
         onCardClick: porPeso ? () => {} : () => this.carrinhoInc(p.id),
         onAdd:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoInc(p.id); },
         onDec:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoDec(p.id); },
-        onGramasChange:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoSetGramas(p.id, e.target.value); }
+        onGramasChange:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoSetGramas(p.id, e.target.value); },
+        onValorPesoChange:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoSetValorPeso(p.id, e.target.value, p.preco); }
       };
     });
 
