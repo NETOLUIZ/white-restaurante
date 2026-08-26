@@ -10,7 +10,7 @@ const superBackupController = require('../controllers/superBackupController');
 const categoriaController = require('../controllers/categoriaController');
 const produtoController = require('../controllers/produtoController');
 const { registrarAuditoria } = require('../utils/auditLogger');
-const { uploadFotoBranding, uploadBackupJson, uploadFoto } = require('../utils/upload');
+const { uploadFotoBranding, uploadBackupJson, uploadFoto, uploadPlanilha } = require('../utils/upload');
 const { converterWebp } = require('../middleware/converterWebp');
 
 /**
@@ -59,6 +59,15 @@ router.post('/tenants/:tenantId/produtos', resolverTenantAlvo, (req, res, next) 
   next();
 }, produtoController.criar);
 router.post('/tenants/:tenantId/produtos/:id/foto', resolverTenantAlvo, uploadFoto.single('foto'), converterWebp, produtoController.enviarFoto);
+router.get('/produtos/import/modelo', produtoController.baixarModeloImportacao);
+router.post('/tenants/:tenantId/produtos/import', resolverTenantAlvo, uploadPlanilha.single('arquivo'), (req, res, next) => {
+  registrarAuditoria({ acao: 'PRODUTOS_IMPORTADOS_VIA_SUPER', ator: req.superAdmin.email, tenantId: req.tenantId, req });
+  next();
+}, produtoController.importarProdutos);
+router.post('/tenants/:tenantId/categorias', resolverTenantAlvo, (req, res, next) => {
+  registrarAuditoria({ acao: 'CATEGORIA_CRIADA_VIA_SUPER', ator: req.superAdmin.email, tenantId: req.tenantId, detalhes: { nome: req.body.nome }, req });
+  next();
+}, categoriaController.criar);
 
 router.get('/backup', superBackupController.exportarJson);
 router.get('/backup/pdf', superBackupController.exportarPdf);
