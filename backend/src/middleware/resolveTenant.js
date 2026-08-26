@@ -84,6 +84,10 @@ function invalidarCacheTenant(slug) {
  * (único lugar do sistema autorizado a isso) e exigem req.ehSuperAdmin
  * explicitamente (ver server.js) — senão 404, não 403, pra não confirmar
  * pra quem não deveria saber que esse painel existe.
+ *
+ * "produtos" (produtos.<DOMINIO_BASE>) é a mesma exceção — tela de cadastro
+ * de produto cross-tenant do super admin (ver routes/super.js e
+ * produtos.html), também sem Tenant próprio.
  */
 async function resolveTenant(req, res, next) {
   try {
@@ -92,7 +96,7 @@ async function resolveTenant(req, res, next) {
       return res.status(400).json({ erro: 'Não foi possível identificar a loja (subdomínio inválido)' });
     }
 
-    if (slug === 'super') {
+    if (slug === 'super' || slug === 'produtos') {
       req.ehSuperAdmin = true;
       return next();
     }
