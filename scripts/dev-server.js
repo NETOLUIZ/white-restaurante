@@ -24,6 +24,7 @@ const ALIASES = {
   '/atendente': '/atendente.html',
   '/empresa': '/empresa.html',
   '/super': '/super.html',
+  '/produtos': '/produtos.html',
 };
 
 liveServer.start({
