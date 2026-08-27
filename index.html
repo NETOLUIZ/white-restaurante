@@ -1186,6 +1186,7 @@ class Component extends DCLogic {
     selectedId: null,
     search: '',
     detailQty: 1,
+    detailValorPesoInput: '', // texto do campo "ou por valor" — separado de detailQty de propósito (ver onDetailValorPeso)
     detailObs: '',
     observacaoGeral: '', // observação do pedido inteiro (diferente de detailObs, que é por item)
     galetoHorarios: [], // janela de horários de retirada (só pra categoria Galetos) — vem de /api/configuracao
@@ -1603,7 +1604,8 @@ class Component extends DCLogic {
     const produto = this.prod(id);
     // Produto por peso já abre sugerindo meio quilo — o cliente ajusta digitando.
     const detailQty = (produto && produto.vendidoPorPeso) ? 500 : 1;
-    this.setState({ screen:'product', selectedId:id, detailQty, detailObs:'', horarioRetirada:null, detailAdicionaisSel:{} });
+    const detailValorPesoInput = (produto && produto.vendidoPorPeso) ? (produto.price * detailQty / 1000).toFixed(2).replace('.', ',') : '';
+    this.setState({ screen:'product', selectedId:id, detailQty, detailValorPesoInput, detailObs:'', horarioRetirada:null, detailAdicionaisSel:{} });
   }
   selecionarHorarioRetirada(h){ this.setState({ horarioRetirada:h }); }
 
@@ -2566,18 +2568,28 @@ class Component extends DCLogic {
       pHasFoto: !!spFoto, pSemFoto: !spFoto, pFotoSrc: spFoto || '',
       detailQty:s.detailQty, detailObs:s.detailObs, detailTotalFmt:this.fmt(detailTotal),
       porPesoDetail: !!sp.vendidoPorPeso, naoPorPesoDetail: !sp.vendidoPorPeso,
-      // "ou por valor" pro item por peso — mesma fonte da verdade que o campo de gramas
-      // (detailQty), só que digitando quanto quer gastar em R$ em vez de pesar.
-      detailValorPeso: (sp.vendidoPorPeso && s.detailQty > 0) ? (sp.price * s.detailQty / 1000).toFixed(2).replace('.', ',') : '',
+      // "ou por valor" pro item por peso — grava o texto digitado à parte
+      // (detailValorPesoInput) em vez de derivar de detailQty a cada render:
+      // um campo controlado que se auto-reescreve a cada tecla (gramas -> R$
+      // arredondado -> de volta pro campo) atropela o que a pessoa tá
+      // digitando no meio da digitação. detailQty continua a fonte da
+      // verdade pro carrinho; só o texto exibido nesse campo é independente.
+      detailValorPeso: s.detailValorPesoInput,
       hasProductAdicionais, productAdicionaisOptions,
       heroStyle:{ position:'relative', height:'260px', background:'linear-gradient(135deg,#FFE9C2 0%,#F2C078 60%,#E89A3C 120%)', display:'flex', alignItems:'flex-end', justifyContent:'center', paddingBottom:'18px' },
       incDetail:() => this.setState(st => ({ detailQty: st.detailQty + 1 })),
       decDetail:() => this.setState(st => ({ detailQty: Math.max(1, st.detailQty - 1) })),
-      onDetailGramas:(e) => { const g = parseInt(String(e.target.value).replace(/\D/g,''), 10); this.setState({ detailQty: g > 0 ? g : 0 }); },
+      onDetailGramas:(e) => {
+        const g = parseInt(String(e.target.value).replace(/\D/g,''), 10);
+        const qty = g > 0 ? g : 0;
+        const valorInput = (sp.vendidoPorPeso && qty > 0) ? (sp.price * qty / 1000).toFixed(2).replace('.', ',') : '';
+        this.setState({ detailQty: qty, detailValorPesoInput: valorInput });
+      },
       onDetailValorPeso:(e) => {
-        const valor = Number(String(e.target.value).replace(',', '.').replace(/[^\d.]/g, ''));
-        if (!sp.price || !valor) { this.setState({ detailQty: 0 }); return; }
-        this.setState({ detailQty: Math.round(valor / sp.price * 1000) });
+        const texto = e.target.value;
+        const valor = Number(texto.replace(',', '.').replace(/[^\d.]/g, ''));
+        const qty = (sp.price && valor) ? Math.round(valor / sp.price * 1000) : 0;
+        this.setState({ detailQty: qty, detailValorPesoInput: texto });
       },
       onObs:(e) => this.setState({ detailObs:e.target.value }),
       isGaletoProduto, horarioOptions, hasHorarioRetirada: !!s.horarioRetirada,

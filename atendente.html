@@ -991,6 +991,7 @@ class Component extends DCLogic {
     selectedCat: null,
     buscaProduto: '',
     carrinho: {}, // { [produtoId]: quantidade } — pedido em montagem, ainda não enviado
+    valorPesoInputs: {}, // { [produtoId]: texto } — ver carrinhoSetValorPeso
     formaPagamento: 'PIX',
     valorRecebido: '', // só usado quando formaPagamento === 'DINHEIRO', pro cálculo do troco
     finalizando: false,
@@ -1186,7 +1187,14 @@ class Component extends DCLogic {
   // Mesmo carrinho (gramas), só que a atendente digita quanto quer GASTAR em
   // R$ (ex: "R$ 40 de carne") em vez de pesar — converte pro preço/kg do
   // produto e reaproveita carrinhoSetGramas, sem duplicar o estado.
+  //
+  // Guarda o texto digitado em valorPesoInputs (à parte de detailQty/carrinho)
+  // de propósito — um campo controlado que recalcula o próprio valor a cada
+  // tecla (R$ -> gramas arredondadas -> de volta pra R$) atropela o que a
+  // pessoa tá digitando no meio da digitação (ex: tentar digitar "40,00"
+  // acaba em "24,38"). valorPesoValue usa esse texto bruto quando presente.
   carrinhoSetValorPeso(produtoId, valorStr, precoPorKg){
+    this.setState(s => ({ valorPesoInputs: { ...s.valorPesoInputs, [produtoId]: valorStr } }));
     const valor = Number(String(valorStr).replace(',', '.').replace(/[^\d.]/g, ''));
     if (!precoPorKg || !valor) { this.carrinhoSetGramas(produtoId, 0); return; }
     this.carrinhoSetGramas(produtoId, Math.round((valor / precoPorKg) * 1000));
@@ -1195,8 +1203,22 @@ class Component extends DCLogic {
     this.setState(s => {
       const carrinho = { ...s.carrinho };
       delete carrinho[produtoId];
-      return { carrinho };
+      const valorPesoInputs = { ...s.valorPesoInputs };
+      delete valorPesoInputs[produtoId];
+      return { carrinho, valorPesoInputs };
     });
+  }
+  // Editar o campo de gramas diretamente invalida qualquer texto "em digitação"
+  // guardado pro campo de R$ desse produto — sem isso ele continuaria mostrando
+  // o texto antigo (ver valorPesoValue/carrinhoSetValorPeso) mesmo depois de o
+  // peso ter mudado por outro caminho.
+  carrinhoSetGramasDireto(produtoId, valor){
+    this.setState(s => {
+      const valorPesoInputs = { ...s.valorPesoInputs };
+      delete valorPesoInputs[produtoId];
+      return { valorPesoInputs };
+    });
+    this.carrinhoSetGramas(produtoId, valor);
   }
   setFormaPagamento(f){
     this.setState({ formaPagamento:f, valorRecebido:'' });
@@ -1614,7 +1636,7 @@ class Component extends DCLogic {
       this.setState({
         finalizando:false, screen:'confirmacao',
         ultimoPedido: { codigo: '#BF' + pedido.id, total: pedido.total },
-        carrinho:{}, formaPagamento:'PIX', valorRecebido:''
+        carrinho:{}, valorPesoInputs:{}, formaPagamento:'PIX', valorRecebido:''
       });
     } catch (e) {
       this.setState({ finalizando:false });
@@ -1779,7 +1801,7 @@ class Component extends DCLogic {
       return {
         nome:p.nome, priceFmt:this.fmt(p.preco) + (p.vendidoPorPeso ? '/kg' : ''), qty:String(qty), hasQty: qty > 0,
         porPeso, naoPorPeso: !porPeso, gramasValue: qty > 0 ? String(qty) : '',
-        valorPesoValue: qty > 0 ? (qty / 1000 * p.preco).toFixed(2).replace('.', ',') : '',
+        valorPesoValue: s.valorPesoInputs[p.id] !== undefined ? s.valorPesoInputs[p.id] : (qty > 0 ? (qty / 1000 * p.preco).toFixed(2).replace('.', ',') : ''),
         hasFoto: !!fotoSrc, semFoto: !fotoSrc, fotoSrc,
         cardClass: 'pos-prod-card' + (qty > 0 ? ' selected' : ''), isSelecionado: qty > 0,
         // Card inteiro clicável só quando dá pra "adicionar 1" sem ambiguidade — item por
@@ -1788,7 +1810,7 @@ class Component extends DCLogic {
         onCardClick: porPeso ? () => {} : () => this.carrinhoInc(p.id),
         onAdd:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoInc(p.id); },
         onDec:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoDec(p.id); },
-        onGramasChange:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoSetGramas(p.id, e.target.value); },
+        onGramasChange:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoSetGramasDireto(p.id, e.target.value); },
         onValorPesoChange:(e) => { if (e && e.stopPropagation) e.stopPropagation(); this.carrinhoSetValorPeso(p.id, e.target.value, p.preco); }
       };
     });
