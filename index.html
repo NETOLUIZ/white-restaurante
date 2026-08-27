@@ -705,12 +705,12 @@
       <sc-if value="{{ porPesoDetail }}" hint-placeholder-val="{{ false }}">
         <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;margin:22px 0 8px;">Peso (gramas)</h2>
         <div style="display:flex;align-items:center;gap:14px;">
-          <input value="{{ detailQty }}" onChange="{{ onDetailGramas }}" inputmode="numeric" placeholder="Ex: 500" style="width:110px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:14px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:19px;text-align:center;outline:none;"/>
+          <input value="{{ detailQty }}" onChange="{{ onDetailGramas }}" onFocus="{{ selecionarTudoAoFocar }}" inputmode="numeric" placeholder="Ex: 500" style="width:110px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:14px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:19px;text-align:center;outline:none;"/>
           <span style="color:#8C8075;font-size:13px;">{{ pUnitFmt }}</span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;margin-top:10px;">
           <span style="color:#8C8075;font-size:13px;">ou por valor: R$</span>
-          <input value="{{ detailValorPeso }}" onChange="{{ onDetailValorPeso }}" inputmode="decimal" placeholder="Ex: 40,00" style="width:110px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:14px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:19px;text-align:center;outline:none;"/>
+          <input value="{{ detailValorPeso }}" onChange="{{ onDetailValorPeso }}" onFocus="{{ selecionarTudoAoFocar }}" inputmode="decimal" placeholder="Ex: 40,00" style="width:110px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:14px;padding:12px 14px;font-family:'DM Mono',monospace;font-size:19px;text-align:center;outline:none;"/>
         </div>
       </sc-if>
       <sc-if value="{{ naoPorPesoDetail }}" hint-placeholder-val="{{ true }}">
@@ -2592,6 +2592,10 @@ class Component extends DCLogic {
         this.setState({ detailQty: qty, detailValorPesoInput: texto });
       },
       onObs:(e) => this.setState({ detailObs:e.target.value }),
+      // Campo já vem preenchido com um valor sugerido (peso/preço padrão) — sem
+      // selecionar tudo ao focar, digitar direto insere no meio do texto
+      // existente em vez de substituí-lo.
+      selecionarTudoAoFocar:(e) => e.target.select(),
       isGaletoProduto, horarioOptions, hasHorarioRetirada: !!s.horarioRetirada,
       addDetail:(e) => {
         if (sp.vendidoPorPeso && !(s.detailQty > 0)) { this.showToast('Informe o peso desejado'); return; }

@@ -531,12 +531,12 @@
                 <sc-if value="{{ p.porPeso }}" hint-placeholder-val="{{ false }}">
                   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
                     <div style="display:flex;align-items:center;gap:4px;">
-                      <input value="{{ p.gramasValue }}" onChange="{{ p.onGramasChange }}" inputmode="numeric" placeholder="g" class="pos-input pos-input-sm" style="width:52px;text-align:center;"/>
+                      <input value="{{ p.gramasValue }}" onChange="{{ p.onGramasChange }}" onFocus="{{ selecionarTudoAoFocar }}" inputmode="numeric" placeholder="g" class="pos-input pos-input-sm" style="width:52px;text-align:center;"/>
                       <span style="font-size:10px;color:#8C8075;">g</span>
                     </div>
                     <div style="display:flex;align-items:center;gap:4px;">
                       <span style="font-size:10px;color:#8C8075;">R$</span>
-                      <input value="{{ p.valorPesoValue }}" onChange="{{ p.onValorPesoChange }}" inputmode="decimal" placeholder="0,00" class="pos-input pos-input-sm" style="width:52px;text-align:center;"/>
+                      <input value="{{ p.valorPesoValue }}" onChange="{{ p.onValorPesoChange }}" onFocus="{{ selecionarTudoAoFocar }}" inputmode="decimal" placeholder="0,00" class="pos-input pos-input-sm" style="width:52px;text-align:center;"/>
                     </div>
                   </div>
                 </sc-if>
@@ -1874,6 +1874,9 @@ class Component extends DCLogic {
       isLoading: s.screen === 'loading', isLogin: s.screen === 'login', isPedido: s.screen === 'pedido',
       isConfirmacao: s.screen === 'confirmacao', isSenha: s.screen === 'senha', isMontarMarmita: s.screen === 'montarMarmita',
       logoSrc: s.logoSrc,
+      // Campo de gramas/valor já vem preenchido — sem selecionar tudo ao focar,
+      // digitar direto insere no meio do texto existente em vez de substituí-lo.
+      selecionarTudoAoFocar:(e) => e.target.select(),
 
       nomeAtendente: s.atendente ? (s.atendente.nome || s.atendente.email) : '',
       logout:() => this.logout(), goSenha:() => this.goSenha(), voltarPedido:() => this.voltarPedido(),
