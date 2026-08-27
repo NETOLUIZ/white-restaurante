@@ -221,7 +221,11 @@ class Component extends DCLogic {
     // brasileiro costuma ser preciso o bastante pra o Maps corrigir sozinho quando o nome
     // da rua não bate com nada indexado.
     const q = [e.rua, e.numero, e.bairro, e.cidade, e.cep].filter(Boolean).join(', ');
-    return 'https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(q);
+    // Sem origin, o Maps usa a localização atual do celular como ponto de partida —
+    // toda entrega sai da loja, não de onde o entregador está nesse instante, então
+    // fixa a origem no endereço cadastrado da loja quando ele existir.
+    const origin = this.state.enderecoLoja ? '&origin=' + encodeURIComponent(this.state.enderecoLoja) : '';
+    return 'https://www.google.com/maps/dir/?api=1' + origin + '&destination=' + encodeURIComponent(q);
   }
 
   async apiCall(path, opts){
@@ -272,11 +276,12 @@ class Component extends DCLogic {
   }
 
   async carregarPedidos(){
-    const [pedidos, { saldo }] = await Promise.all([
+    const [pedidos, { saldo }, config] = await Promise.all([
       this.apiGet('/entregador/pedidos'),
       this.apiGet('/entregador/saldo'),
+      this.apiGet('/configuracao').catch(() => ({})),
     ]);
-    this.setState({ pedidos, saldo });
+    this.setState({ pedidos, saldo, enderecoLoja: config.enderecoLoja || '' });
   }
 
   onLoginEmail(e){ this.setState(s => ({ loginForm:{ ...s.loginForm, email:e.target.value } })); }
