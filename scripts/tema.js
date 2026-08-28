@@ -188,7 +188,12 @@
   }
 
   function aplicarCoresDom(branding) {
-    var elementos = document.querySelectorAll('body *');
+    // :not(.pos-nav-item) — esse item de categoria (atendente.html) alterna
+    // fundo branco/vermelho via classe "active" no clique. Se o scan pegar ele
+    // no estado branco (bate com a regra de corCard) e travar com !important,
+    // o fundo vermelho do "selecionado" nunca mais consegue vencer na cascata
+    // — texto branco fica sobre fundo branco travado (letras somem).
+    var elementos = document.querySelectorAll('body *:not(.pos-nav-item)');
     elementos.forEach(function (el) {
       var cs = getComputedStyle(el);
       REGRAS_COR.forEach(function (regra) {
