@@ -1,6 +1,7 @@
 const { estaAberto } = require('../utils/horarioFuncionamento');
 const { criarPagamentoPix } = require('../utils/mercadoPago');
 const { gerarLinkDoJogo } = require('../utils/gameLink');
+const { enviarMensagem, formatarNumeroWhatsapp } = require('../utils/evolutionApi');
 
 // Pedido público (guest checkout) aceita Dinheiro na entrega/retirada além de
 // Pix/Cartão — o troco (se precisar) é só cálculo do lado do cliente, exibido
@@ -102,6 +103,32 @@ async function montarItemValidado(item, produtosPorId, tamanhosPorSlug, proteina
     precoUnitarioCongelado: precoUnitario,
     adicionais: { create: adicionaisValidados },
   };
+}
+
+/** Monta o texto da confirmação de pedido enviada por WhatsApp (ver enviarMensagem em criarPedidoInterno). */
+function montarMensagemConfirmacaoWhatsapp({ tenant, nomeCliente, itens, itensValidados, produtosPorId, tamanhosPorSlug, tipo, formaPagamento, total }) {
+  const linhas = itensValidados.map((iv, i) => {
+    if (iv.produtoId) {
+      const produto = produtosPorId.get(iv.produtoId);
+      const nome = produto ? produto.nome : 'Item';
+      const qtdTexto = produto?.vendidoPorPeso ? `${iv.quantidade}g` : `${iv.quantidade}x`;
+      return `• ${qtdTexto} ${nome}`;
+    }
+    const tamanho = tamanhosPorSlug.get(String(itens[i]?.tamanhoMarmitaId));
+    return `• ${iv.quantidade}x Marmita ${tamanho ? tamanho.nome : ''}`.trim();
+  });
+
+  const formaTexto = { PIX: 'Pix', CARTAO: 'Cartão', DINHEIRO: 'Dinheiro' }[formaPagamento] || formaPagamento;
+  const entregaTexto = tipo === 'RETIRADA' ? 'Retirada no local' : 'Entrega';
+
+  return [
+    `Olá, ${nomeCliente}! Seu pedido na *${tenant.nome}* foi confirmado. ✅`,
+    '',
+    ...linhas,
+    '',
+    `Total: R$ ${total.toFixed(2).replace('.', ',')}`,
+    `${entregaTexto} — pagamento em ${formaTexto}`,
+  ].join('\n');
 }
 
 class Erro400 extends Error {}
@@ -320,6 +347,36 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
         }
       } catch (err) {
         console.error(`[pedido] falha ao criar cobrança PIX (id=${pedido.id}), seguindo sem cobrança automática:`, err.message);
+      }
+    }
+
+    // Confirmação no WhatsApp da própria loja (Evolution API self-hosted, ver
+    // whatsappController) — mesmo racional do PIX acima: sem instância conectada
+    // ou falha no envio, o pedido segue normal (nunca quebra o checkout).
+    if (telefoneDigitos) {
+      try {
+        const configWhatsapp = await req.prisma.configuracao.findFirst();
+        if (configWhatsapp?.whatsappConectado && configWhatsapp.whatsappInstancia && configWhatsapp.whatsappToken) {
+          const texto = montarMensagemConfirmacaoWhatsapp({
+            tenant: req.tenant,
+            nomeCliente: nomeTrim,
+            itens,
+            itensValidados,
+            produtosPorId,
+            tamanhosPorSlug,
+            tipo,
+            formaPagamento,
+            total,
+          });
+          await enviarMensagem({
+            instanceName: configWhatsapp.whatsappInstancia,
+            token: configWhatsapp.whatsappToken,
+            numero: formatarNumeroWhatsapp(telefoneDigitos),
+            texto,
+          });
+        }
+      } catch (err) {
+        console.error(`[pedido] falha ao enviar confirmação no WhatsApp (id=${pedido.id}):`, err.message);
       }
     }
 

@@ -19,6 +19,7 @@ const atendenteAdminController = require('../controllers/atendenteAdminControlle
 const empresaAdminController = require('../controllers/empresaAdminController');
 const caixaController = require('../controllers/caixaController');
 const configuracaoController = require('../controllers/configuracaoController');
+const whatsappController = require('../controllers/whatsappController');
 const mesaController = require('../controllers/mesaController');
 
 /**
@@ -121,6 +122,9 @@ router.post('/caixa/fechar', caixaController.fechar);
 
 router.get('/configuracao', configuracaoController.obter);
 router.put('/configuracao', configuracaoController.atualizar);
+router.post('/whatsapp/conectar', whatsappController.conectar);
+router.get('/whatsapp/status', whatsappController.status);
+router.post('/whatsapp/desconectar', whatsappController.desconectar);
 
 router.get('/mesas', mesaController.listarAdmin);
 router.post('/mesas', mesaController.criar);

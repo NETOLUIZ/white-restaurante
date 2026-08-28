@@ -872,6 +872,34 @@
         </div>
 
         <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
+          <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Confirmação de pedido no WhatsApp</h3>
+          <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Conecte o WhatsApp da própria loja pra mandar automaticamente a confirmação de compra pro cliente assim que ele fizer o pedido.</p>
+
+          <sc-if value="{{ whatsappConectado }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:10px;background:#EAF7EF;border:1px solid #BFE6CC;border-radius:10px;padding:10px 14px;">
+              <span style="width:9px;height:9px;border-radius:50%;background:#2D9E60;flex:none;"></span>
+              <span style="flex:1;font-size:13px;font-weight:600;color:#1F7A3D;">WhatsApp conectado — confirmação automática ativa</span>
+              <button onClick="{{ desconectarWhatsapp }}" style="background:none;border:1px solid #F0CFCB;color:#C0392B;border-radius:8px;padding:7px 12px;font-weight:700;font-size:12px;cursor:pointer;">Desconectar</button>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ whatsappDesconectado }}" hint-placeholder-val="{{ true }}">
+            <sc-if value="{{ whatsappQr }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;">
+                <img sc-camel-src="{{ whatsappQr }}" style="width:200px;height:200px;object-fit:contain;border-radius:12px;border:1px solid rgba(29,16,9,.1);background:#fff;" alt="QR Code do WhatsApp"/>
+                <p style="margin:0;font-size:12.5px;color:#8C8075;">Abra o WhatsApp da loja no celular → Aparelhos conectados → Conectar um aparelho, e escaneie o código acima.</p>
+              </div>
+            </sc-if>
+            <sc-if value="{{ whatsappQr }}" hint-placeholder-val="{{ true }}">
+              <button onClick="{{ conectarWhatsapp }}" disabled="{{ whatsappCarregando }}" style="background:#25D366;color:#fff;border:none;border-radius:10px;padding:11px 18px;font-weight:700;font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
+                {{ whatsappCarregando ? 'Gerando QR Code…' : 'Conectar WhatsApp' }}
+              </button>
+            </sc-if>
+          </sc-if>
+        </div>
+
+        <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:18px;">
           <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:15px;margin:0 0 4px;">Taxa de entrega padrão</h3>
           <p style="margin:0 0 14px;font-size:13px;color:#8C8075;">Usada quando o cliente escolhe "Outro bairro" ou nenhum bairro está cadastrado abaixo (não se aplica a mesa/retirada).</p>
           <div style="display:flex;gap:10px;align-items:flex-end;max-width:280px;">
@@ -2817,6 +2845,7 @@ class Component extends DCLogic {
       mercadoPagoConfigurado: config.mercadoPagoConfigurado,
       mercadoPagoTokenFinal: config.mercadoPagoAccessTokenFinal,
       mercadoPagoTokenInput: '',
+      whatsappConectado: !!config.whatsappConectado,
     });
   }
   onEnderecoLojaInput(e){ this.setState({ enderecoLojaInput: e.target.value }); }
@@ -2848,6 +2877,46 @@ class Component extends DCLogic {
       this.setState({ mercadoPagoConfigurado: config.mercadoPagoConfigurado, mercadoPagoTokenFinal: config.mercadoPagoAccessTokenFinal, mercadoPagoTokenInput: '' });
       this.showToast('Integração desligada');
     } catch (e) { this.showToast(e.message || 'Erro ao desligar'); }
+  }
+  pararPollWhatsapp(){
+    clearInterval(this._whatsappPoll);
+    clearTimeout(this._whatsappPollTimeout);
+  }
+  async conectarWhatsapp(){
+    this.setState({ whatsappCarregando: true, whatsappQr: null });
+    try {
+      const { qrCode } = await this.apiSend('POST', '/admin/whatsapp/conectar', {});
+      this.setState({ whatsappQr: qrCode, whatsappCarregando: false });
+      this.pararPollWhatsapp();
+      // QR Code do WhatsApp expira rápido — 90s de poll cobre folga suficiente
+      // pro admin abrir o celular e escanear sem deixar um interval pra sempre.
+      this._whatsappPoll = setInterval(async () => {
+        try {
+          const { conectado } = await this.apiGet('/admin/whatsapp/status');
+          if (conectado) {
+            this.pararPollWhatsapp();
+            this.setState({ whatsappConectado: true, whatsappQr: null });
+            this.showToast('WhatsApp conectado!');
+          }
+        } catch (e) { /* falha isolada de poll não precisa travar a tela */ }
+      }, 4000);
+      this._whatsappPollTimeout = setTimeout(() => {
+        this.pararPollWhatsapp();
+        this.setState(st => st.whatsappConectado ? st : { whatsappQr: null });
+      }, 90000);
+    } catch (e) {
+      this.setState({ whatsappCarregando: false });
+      this.showToast(e.message || 'Erro ao conectar WhatsApp');
+    }
+  }
+  async desconectarWhatsapp(){
+    if (!confirm('Desconectar o WhatsApp da loja? A confirmação de pedido para de ser enviada.')) return;
+    try {
+      await this.apiSend('POST', '/admin/whatsapp/desconectar', {});
+      this.pararPollWhatsapp();
+      this.setState({ whatsappConectado: false, whatsappQr: null });
+      this.showToast('WhatsApp desconectado');
+    } catch (e) { this.showToast(e.message || 'Erro ao desconectar'); }
   }
   /** Converte o formato da API ({dia:[{inicio,fim}]}) pro formato editável da tela (1 objeto fixo por dia, sempre com turno1/turno2). */
   horarioParaDraft(horarioFuncionamento){
@@ -4115,6 +4184,9 @@ class Component extends DCLogic {
       mercadoPagoTokenFinal: this.state.mercadoPagoTokenFinal || '',
       mercadoPagoTokenInput: this.state.mercadoPagoTokenInput || '', onMercadoPagoTokenInput:(e) => this.onMercadoPagoTokenInput(e),
       salvarMercadoPagoToken:() => this.salvarMercadoPagoToken(), desligarMercadoPago:() => this.desligarMercadoPago(),
+      whatsappConectado: !!this.state.whatsappConectado, whatsappDesconectado: !this.state.whatsappConectado,
+      whatsappQr: this.state.whatsappQr || null, whatsappCarregando: !!this.state.whatsappCarregando,
+      conectarWhatsapp:() => this.conectarWhatsapp(), desconectarWhatsapp:() => this.desconectarWhatsapp(),
       galetoHorarioInicioInput: this.state.galetoHorarioInicioInput, onGaletoHorarioInicioInput:(e) => this.onGaletoHorarioInicioInput(e),
       galetoHorarioFimInput: this.state.galetoHorarioFimInput, onGaletoHorarioFimInput:(e) => this.onGaletoHorarioFimInput(e),
       salvarGaletoHorarios:() => this.salvarGaletoHorarios(),

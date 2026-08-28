@@ -22,7 +22,7 @@ function comHorariosGaleto(config) {
   // verdade (não uma cor de marca), então só os últimos 4 caracteres voltam
   // pro painel confirmar "sim, tem token salvo" sem expor o valor inteiro de
   // novo a cada GET. Reenviar o token completo (PUT) sempre sobrescreve.
-  const { mercadoPagoAccessToken, ...resto } = config;
+  const { mercadoPagoAccessToken, whatsappToken, ...resto } = config;
   return {
     ...resto,
     galetoHorarios: gerarHorarios(config.galetoHorarioInicio, config.galetoHorarioFim),

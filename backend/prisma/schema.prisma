@@ -135,6 +135,15 @@ model Configuracao {
   /// URL (base64 data URI) do QR Code PIX estático da loja — exibido no PDV
   /// do atendente quando a forma de pagamento PIX é selecionada.
   pixQrCodeUrl         String?
+  /// Nome da instância do tenant no Evolution API (self-hosted) — 1 instância
+  /// por tenant, criada na primeira vez que o admin conecta o WhatsApp.
+  whatsappInstancia    String?
+  /// Token (apikey) da instância, devolvido pelo Evolution API na criação —
+  /// só serve pra mandar mensagem por ESSA instância, nunca é exposto ao
+  /// painel (mesmo racional do mercadoPagoAccessToken).
+  whatsappToken        String?
+  /// true depois que o QR Code foi escaneado e a sessão do WhatsApp está ativa.
+  whatsappConectado    Boolean  @default(false)
   updatedAt            DateTime @updatedAt
 }
 

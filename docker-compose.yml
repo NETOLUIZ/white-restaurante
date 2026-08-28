@@ -62,10 +62,67 @@ services:
       SEED_SUPER_EMAIL: ${SEED_SUPER_EMAIL:-}
       SEED_SUPER_SENHA: ${SEED_SUPER_SENHA:-}
       GAME_JWT_SECRET: ${GAME_JWT_SECRET:-saas_pipes_internal_secure_hmac_secret_2026}
+      EVOLUTION_API_URL: http://evolution-api:8080
+      EVOLUTION_API_KEY: ${EVOLUTION_API_KEY}
     volumes:
       - uploads_data:/app/uploads
     expose:
       - "3010"
+
+  # ---- Evolution API (WhatsApp self-hosted) — 1 instância por tenant, ver
+  # backend/src/utils/evolutionApi.js. Nada aqui é exposto ao host: só o
+  # backend fala com "evolution-api" pela rede interna do compose.
+  evolution-postgres:
+    image: postgres:15-alpine
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+    environment:
+      POSTGRES_USER: ${EVOLUTION_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${EVOLUTION_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${EVOLUTION_POSTGRES_DB}
+    volumes:
+      - evolution_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${EVOLUTION_POSTGRES_USER} -d ${EVOLUTION_POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    expose:
+      - "5432"
+
+  evolution-redis:
+    image: redis:alpine
+    restart: unless-stopped
+    mem_limit: 128m
+    cpus: 0.25
+    command: redis-server --appendonly yes
+    volumes:
+      - evolution_redis_data:/data
+    expose:
+      - "6379"
+
+  evolution-api:
+    image: atendai/evolution-api:v2.2.3
+    restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
+    depends_on:
+      evolution-postgres:
+        condition: service_healthy
+    environment:
+      AUTHENTICATION_API_KEY: ${EVOLUTION_API_KEY}
+      DATABASE_ENABLED: "true"
+      DATABASE_PROVIDER: postgresql
+      DATABASE_CONNECTION_URI: postgresql://${EVOLUTION_POSTGRES_USER}:${EVOLUTION_POSTGRES_PASSWORD}@evolution-postgres:5432/${EVOLUTION_POSTGRES_DB}?schema=evolution_api
+      DATABASE_SAVE_DATA_INSTANCE: "true"
+      CACHE_REDIS_ENABLED: "true"
+      CACHE_REDIS_URI: redis://evolution-redis:6379/6
+      CACHE_LOCAL_ENABLED: "false"
+    volumes:
+      - evolution_instances:/evolution/instances
+    expose:
+      - "8080"
 
   nginx:
     image: nginx:alpine
@@ -97,3 +154,6 @@ services:
 volumes:
   pg_data:
   uploads_data:
+  evolution_pg_data:
+  evolution_redis_data:
+  evolution_instances:
