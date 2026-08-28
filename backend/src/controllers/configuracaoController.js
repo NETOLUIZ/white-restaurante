@@ -74,6 +74,9 @@ async function atualizar(req, res) {
     if (req.body.enderecoLoja !== undefined) {
       data.enderecoLoja = String(req.body.enderecoLoja).trim();
     }
+    if (req.body.cidadeLoja !== undefined) {
+      data.cidadeLoja = String(req.body.cidadeLoja).trim() || null;
+    }
     if (req.body.capaUrl !== undefined) {
       data.capaUrl = req.body.capaUrl ? String(req.body.capaUrl) : null;
     }

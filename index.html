@@ -1405,6 +1405,7 @@ class Component extends DCLogic {
     const config = await this.apiGet('/configuracao');
     this.fee = config.taxaEntrega;
     if (config.enderecoLoja) this.RESTAURANT_ENDERECO = config.enderecoLoja;
+    this.CIDADE_LOJA = config.cidadeLoja || '';
     if (config.capaUrl) this.setState({ capaSrc: config.capaUrl });
     // abertoAgora vem calculado do servidor (ver configuracaoController.js) — nunca do
     // relógio do navegador, pra não depender do fuso/hora do aparelho do cliente.
@@ -1412,6 +1413,7 @@ class Component extends DCLogic {
   }
 
   fee = 7.9; // padrão de fábrica até carregarConfiguracao() resolver
+  CIDADE_LOJA = ''; // idem — fallback de cidade do endereço do cliente quando ele não preenche o CEP (ver placeOrder)
 
   // Ponto fixo (demonstração) usado só como centro de fallback do preview de endereço da
   // tela de Cadastro (setCadastroMap), quando o Nominatim ainda não geocodificou nada.
@@ -1732,7 +1734,14 @@ class Component extends DCLogic {
     if (!telefone) { this.showToast('Informe seu telefone para continuar'); return; }
     const enderecoSalvo = (usuario && usuario.endereco && usuario.endereco.rua) ? usuario.endereco : null;
     const enderecoInline = s.cadastro.rua ? { cep: s.cadastro.cep, rua: s.cadastro.rua, numero: s.cadastro.numero, complemento: s.cadastro.complemento, bairro: s.cadastro.bairro, cidade: s.cadastro.cidade, uf: s.cadastro.uf } : null;
-    const enderecoParaPedido = enderecoSalvo || enderecoInline;
+    let enderecoParaPedido = enderecoSalvo || enderecoInline;
+    // CEP no checkout é opcional — sem ele, cidade/uf nunca são preenchidos (só o
+    // autofill do CEP seta isso), e um endereço sem cidade geocodifica errado no
+    // Maps do entregador (rua numerada tipo "Rua 118" existe em várias cidades).
+    // Cai pra cidade da própria loja, já que a entrega nunca sai do raio dela.
+    if (enderecoParaPedido && !enderecoParaPedido.cidade && this.CIDADE_LOJA) {
+      enderecoParaPedido = { ...enderecoParaPedido, cidade: this.CIDADE_LOJA };
+    }
     if (s.pedidoTipo !== 'retirada' && !enderecoParaPedido) {
       this.showToast('Informe seu endereço de entrega para continuar');
       return;

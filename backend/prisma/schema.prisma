@@ -120,6 +120,12 @@ model Configuracao {
   horarioFuncionamento Json?
   /// Endereço completo da loja/estabelecimento exibido nas retiradas no local.
   enderecoLoja         String?  @default("Rua Central, 100 — Centro")
+  /// Cidade/UF da loja (ex: "Caucaia - CE") — usado como fallback de cidade no
+  /// endereço do cliente quando ele não preenche o CEP no checkout (a cidade só
+  /// vem do autofill do CEP hoje). Sem uma cidade no endereço, o Google Maps
+  /// geocodifica "Rua 118, 495, Planalto Caucaia" errado (rua numerada é comum
+  /// em vários municípios) e o entregador é mandado pro lugar errado.
+  cidadeLoja           String?
   capaUrl              String?
   /// Access Token da conta Mercado Pago do PRÓPRIO tenant — nunca compartilhado
   /// entre lojas. Presente = PIX no checkout vira cobrança real (QR Code +
