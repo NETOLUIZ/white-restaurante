@@ -19,6 +19,21 @@ function fetchComTimeout(url, opts = {}) {
   return fetch(url, { ...opts, signal: AbortSignal.timeout(TIMEOUT_MS) });
 }
 
+/**
+ * Erros de negócio da Evolution API (ex: instância desconectada) vêm como
+ * `{ status, error: 'Bad Request', response: { message: [...] } }` — o
+ * `.error` sozinho só repete o nome genérico do status HTTP ("Bad Request"),
+ * o motivo real fica em `.response.message`. Erros de baixo nível (Boom, ex:
+ * sessão do WhatsApp caiu) vêm num formato mais simples, com `.message` já
+ * na raiz. Sem checar `.response.message` primeiro, o log só mostrava
+ * "Bad Request" pra qualquer falha de envio, escondendo a causa real.
+ */
+function extrairMensagemErro(data, status) {
+  const bruta = data && ((data.response && data.response.message) || data.message || data.error);
+  const mensagem = Array.isArray(bruta) ? bruta.join('; ') : bruta;
+  return mensagem || `Evolution API respondeu ${status}`;
+}
+
 async function chamar(path, { method = 'GET', apikey, body } = {}) {
   const res = await fetchComTimeout(`${BASE_URL}${path}`, {
     method,
@@ -27,7 +42,7 @@ async function chamar(path, { method = 'GET', apikey, body } = {}) {
   });
   const data = await res.json().catch(() => null);
   if (!res.ok) {
-    throw new Error((data && (data.message || data.error)) || `Evolution API respondeu ${res.status}`);
+    throw new Error(extrairMensagemErro(data, res.status));
   }
   return data;
 }

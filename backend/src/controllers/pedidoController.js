@@ -1,7 +1,7 @@
 const { estaAberto } = require('../utils/horarioFuncionamento');
 const { criarPagamentoPix } = require('../utils/mercadoPago');
 const { gerarLinkDoJogo } = require('../utils/gameLink');
-const { enviarMensagem, formatarNumeroWhatsapp } = require('../utils/evolutionApi');
+const { enviarMensagem, formatarNumeroWhatsapp, statusConexao } = require('../utils/evolutionApi');
 
 // Pedido público (guest checkout) aceita Dinheiro na entrega/retirada além de
 // Pix/Cartão — o troco (se precisar) é só cálculo do lado do cliente, exibido
@@ -377,6 +377,18 @@ async function criarPedidoInterno(req, res, formasPagamentoValidas, { exigirClie
         }
       } catch (err) {
         console.error(`[pedido] falha ao enviar confirmação no WhatsApp (id=${pedido.id}):`, err.message);
+        // A sessão do WhatsApp cai sozinha às vezes (celular ficou offline, sessão
+        // expirou etc.) — sem essa checagem, whatsappConectado ficava travado em
+        // true pra sempre e o Admin nunca avisava a loja pra escanear o QR de novo.
+        try {
+          const configAtual = await req.prisma.configuracao.findFirst();
+          if (configAtual?.whatsappInstancia) {
+            const estado = await statusConexao(configAtual.whatsappInstancia);
+            if (estado !== 'open') {
+              await req.prisma.configuracao.upsert({ where: {}, update: { whatsappConectado: false }, create: { whatsappConectado: false } });
+            }
+          }
+        } catch (err2) { /* checagem best-effort — não pode derrubar o pedido */ }
       }
     }
 
