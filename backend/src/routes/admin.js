@@ -5,6 +5,7 @@ const { converterWebp } = require('../middleware/converterWebp');
 const backupController = require('../controllers/backupController');
 const categoriaController = require('../controllers/categoriaController');
 const produtoController = require('../controllers/produtoController');
+const catalogoProdutoController = require('../controllers/catalogoProdutoController');
 const cupomController = require('../controllers/cupomController');
 const pedidoController = require('../controllers/pedidoController');
 const bannerController = require('../controllers/bannerController');
@@ -55,6 +56,8 @@ router.delete('/produtos/:id', produtoController.deletar);
 router.post('/produtos/:id/foto', uploadFoto.single('foto'), converterWebp, produtoController.enviarFoto);
 router.delete('/produtos/:id/foto', produtoController.removerFoto);
 router.put('/produtos/:id/estoque', produtoController.ajustarEstoque);
+router.get('/catalogo', catalogoProdutoController.listar);
+router.post('/catalogo/:catalogoProdutoId/importar', catalogoProdutoController.importar);
 router.post('/produtos/:produtoId/adicionais', adicionalController.criar);
 
 router.get('/cupons', cupomController.listarAdmin);

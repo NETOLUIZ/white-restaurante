@@ -7,10 +7,12 @@ const superBrandingController = require('../controllers/superBrandingController'
 const superFeatureController = require('../controllers/superFeatureController');
 const superImpersonacaoController = require('../controllers/superImpersonacaoController');
 const superBackupController = require('../controllers/superBackupController');
+const superProdutoController = require('../controllers/superProdutoController');
+const superCatalogoController = require('../controllers/superCatalogoController');
 const categoriaController = require('../controllers/categoriaController');
 const produtoController = require('../controllers/produtoController');
 const { registrarAuditoria } = require('../utils/auditLogger');
-const { uploadFotoBranding, uploadBackupJson, uploadFoto, uploadPlanilha } = require('../utils/upload');
+const { uploadFotoBranding, uploadBackupJson, uploadFoto, uploadFotoCatalogo, uploadPlanilha } = require('../utils/upload');
 const { converterWebp } = require('../middleware/converterWebp');
 
 /**
@@ -51,6 +53,9 @@ router.patch('/tenants/:id/features/:chave', superFeatureController.atualizar);
 router.post('/tenants/:id/impersonar', superImpersonacaoController.impersonar);
 router.get('/impersonacoes', superImpersonacaoController.listarLogs);
 
+// ---- visão consolidada de produtos de todos os tenants (painel super) ----
+router.get('/produtos', superProdutoController.listar);
+
 // ---- cadastro rápido de produto cross-tenant (tela produtos.temnaarea.site) ----
 router.get('/produtos/codigo-barras/:codigo', produtoController.buscarCodigoBarras);
 router.get('/tenants/:tenantId/categorias', resolverTenantAlvo, categoriaController.listarPublico);
@@ -68,6 +73,20 @@ router.post('/tenants/:tenantId/categorias', resolverTenantAlvo, (req, res, next
   registrarAuditoria({ acao: 'CATEGORIA_CRIADA_VIA_SUPER', ator: req.superAdmin.email, tenantId: req.tenantId, detalhes: { nome: req.body.nome }, req });
   next();
 }, categoriaController.criar);
+
+// ---- catálogo mestre de produtos (compartilhado entre tenants, curado pelo super) ----
+router.get('/catalogo', superCatalogoController.listar);
+router.post('/produtos/:id/promover-catalogo', (req, res, next) => {
+  registrarAuditoria({ acao: 'PRODUTO_PROMOVIDO_AO_CATALOGO', ator: req.superAdmin.email, detalhes: { produtoId: req.params.id }, req });
+  next();
+}, superCatalogoController.promover);
+router.put('/catalogo/:id', superCatalogoController.atualizar);
+router.delete('/catalogo/:id', superCatalogoController.deletar);
+router.post('/catalogo/:id/foto', uploadFotoCatalogo.single('foto'), converterWebp, superCatalogoController.enviarFoto);
+router.patch('/catalogo/:id/tenants/:tenantId', (req, res, next) => {
+  registrarAuditoria({ acao: 'CATALOGO_ACESSO_TENANT_ALTERADO', ator: req.superAdmin.email, tenantId: req.params.tenantId, detalhes: { catalogoProdutoId: req.params.id, ativo: req.body.ativo }, req });
+  next();
+}, superCatalogoController.atualizarTenant);
 
 router.get('/backup', superBackupController.exportarJson);
 router.get('/backup/pdf', superBackupController.exportarPdf);

@@ -312,6 +312,7 @@
           <input ref="{{ setImportInput }}" type="file" accept=".xlsx" onChange="{{ onImportFileSelected }}" style="display:none;"/>
           <button onClick="{{ baixarModeloProdutos }}" style="margin-left:auto;display:flex;align-items:center;gap:8px;background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Baixar modelo</button>
           <button onClick="{{ triggerImportUpload }}" disabled="{{ importandoProdutos }}" style="display:flex;align-items:center;gap:8px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>{{ importandoProdutosLabel }}</button>
+          <button onClick="{{ abrirCatalogoModal }}" style="display:flex;align-items:center;gap:8px;background:#FFF3DC;border:1px solid #F2C078;color:#B45309;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Importar do catálogo</button>
           <button onClick="{{ newProduct }}" style="display:flex;align-items:center;gap:8px;background:#6B2E12;color:#FFF3DC;border:none;border-radius:12px;padding:11px 17px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:0 6px 16px rgba(107,46,18,.22);"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Novo produto</button>
         </div>
 
@@ -1675,6 +1676,62 @@
   </div>
   </sc-if>
 
+  <!-- ===================== CATÁLOGO MESTRE DRAWER (importar do catálogo compartilhado) ===================== -->
+  <sc-if value="{{ catalogoModalOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:40;">
+    <div onClick="{{ closeCatalogoModal }}" style="position:absolute;inset:0;background:rgba(29,16,9,.42);animation:adFade .2s ease-out;"></div>
+    <div style="position:absolute;top:0;right:0;height:100%;width:460px;max-width:92vw;background:#FFFBF3;box-shadow:-12px 0 40px rgba(29,16,9,.2);display:flex;flex-direction:column;animation:adSlide .26s cubic-bezier(.2,.8,.3,1);">
+      <div style="display:flex;align-items:center;gap:12px;padding:20px 22px;border-bottom:1px solid rgba(29,16,9,.07);">
+        <h2 style="font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:19px;margin:0;flex:1;">Importar do catálogo</h2>
+        <button onClick="{{ closeCatalogoModal }}" aria-label="Fechar" style="width:38px;height:38px;border-radius:11px;background:#F6F1E7;border:none;color:#6B2E12;cursor:pointer;display:flex;align-items:center;justify-content:center;"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      </div>
+      <div style="flex:1;overflow-y:auto;padding:20px 22px;">
+
+        <sc-if value="{{ catalogoModalSemSelecionado }}" hint-placeholder-val="{{ true }}">
+          <sc-if value="{{ catalogoModalCarregando }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Carregando catálogo...</div></sc-if>
+          <sc-if value="{{ catalogoModalEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum item liberado pro seu catálogo ainda.</div></sc-if>
+          <sc-for list="{{ catalogoModalItensRows }}" as="it" hint-placeholder-count="3">
+            <div onClick="{{ it.onSelecionar }}" style="display:flex;align-items:center;gap:12px;padding:11px 8px;border-bottom:1px solid rgba(29,16,9,.06);cursor:pointer;">
+              <sc-if value="{{ it.hasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:48px;height:48px;border-radius:11px;overflow:hidden;flex:none;"><img sc-camel-src="{{ it.fotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+              <sc-if value="{{ it.semFoto }}" hint-placeholder-val="{{ true }}"><div style="width:48px;height:48px;border-radius:11px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);flex:none;"></div></sc-if>
+              <div style="flex:1;min-width:0;">
+                <div style="font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.nome }}</div>
+                <div style="font-size:12px;color:#8C8075;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ it.descricaoCurta }}</div>
+              </div>
+              <div style="font-family:'DM Mono',monospace;font-size:13px;color:#D97706;flex:none;">{{ it.precoLabel }}</div>
+            </div>
+          </sc-for>
+        </sc-if>
+
+        <sc-if value="{{ catalogoModalTemSelecionado }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ voltarCatalogoLista }}" style="display:flex;align-items:center;gap:7px;background:none;border:none;color:#6B2E12;font-weight:700;font-size:13px;cursor:pointer;padding:0;margin-bottom:16px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>Voltar pro catálogo</button>
+          <div style="display:flex;gap:14px;align-items:center;margin-bottom:20px;">
+            <sc-if value="{{ catalogoSelHasFoto }}" hint-placeholder-val="{{ false }}"><div style="width:88px;height:88px;border-radius:16px;overflow:hidden;flex:none;"><img sc-camel-src="{{ catalogoSelFotoSrc }}" alt="" style="width:100%;height:100%;object-fit:cover;"/></div></sc-if>
+            <sc-if value="{{ catalogoSelSemFoto }}" hint-placeholder-val="{{ true }}"><div style="width:88px;height:88px;border-radius:16px;background:linear-gradient(135deg,#FFE9C2 0%,#F2C078 100%);border:1px solid rgba(180,83,9,.18);flex:none;"></div></sc-if>
+            <div>
+              <div style="font-weight:700;font-size:16px;">{{ catalogoSelNome }}</div>
+              <div style="font-size:13px;color:#8C8075;margin-top:2px;">{{ catalogoSelDescricao }}</div>
+              <div style="font-family:'DM Mono',monospace;font-size:14px;color:#D97706;margin-top:4px;">{{ catalogoSelPrecoLabel }}</div>
+            </div>
+          </div>
+          <label style="display:block;font-size:13px;font-weight:600;color:#6B2E12;margin-bottom:6px;">Categoria</label>
+          <sc-if value="{{ hasCatalogoModalCatOptions }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;gap:7px;flex-wrap:wrap;">
+              <sc-for list="{{ catalogoModalCatOptions }}" as="c" hint-placeholder-count="6">
+                <button onClick="{{ c.onClick }}" style="{{ c.style }}">{{ c.label }}</button>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ semCatalogoModalCatOptions }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:12.5px;color:#8C8075;">Crie uma categoria antes de importar produtos.</p></sc-if>
+          <sc-if value="{{ hasCatalogoModalErro }}" hint-placeholder-val="{{ false }}"><p style="margin:14px 0 0;font-size:13px;font-weight:600;color:#C0392B;">{{ catalogoModalErro }}</p></sc-if>
+          <button onClick="{{ confirmarImportarCatalogo }}" style="width:100%;margin-top:20px;background:#2D9E60;color:#fff;border:none;border-radius:13px;padding:13px;font-weight:700;font-size:15px;cursor:pointer;box-shadow:0 8px 18px rgba(45,158,96,.26);">{{ catalogoImportandoLabel }}</button>
+        </sc-if>
+
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
   <!-- ===================== BANNER DRAWER ===================== -->
   <sc-if value="{{ bannerOpen }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;inset:0;z-index:40;">
@@ -1829,6 +1886,7 @@ class Component extends DCLogic {
     importandoProdutos:false,
     importErros:null,
     importResumo:null,
+    catalogoModal:null,
     bannerDraft:null,
     splashSrc: localStorage.getItem('bf_custom_splash') || null,
     capaSrc: localStorage.getItem('bf_custom_capa') || null,
@@ -2544,7 +2602,7 @@ class Component extends DCLogic {
   nav(view){
     if (view === 'empresas' && this.state.tipoTenant !== 'RESTAURANTE') view = 'pedidos';
     clearInterval(this._mesasPoll);
-    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaEdit:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, atendenteDraft:null, empresaDraft:null, pedidoEmpresaDraft:null, categoriaDraft:null });
+    this.setState({ view, sidebarOpen:false, productDraft:null, bannerDraft:null, marmitaEdit:null, selectedOrder:null, selectedTable:null, entregadorDraft:null, garcomDraft:null, atendenteDraft:null, empresaDraft:null, pedidoEmpresaDraft:null, categoriaDraft:null, catalogoModal:null });
     if (view === 'mesas') {
       this.carregarMesas();
       this._mesasPoll = setInterval(() => this.carregarMesas(), 8000);
@@ -2713,6 +2771,41 @@ class Component extends DCLogic {
   async carregarProdutos(){
     const produtos = await this.apiGet('/admin/produtos');
     this.setState({ products: produtos.map((p) => this.mapProduto(p)) });
+  }
+  // ---- catálogo mestre (itens liberados pelo super admin pra importar) ----
+  abrirCatalogoModal(){
+    this.setState({ catalogoModal: { itens:[], carregando:true, selecionado:null, categoriaId:'', importando:false, erro:'' } });
+    this.carregarCatalogoModal();
+  }
+  fecharCatalogoModal(){ this.setState({ catalogoModal:null }); }
+  async carregarCatalogoModal(){
+    try {
+      const itens = await this.apiGet('/admin/catalogo');
+      const itensMapeados = itens.map((it) => ({ ...it, fotoSrc: it.foto ? this.apiBase.replace('/api', '') + '/uploads/' + it.foto : null }));
+      this.setState(st => st.catalogoModal ? { catalogoModal: { ...st.catalogoModal, itens: itensMapeados, carregando:false } } : {});
+    } catch (e) {
+      this.setState(st => st.catalogoModal ? { catalogoModal: { ...st.catalogoModal, carregando:false } } : {});
+      this.showToast(e.message || 'Erro ao carregar catálogo');
+    }
+  }
+  selecionarCatalogoItem(item){
+    this.setState(st => ({ catalogoModal: { ...st.catalogoModal, selecionado:item, categoriaId:'', erro:'' } }));
+  }
+  voltarCatalogoLista(){
+    this.setState(st => ({ catalogoModal: { ...st.catalogoModal, selecionado:null, erro:'' } }));
+  }
+  async confirmarImportarCatalogo(){
+    const m = this.state.catalogoModal;
+    if (!m || !m.selecionado) return;
+    if (!m.categoriaId) { this.setState(st => ({ catalogoModal: { ...st.catalogoModal, erro:'Escolha uma categoria' } })); return; }
+    this.setState(st => ({ catalogoModal: { ...st.catalogoModal, importando:true, erro:'' } }));
+    try {
+      const produto = await this.apiSend('POST', '/admin/catalogo/' + m.selecionado.id + '/importar', { categoriaId: m.categoriaId });
+      this.setState(st => ({ products: [...st.products, this.mapProduto(produto)], catalogoModal:null }));
+      this.showToast('Produto importado do catálogo!');
+    } catch (e) {
+      this.setState(st => ({ catalogoModal: { ...st.catalogoModal, importando:false, erro: e.message || 'Erro ao importar produto' } }));
+    }
   }
   resumoAdicionais(adicionais){
     return (adicionais || []).map((a) => (a.quantidade > 1 ? a.quantidade + 'x ' : '') + a.nome).join(', ');
@@ -4570,6 +4663,22 @@ class Component extends DCLogic {
         style:{ border:'1px solid', cursor:'pointer', borderRadius:'10px', padding:'8px 13px', fontWeight:700, fontSize:'13px',
           background: on ? '#D97706' : '#fff', color: on ? '#fff' : '#6B2E12', borderColor: on ? '#D97706' : 'rgba(29,16,9,.12)' } };
     });
+    // ---- catálogo mestre (drawer "Importar do catálogo") ----
+    const cm = s.catalogoModal;
+    const catalogoModalItensRows = (cm ? cm.itens : []).map((it) => ({
+      id: it.id, nome: it.nome, descricaoCurta: it.descricaoCurta,
+      precoLabel: it.preco != null ? this.fmt(it.preco) : '—',
+      hasFoto: !!it.fotoSrc, semFoto: !it.fotoSrc, fotoSrc: it.fotoSrc || '',
+      onSelecionar: () => this.selecionarCatalogoItem(it),
+    }));
+    const catalogoModalCatOptions = s.categorias.map((c) => {
+      const on = !!(cm && cm.categoriaId === c.id);
+      return { label:c.nome, onClick:() => this.setState(st => ({ catalogoModal:{ ...st.catalogoModal, categoriaId:c.id } })),
+        style:{ border:'1px solid', cursor:'pointer', borderRadius:'10px', padding:'8px 13px', fontWeight:700, fontSize:'13px',
+          background: on ? '#6B2E12' : '#fff', color: on ? '#FFF3DC' : '#6B2E12', borderColor: on ? '#6B2E12' : 'rgba(29,16,9,.12)' } };
+    });
+    const selCat = cm && cm.selecionado;
+
     const aEdit = s.adicionalDraftEdit;
     const draftAdicionaisRows = (d && d.adicionais ? d.adicionais : []).map((it) => {
       const isEditing = !!(aEdit && aEdit.id === it.id);
@@ -4937,6 +5046,21 @@ class Component extends DCLogic {
 
       productOpen: !!d, closeProduct:() => this.setState({ productDraft:null }),
       productDrawerTitle: d && d.id ? 'Editar produto' : 'Novo produto',
+
+      abrirCatalogoModal: () => this.abrirCatalogoModal(),
+      catalogoModalOpen: !!cm, closeCatalogoModal: () => this.fecharCatalogoModal(),
+      catalogoModalCarregando: !!(cm && cm.carregando),
+      catalogoModalItensRows,
+      catalogoModalEmpty: !!(cm && !cm.carregando && !cm.selecionado && catalogoModalItensRows.length === 0),
+      catalogoModalTemSelecionado: !!selCat, catalogoModalSemSelecionado: !selCat,
+      catalogoSelNome: selCat ? selCat.nome : '', catalogoSelDescricao: selCat ? selCat.descricaoCurta : '',
+      catalogoSelPrecoLabel: selCat && selCat.preco != null ? this.fmt(selCat.preco) : '—',
+      catalogoSelHasFoto: !!(selCat && selCat.fotoSrc), catalogoSelSemFoto: !(selCat && selCat.fotoSrc), catalogoSelFotoSrc: selCat ? selCat.fotoSrc || '' : '',
+      catalogoModalCatOptions, hasCatalogoModalCatOptions: catalogoModalCatOptions.length > 0, semCatalogoModalCatOptions: catalogoModalCatOptions.length === 0,
+      voltarCatalogoLista: () => this.voltarCatalogoLista(),
+      confirmarImportarCatalogo: () => this.confirmarImportarCatalogo(),
+      catalogoImportandoLabel: cm && cm.importando ? 'Importando...' : 'Importar produto',
+      hasCatalogoModalErro: !!(cm && cm.erro), catalogoModalErro: cm ? cm.erro : '',
       draftIsEdit: !!(d && d.id), draftIsNew,
       draftAdicionaisRows, draftAdicionaisEmpty,
       novoAdicionalNome: s.novoAdicionalNome, onNovoAdicionalNome:(e) => this.onNovoAdicionalNome(e),

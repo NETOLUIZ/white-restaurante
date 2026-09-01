@@ -47,6 +47,22 @@ const uploadFoto = multer({
   },
 });
 
+/**
+ * Multer configurado para fotos do catálogo mestre (super admin) — salva em
+ * uploads/catalogo/produtos/, fora da pasta de qualquer tenant, já que
+ * ProdutoCatalogo não pertence a nenhum tenant específico.
+ */
+const uploadFotoCatalogo = multer({
+  storage: criarStorage('produtos', () => 'catalogo'),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB — mesmo teto da foto de produto
+  fileFilter(req, file, cb) {
+    if (!TIPOS_PERMITIDOS.has(file.mimetype)) {
+      return cb(new Error('Tipo de arquivo não permitido — envie JPG, PNG, WEBP ou GIF'));
+    }
+    cb(null, true);
+  },
+});
+
 /** Multer configurado para fotos de banner — salva em uploads/{tenantId}/banners. */
 const uploadFotoBanner = multer({
   storage: criarStorage('banners'),
@@ -134,5 +150,5 @@ const uploadBackupJson = multer({
 });
 
 module.exports = {
-  uploadFoto, uploadFotoBanner, uploadFotoCategoria, uploadFotoBranding, uploadPlanilha, uploadBackupJson,
+  uploadFoto, uploadFotoBanner, uploadFotoCategoria, uploadFotoBranding, uploadFotoCatalogo, uploadPlanilha, uploadBackupJson,
 };

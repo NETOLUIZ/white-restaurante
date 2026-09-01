@@ -99,6 +99,7 @@ model Tenant {
   features            TenantFeature[]
   impersonacaoCodigos ImpersonacaoCodigo[]
   logsImpersonacao    LogImpersonacao[]
+  catalogoProdutos    CatalogoProdutoTenant[]
 }
 
 /// Configurações gerais da loja — 1 registro por tenant. `taxaEntrega` aqui é
@@ -303,6 +304,42 @@ model Produto {
   @@index([tenantId])
   @@index([categoriaId])
   @@index([subcategoriaId])
+}
+
+/// Catálogo mestre de produtos, curado pelo super admin a partir de produtos
+/// já cadastrados em algum tenant ("promover" — ver superCatalogoController).
+/// Não pertence a nenhum tenant (por isso fica em MODELS_NAO_ESCOPADOS em
+/// prismaTenant.js). Importar pra um tenant (ver catalogoProdutoController)
+/// só copia os dados pra um Produto novo — sem vínculo depois, editar aqui
+/// não afeta quem já importou.
+model ProdutoCatalogo {
+  id                Int      @id @default(autoincrement())
+  nome              String
+  descricaoCurta    String
+  descricaoCompleta String
+  preco             Float?
+  codigoBarras      String?
+  /// Caminho relativo em /uploads/catalogo/produtos — cópia independente da
+  /// foto do produto de origem, nunca referencia o arquivo do tenant original.
+  foto              String?
+  tag               String?
+  criadoEm          DateTime @default(now())
+  tenants           CatalogoProdutoTenant[]
+}
+
+/// Libera um item do catálogo mestre pra um tenant específico — só o super
+/// admin cria/remove essas linhas (painel super). A existência da linha é
+/// a própria permissão: sem "ativo" boolean, só existe ou não.
+model CatalogoProdutoTenant {
+  id                Int             @id @default(autoincrement())
+  catalogoProdutoId Int
+  catalogoProduto   ProdutoCatalogo @relation(fields: [catalogoProdutoId], references: [id], onDelete: Cascade)
+  tenantId          String
+  tenant            Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  criadoEm          DateTime        @default(now())
+
+  @@unique([catalogoProdutoId, tenantId])
+  @@index([tenantId])
 }
 
 /// Nota (1-5) que um cliente dá a um produto depois que o PRÓPRIO pedido dele

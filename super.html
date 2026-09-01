@@ -102,6 +102,14 @@
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h1"/><path d="M9 13h1"/><path d="M14 9h1"/><path d="M14 13h1"/><path d="M10 21v-4h4v4"/></svg>
         <span style="flex:1;text-align:left;">Tenants</span>
       </button>
+      <button onClick="{{ goProdutos }}" style="{{ navProdutos }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7.5 4.27 9 5.15"/><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        <span style="flex:1;text-align:left;">Produtos</span>
+      </button>
+      <button onClick="{{ goCatalogo }}" style="{{ navCatalogo }}">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        <span style="flex:1;text-align:left;">Catálogo</span>
+      </button>
       <button onClick="{{ goLogs }}" style="{{ navLogs }}">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <span style="flex:1;text-align:left;">Logs de acesso</span>
@@ -197,6 +205,118 @@
           <sc-if value="{{ tenantsEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum tenant cadastrado.</div></sc-if>
           </div>
         </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- PRODUTOS (todos os tenants) ---------- -->
+      <sc-if value="{{ isProdutos }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:suIn .25s ease-out;max-width:1040px;">
+        <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;">
+          <input value="{{ produtoBusca }}" onChange="{{ onProdutoBusca }}" placeholder="Buscar por produto ou empresa..." style="flex:1;min-width:200px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+          <select value="{{ produtoTenantFiltro }}" onChange="{{ onProdutoTenantFiltro }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;cursor:pointer;">
+            <option value="TODOS">Todas as empresas</option>
+            <sc-for list="{{ produtoTenantOpcoes }}" as="op" hint-placeholder-count="3">
+              <option value="{{ op.id }}">{{ op.nome }}</option>
+            </sc-for>
+          </select>
+          <select value="{{ produtoStatusFiltro }}" onChange="{{ onProdutoStatusFiltro }}" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;cursor:pointer;">
+            <option value="TODOS">Todos os status</option>
+            <option value="ATIVO">Ativos</option>
+            <option value="INATIVO">Inativos</option>
+          </select>
+        </div>
+
+        <div class="su-table-wrap">
+          <div class="su-table-inner">
+            <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr 85px 80px 80px 150px;gap:14px;padding:13px 20px;background:#F6F1E7;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;">
+              <span>Produto</span><span>Empresa</span><span>Categoria</span><span>Preço</span><span>Estoque</span><span>Status</span><span></span>
+            </div>
+            <sc-for list="{{ produtoRows }}" as="p" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr 85px 80px 80px 150px;gap:14px;padding:13px 20px;border-top:1px solid rgba(29,16,9,.06);align-items:center;">
+                <span style="font-weight:700;font-size:13.5px;">{{ p.nome }}</span>
+                <span style="font-size:12.5px;color:#8C8075;">{{ p.tenantNome }}</span>
+                <span style="font-size:12.5px;color:#8C8075;">{{ p.categoriaNome }}</span>
+                <span style="font-family:'DM Mono',monospace;font-size:12.5px;">{{ p.precoLabel }}</span>
+                <span style="{{ p.estoqueStyle }}">{{ p.estoqueLabel }}</span>
+                <span style="{{ p.statusStyle }}">{{ p.statusLabel }}</span>
+                <div style="display:flex;justify-content:flex-end;">
+                  <button onClick="{{ p.onPromover }}" disabled="{{ p.promoverDesabilitado }}" style="{{ p.promoverBtnStyle }}">{{ p.promoverLabel }}</button>
+                </div>
+              </div>
+            </sc-for>
+            <sc-if value="{{ produtosCarregando }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Carregando produtos...</div></sc-if>
+            <sc-if value="{{ produtosEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum produto encontrado.</div></sc-if>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- ---------- CATÁLOGO MESTRE (compartilhado entre tenants) ---------- -->
+      <sc-if value="{{ isCatalogo }}" hint-placeholder-val="{{ false }}">
+      <div style="animation:suIn .25s ease-out;max-width:900px;">
+        <p style="margin:0 0 18px;font-size:13px;color:#8C8075;">Promova produtos na aba "Produtos" (botão "Promover ao catálogo") pra adicioná-los aqui. Depois libere o acesso por tenant em cada item — só quem for liberado enxerga o item pra importar.</p>
+
+        <sc-if value="{{ catalogoCarregando }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Carregando catálogo...</div></sc-if>
+        <sc-if value="{{ catalogoEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:46px;text-align:center;color:#8C8075;">Nenhum item no catálogo ainda.</div></sc-if>
+
+        <sc-for list="{{ catalogoRows }}" as="item" hint-placeholder-count="2">
+          <div style="background:#FFFBF3;border:1px solid rgba(29,16,9,.07);border-radius:18px;padding:18px 20px;box-shadow:0 5px 16px rgba(29,16,9,.05);margin-bottom:14px;">
+            <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap;">
+              <div style="width:64px;height:64px;border-radius:12px;background:#F6F1E7;flex:none;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+                <sc-if value="{{ item.temFoto }}" hint-placeholder-val="{{ false }}"><img sc-camel-src="{{ item.fotoSrc }}" alt="{{ item.nome }}" style="width:100%;height:100%;object-fit:cover;"/></sc-if>
+                <sc-if value="{{ item.semFoto }}" hint-placeholder-val="{{ true }}"><span style="font-size:10px;color:#8C8075;">sem foto</span></sc-if>
+              </div>
+              <div style="flex:1;min-width:200px;">
+                <div style="font-weight:700;font-size:15px;">{{ item.nome }}</div>
+                <div style="font-size:12.5px;color:#8C8075;margin-top:2px;">{{ item.descricaoCurta }}</div>
+                <div style="display:flex;gap:12px;align-items:center;margin-top:6px;">
+                  <span style="font-family:'DM Mono',monospace;font-size:12.5px;">{{ item.precoLabel }}</span>
+                  <span style="font-size:11.5px;color:#8C8075;">{{ item.totalTenantsLabel }}</span>
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+                <div style="display:flex;gap:6px;">
+                  <button onClick="{{ item.onEditar }}" style="background:#FFF3DC;color:#B45309;border:1px solid #F2C078;border-radius:8px;padding:6px 9px;font-weight:700;font-size:12px;cursor:pointer;">Editar</button>
+                  <button onClick="{{ item.onExcluir }}" disabled="{{ item.excluindo }}" style="background:#FBEAE8;color:#C0392B;border:1px solid #F0CFCB;border-radius:8px;padding:6px 9px;font-weight:700;font-size:12px;cursor:pointer;">Excluir</button>
+                </div>
+                <label style="font-size:11.5px;color:#8C8075;cursor:pointer;">
+                  {{ item.trocarFotoLabel }}
+                  <input type="file" accept="image/*" onChange="{{ item.onFoto }}" style="display:none;"/>
+                </label>
+              </div>
+            </div>
+
+            <sc-if value="{{ item.isEditando }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-direction:column;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(29,16,9,.07);">
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input value="{{ catalogoFormNome }}" onChange="{{ onCatalogoFormNome }}" placeholder="Nome" style="flex:1;min-width:180px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+                <input value="{{ catalogoFormPreco }}" onChange="{{ onCatalogoFormPreco }}" placeholder="Preço sugerido" style="width:150px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              </div>
+              <input value="{{ catalogoFormDescricaoCurta }}" onChange="{{ onCatalogoFormDescricaoCurta }}" placeholder="Descrição curta" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              <textarea value="{{ catalogoFormDescricaoCompleta }}" onChange="{{ onCatalogoFormDescricaoCompleta }}" placeholder="Descrição completa" style="border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;min-height:64px;font-family:inherit;resize:vertical;"></textarea>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <input value="{{ catalogoFormCodigoBarras }}" onChange="{{ onCatalogoFormCodigoBarras }}" placeholder="Código de barras (opcional)" style="flex:1;min-width:160px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+                <input value="{{ catalogoFormTag }}" onChange="{{ onCatalogoFormTag }}" placeholder="Tag (opcional)" style="flex:1;min-width:160px;border:1px solid rgba(29,16,9,.14);background:#fff;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;"/>
+              </div>
+              <sc-if value="{{ hasCatalogoFormErro }}" hint-placeholder-val="{{ false }}"><p style="margin:0;font-size:13px;font-weight:600;color:#C0392B;">{{ catalogoFormErro }}</p></sc-if>
+              <div style="display:flex;gap:8px;">
+                <button onClick="{{ salvarCatalogoForm }}" style="background:#2D9E60;color:#fff;border:none;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">{{ salvandoCatalogoFormLabel }}</button>
+                <button onClick="{{ cancelarCatalogoForm }}" style="background:none;border:1px solid rgba(29,16,9,.14);color:#6B2E12;border-radius:10px;padding:10px 16px;font-weight:700;font-size:13px;cursor:pointer;">Cancelar</button>
+              </div>
+            </div>
+            </sc-if>
+
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(29,16,9,.07);">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#8C8075;margin-bottom:8px;">Acesso por tenant</div>
+              <sc-for list="{{ item.tenantAccessRows }}" as="ta" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-top:1px solid rgba(29,16,9,.05);">
+                  <span style="font-size:13px;">{{ ta.nome }}</span>
+                  <button onClick="{{ ta.onToggle }}" disabled="{{ ta.desabilitado }}" style="{{ ta.toggleStyle }}"><span style="{{ ta.knobStyle }}"></span></button>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
       </div>
       </sc-if>
 
@@ -696,6 +816,15 @@ class Component extends DCLogic {
 
     logs: [], logsPagina: 1, logsTotal: 0, logsTamanhoPagina: 20,
 
+    produtos: [], produtosCarregando: false, produtosCarregados: false,
+    produtoBusca: '', produtoTenantFiltro: 'TODOS', produtoStatusFiltro: 'TODOS',
+    promovendoProduto: {},
+
+    catalogo: [], catalogoCarregando: false, catalogoCarregados: false,
+    catalogoForm: null, salvandoCatalogoForm: false, catalogoFormErro: '',
+    catalogoFotoFile: {}, enviandoCatalogoFoto: {},
+    catalogoTenantSalvando: {}, excluindoCatalogoItem: {},
+
     pwd: { atual: '', nova: '', conf: '' }, pwdMsg: '', pwdOk: false,
   };
 
@@ -746,7 +875,7 @@ class Component extends DCLogic {
   closeSidebar() { this.setState({ sidebarOpen: false }); }
 
   // Views conhecidas — nunca restaura um valor desconhecido/corrompido do sessionStorage.
-  VIEWS_VALIDAS = new Set(['tenants', 'tenantDetalhe', 'logs', 'senha']);
+  VIEWS_VALIDAS = new Set(['tenants', 'tenantDetalhe', 'logs', 'senha', 'produtos', 'catalogo', 'backup']);
   STORAGE_KEY = 'bf_tela_super';
   async restaurarViewSalva() {
     let salvo;
@@ -756,6 +885,8 @@ class Component extends DCLogic {
     if (salvo.view === 'logs') { this.goLogs(); return; }
     if (salvo.view === 'senha') { this.goSenha(); return; }
     if (salvo.view === 'backup') { this.nav('backup'); return; }
+    if (salvo.view === 'produtos') { this.goProdutos(); return; }
+    if (salvo.view === 'catalogo') { this.goCatalogo(); return; }
     if (salvo.view === 'tenantDetalhe' && salvo.tenantDetalheId) {
       try {
         await this.abrirTenant(salvo.tenantDetalheId);
@@ -816,6 +947,8 @@ class Component extends DCLogic {
   nav(view) { this.setState({ view, sidebarOpen: false }); }
   goTenants() { this.nav('tenants'); }
   goLogs() { this.nav('logs'); this.carregarLogs(1); }
+  goProdutos() { this.nav('produtos'); this.carregarProdutos(); }
+  goCatalogo() { this.nav('catalogo'); this.carregarCatalogo(); }
   goSenha() { this.nav('senha'); this.setState({ pwd: { atual: '', nova: '', conf: '' }, pwdMsg: '' }); }
 
   // ---- tenants ----
@@ -1116,6 +1249,108 @@ class Component extends DCLogic {
   logsAnterior() { if (this.state.logsPagina > 1) this.carregarLogs(this.state.logsPagina - 1); }
   logsProximo() { if (this.state.logsPagina * this.state.logsTamanhoPagina < this.state.logsTotal) this.carregarLogs(this.state.logsPagina + 1); }
 
+  // ---- produtos (visão consolidada de todos os tenants) ----
+  async carregarProdutos() {
+    this.setState({ produtosCarregando: true });
+    try {
+      const produtos = await this.apiGet('/super/produtos');
+      this.setState({ produtos, produtosCarregando: false, produtosCarregados: true });
+    } catch (e) {
+      this.setState({ produtosCarregando: false });
+    }
+  }
+  onProdutoBusca(e) { this.setState({ produtoBusca: e.target.value }); }
+  onProdutoTenantFiltro(e) { this.setState({ produtoTenantFiltro: e.target.value }); }
+  onProdutoStatusFiltro(e) { this.setState({ produtoStatusFiltro: e.target.value }); }
+  async promoverProduto(produtoId) {
+    this.setState(s => ({ promovendoProduto: { ...s.promovendoProduto, [produtoId]: true } }));
+    try {
+      await this.apiSend('POST', '/super/produtos/' + produtoId + '/promover-catalogo', {});
+      this.setState(s => ({ promovendoProduto: { ...s.promovendoProduto, [produtoId]: false } }));
+      if (this.state.catalogoCarregados) await this.carregarCatalogo();
+    } catch (e) {
+      this.setState(s => ({ promovendoProduto: { ...s.promovendoProduto, [produtoId]: false } }));
+      alert(e.message || 'Erro ao promover produto ao catálogo');
+    }
+  }
+
+  // ---- catálogo mestre (compartilhado entre tenants, curado pelo super) ----
+  async carregarCatalogo() {
+    this.setState({ catalogoCarregando: true });
+    try {
+      const catalogo = await this.apiGet('/super/catalogo');
+      this.setState({ catalogo, catalogoCarregando: false, catalogoCarregados: true });
+    } catch (e) {
+      this.setState({ catalogoCarregando: false });
+    }
+  }
+  editarCatalogoItem(item) {
+    this.setState({
+      catalogoForm: { id: item.id, nome: item.nome, descricaoCurta: item.descricaoCurta, descricaoCompleta: item.descricaoCompleta, preco: item.preco != null ? String(item.preco) : '', codigoBarras: item.codigoBarras || '', tag: item.tag || '' },
+      catalogoFormErro: '',
+    });
+  }
+  cancelarCatalogoForm() { this.setState({ catalogoForm: null, catalogoFormErro: '' }); }
+  onCatalogoFormCampo(campo, e) { this.setState(s => ({ catalogoForm: { ...s.catalogoForm, [campo]: e.target.value } })); }
+  async salvarCatalogoForm() {
+    const f = this.state.catalogoForm;
+    this.setState({ salvandoCatalogoForm: true, catalogoFormErro: '' });
+    try {
+      await this.apiSend('PUT', '/super/catalogo/' + f.id, {
+        nome: f.nome, descricaoCurta: f.descricaoCurta, descricaoCompleta: f.descricaoCompleta,
+        preco: f.preco === '' ? null : Number(f.preco), codigoBarras: f.codigoBarras || null, tag: f.tag || null,
+      });
+      this.setState({ salvandoCatalogoForm: false, catalogoForm: null });
+      await this.carregarCatalogo();
+    } catch (e) {
+      this.setState({ salvandoCatalogoForm: false, catalogoFormErro: e.message || 'Erro ao salvar item do catálogo' });
+    }
+  }
+  async excluirCatalogoItem(id) {
+    if (!confirm('Remover este item do catálogo mestre? Produtos já importados por algum tenant não são afetados.')) return;
+    this.setState(s => ({ excluindoCatalogoItem: { ...s.excluindoCatalogoItem, [id]: true } }));
+    try {
+      await this.apiSend('DELETE', '/super/catalogo/' + id, {});
+      await this.carregarCatalogo();
+    } catch (e) {
+      this.setState(s => ({ excluindoCatalogoItem: { ...s.excluindoCatalogoItem, [id]: false } }));
+      alert(e.message || 'Erro ao remover item do catálogo');
+    }
+  }
+  onCatalogoFoto(id, e) {
+    const file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    this.setState(s => ({ catalogoFotoFile: { ...s.catalogoFotoFile, [id]: file } }));
+    this.enviarCatalogoFoto(id);
+  }
+  async enviarCatalogoFoto(id) {
+    const file = this.state.catalogoFotoFile[id];
+    if (!file) return;
+    this.setState(s => ({ enviandoCatalogoFoto: { ...s.enviandoCatalogoFoto, [id]: true } }));
+    try {
+      const fd = new FormData(); fd.append('foto', file);
+      await this.apiUpload('/super/catalogo/' + id + '/foto', fd);
+      this.setState(s => ({ enviandoCatalogoFoto: { ...s.enviandoCatalogoFoto, [id]: false }, catalogoFotoFile: { ...s.catalogoFotoFile, [id]: null } }));
+      await this.carregarCatalogo();
+    } catch (e) {
+      this.setState(s => ({ enviandoCatalogoFoto: { ...s.enviandoCatalogoFoto, [id]: false } }));
+      alert(e.message || 'Erro ao enviar foto');
+    }
+  }
+  async toggleCatalogoTenant(catalogoProdutoId, tenantId, atual) {
+    const chave = catalogoProdutoId + ':' + tenantId;
+    this.setState(s => ({ catalogoTenantSalvando: { ...s.catalogoTenantSalvando, [chave]: true } }));
+    try {
+      await this.apiSend('PATCH', '/super/catalogo/' + catalogoProdutoId + '/tenants/' + tenantId, { ativo: !atual });
+      await this.carregarCatalogo();
+    } catch (e) {
+      alert(e.message || 'Erro ao atualizar acesso do tenant');
+    } finally {
+      this.setState(s => ({ catalogoTenantSalvando: { ...s.catalogoTenantSalvando, [chave]: false } }));
+    }
+  }
+
   // ---- trocar senha ----
   onPwdAtual(e) { this.setState(s => ({ pwd: { ...s.pwd, atual: e.target.value } })); }
   onPwdNova(e) { this.setState(s => ({ pwd: { ...s.pwd, nova: e.target.value } })); }
@@ -1147,6 +1382,8 @@ class Component extends DCLogic {
     const titles = {
       tenants: ['Tenants', 'Todas as lojas cadastradas na plataforma'],
       tenantDetalhe: [s.tenantAtual ? s.tenantAtual.nome : 'Tenant', 'Detalhe, marca, features e impersonation'],
+      produtos: ['Produtos', 'Catálogo de todos os tenants, num só lugar'],
+      catalogo: ['Catálogo mestre', 'Produtos promovidos, liberados por tenant'],
       logs: ['Logs de acesso', 'Histórico de impersonation, mais recente primeiro'],
       backup: ['Backup', 'Exportar e restaurar os dados de todos os tenants'],
       senha: ['Trocar senha', 'Atualize a senha do seu login de super admin'],
@@ -1179,6 +1416,56 @@ class Component extends DCLogic {
       ip: l.ip || '—',
     }));
 
+    const produtoTenantOpcoes = (s.tenants || []).map(t => ({ id: t.id, nome: t.nome }));
+    const buscaProd = (s.produtoBusca || '').toLowerCase();
+    const produtosFiltrados = (s.produtos || []).filter(p => {
+      const matchBusca = !buscaProd || p.nome.toLowerCase().includes(buscaProd) || (p.tenant && p.tenant.nome.toLowerCase().includes(buscaProd));
+      const matchTenant = s.produtoTenantFiltro === 'TODOS' || (p.tenant && p.tenant.id === s.produtoTenantFiltro);
+      const matchStatus = s.produtoStatusFiltro === 'TODOS' || (s.produtoStatusFiltro === 'ATIVO' ? p.ativo : !p.ativo);
+      return matchBusca && matchTenant && matchStatus;
+    });
+    const produtoRows = produtosFiltrados.map(p => ({
+      nome: p.nome,
+      tenantNome: p.tenant ? p.tenant.nome : '—',
+      categoriaNome: p.categoria ? p.categoria.nome : '—',
+      precoLabel: 'R$ ' + Number(p.preco || 0).toFixed(2).replace('.', ','),
+      estoqueLabel: String(p.estoque != null ? p.estoque : 0),
+      estoqueStyle: { fontFamily: "'DM Mono',monospace", fontSize: '12.5px', fontWeight: (p.estoque || 0) <= 0 ? 700 : 400, color: (p.estoque || 0) <= 0 ? '#C0392B' : '#1D1009' },
+      statusLabel: p.ativo ? 'Ativo' : 'Inativo',
+      statusStyle: { fontSize: '11px', fontWeight: 700, color: p.ativo ? '#2D9E60' : '#C0392B' },
+      onPromover: () => this.promoverProduto(p.id),
+      promoverDesabilitado: !!s.promovendoProduto[p.id],
+      promoverLabel: s.promovendoProduto[p.id] ? 'Promovendo...' : 'Promover ao catálogo',
+      promoverBtnStyle: { background: '#FFF3DC', color: '#B45309', border: '1px solid #F2C078', borderRadius: '8px', padding: '7px 11px', fontWeight: 700, fontSize: '12px', cursor: 'pointer' },
+    }));
+
+    const catalogoRows = (s.catalogo || []).map(item => {
+      const tenantAccessRows = (s.tenants || []).map(t => {
+        const ativo = item.tenants.some(x => x.tenant.id === t.id);
+        const chave = item.id + ':' + t.id;
+        return {
+          id: t.id, nome: t.nome, ativo,
+          toggleStyle: this.toggleStyle(ativo), knobStyle: this.knobStyle(),
+          onToggle: () => this.toggleCatalogoTenant(item.id, t.id, ativo),
+          desabilitado: !!s.catalogoTenantSalvando[chave],
+        };
+      });
+      return {
+        id: item.id, nome: item.nome, descricaoCurta: item.descricaoCurta,
+        precoLabel: item.preco != null ? 'R$ ' + Number(item.preco).toFixed(2).replace('.', ',') : '—',
+        temFoto: !!item.foto, semFoto: !item.foto, fotoSrc: item.foto ? this.uploadsUrl('/uploads/' + item.foto) : '',
+        totalTenantsLabel: item.tenants.length + ' tenant' + (item.tenants.length === 1 ? '' : 's') + ' com acesso',
+        tenantAccessRows,
+        onEditar: () => this.editarCatalogoItem(item),
+        onExcluir: () => this.excluirCatalogoItem(item.id),
+        excluindo: !!s.excluindoCatalogoItem[item.id],
+        onFoto: (e) => this.onCatalogoFoto(item.id, e),
+        enviandoFoto: !!s.enviandoCatalogoFoto[item.id],
+        trocarFotoLabel: s.enviandoCatalogoFoto[item.id] ? 'Enviando foto...' : 'Trocar foto',
+        isEditando: !!(s.catalogoForm && s.catalogoForm.id === item.id),
+      };
+    });
+
     const LABELS_CONTRASTE = {
       botao: 'botão', texto: 'texto', botaoSecundario: 'botão secundário',
       cardTitulo: 'título do card', cardTextoSecundario: 'texto secundário do card',
@@ -1202,13 +1489,32 @@ class Component extends DCLogic {
 
       sidebarOpen: s.sidebarOpen, sidebarClass: 'su-sidebar' + (s.sidebarOpen ? ' open' : ''),
       openSidebar: () => this.openSidebar(), closeSidebar: () => this.closeSidebar(),
-      goTenants: () => this.goTenants(), goLogs: () => this.goLogs(), goSenha: () => this.goSenha(), goBackup: () => this.nav('backup'), logout: () => this.logout(),
-      navTenants: navStyle(s.view === 'tenants' || s.view === 'tenantDetalhe'), navLogs: navStyle(s.view === 'logs'), navSenha: navStyle(s.view === 'senha'), navBackup: navStyle(s.view === 'backup'),
+      goTenants: () => this.goTenants(), goLogs: () => this.goLogs(), goSenha: () => this.goSenha(), goBackup: () => this.nav('backup'), goProdutos: () => this.goProdutos(), goCatalogo: () => this.goCatalogo(), logout: () => this.logout(),
+      navTenants: navStyle(s.view === 'tenants' || s.view === 'tenantDetalhe'), navLogs: navStyle(s.view === 'logs'), navSenha: navStyle(s.view === 'senha'), navBackup: navStyle(s.view === 'backup'), navProdutos: navStyle(s.view === 'produtos'), navCatalogo: navStyle(s.view === 'catalogo'),
       superNome: s.superAdmin ? s.superAdmin.nome : '', superEmail: s.superAdmin ? s.superAdmin.email : '',
       superInicial: s.superAdmin && s.superAdmin.nome ? s.superAdmin.nome[0].toUpperCase() : 'S',
       pageTitle, pageSubtitle,
 
-      isTenants: s.view === 'tenants', isTenantDetalhe: s.view === 'tenantDetalhe', isLogs: s.view === 'logs', isSenha: s.view === 'senha', isBackup: s.view === 'backup',
+      isTenants: s.view === 'tenants', isTenantDetalhe: s.view === 'tenantDetalhe', isLogs: s.view === 'logs', isSenha: s.view === 'senha', isBackup: s.view === 'backup', isProdutos: s.view === 'produtos', isCatalogo: s.view === 'catalogo',
+
+      produtoBusca: s.produtoBusca, onProdutoBusca: (e) => this.onProdutoBusca(e),
+      produtoTenantFiltro: s.produtoTenantFiltro, onProdutoTenantFiltro: (e) => this.onProdutoTenantFiltro(e),
+      produtoStatusFiltro: s.produtoStatusFiltro, onProdutoStatusFiltro: (e) => this.onProdutoStatusFiltro(e),
+      produtoTenantOpcoes, produtoRows, produtosCarregando: s.produtosCarregando,
+      produtosEmpty: !s.produtosCarregando && produtosFiltrados.length === 0,
+
+      catalogoRows, catalogoCarregando: s.catalogoCarregando,
+      catalogoEmpty: !s.catalogoCarregando && catalogoRows.length === 0,
+      isEditandoCatalogo: !!s.catalogoForm,
+      catalogoFormNome: s.catalogoForm ? s.catalogoForm.nome : '', onCatalogoFormNome: (e) => this.onCatalogoFormCampo('nome', e),
+      catalogoFormDescricaoCurta: s.catalogoForm ? s.catalogoForm.descricaoCurta : '', onCatalogoFormDescricaoCurta: (e) => this.onCatalogoFormCampo('descricaoCurta', e),
+      catalogoFormDescricaoCompleta: s.catalogoForm ? s.catalogoForm.descricaoCompleta : '', onCatalogoFormDescricaoCompleta: (e) => this.onCatalogoFormCampo('descricaoCompleta', e),
+      catalogoFormPreco: s.catalogoForm ? s.catalogoForm.preco : '', onCatalogoFormPreco: (e) => this.onCatalogoFormCampo('preco', e),
+      catalogoFormCodigoBarras: s.catalogoForm ? s.catalogoForm.codigoBarras : '', onCatalogoFormCodigoBarras: (e) => this.onCatalogoFormCampo('codigoBarras', e),
+      catalogoFormTag: s.catalogoForm ? s.catalogoForm.tag : '', onCatalogoFormTag: (e) => this.onCatalogoFormCampo('tag', e),
+      salvarCatalogoForm: () => this.salvarCatalogoForm(), cancelarCatalogoForm: () => this.cancelarCatalogoForm(),
+      salvandoCatalogoFormLabel: s.salvandoCatalogoForm ? 'Salvando...' : 'Salvar alterações',
+      hasCatalogoFormErro: !!s.catalogoFormErro, catalogoFormErro: s.catalogoFormErro,
 
       exportarBackupJson: () => this.exportarBackupJson(), exportarBackupPdf: () => this.exportarBackupPdf(),
       setBackupInput: (el) => { this._backupInput = el; }, triggerBackupUpload: () => { if (this._backupInput) this._backupInput.click(); },

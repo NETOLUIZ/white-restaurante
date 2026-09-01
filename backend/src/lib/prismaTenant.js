@@ -4,13 +4,16 @@ const { prismaBase } = require('./prismaBase');
 // (ver schema.prisma — não têm tenantId). Tenant: o próprio model de tenant não
 // pode ser escopado por si mesmo. SuperAdmin (Fase 6A): não pertence a
 // nenhum tenant — a extension tentaria injetar tenantId e o Prisma quebraria,
-// já que o model nem tem essa coluna.
+// já que o model nem tem essa coluna. ProdutoCatalogo: catálogo mestre do
+// super admin, também sem tenantId — a permissão por tenant vive em
+// CatalogoProdutoTenant (esse sim escopado normalmente).
 const MODELS_NAO_ESCOPADOS = new Set([
   'ItemPedidoAdicional',
   'ItemPedidoProteina',
   'ItemPedidoComplemento',
   'Tenant',
   'SuperAdmin',
+  'ProdutoCatalogo',
 ]);
 
 // findUnique/findUniqueOrThrow não aceitam tenantId solto no where quando a
