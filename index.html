@@ -174,7 +174,7 @@
         <div style="font-size:13px;color:var(--header-cor-saudacao, #8A1C12);font-weight:600;">{{ saudacao }}</div>
         <button onClick="{{ goCadastro }}" aria-label="Alterar endereço de entrega" style="display:flex;align-items:center;gap:5px;background:none;border:none;color:var(--header-cor-localizacao, #7A1209);padding:2px 0 0;cursor:pointer;font-weight:700;font-size:14px;text-align:left;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;">Entregar em: {{ enderecoCurto }}</span>
+          <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;min-width:0;">Entregar em: {{ enderecoCurto }}</span>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none;"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
       </div>

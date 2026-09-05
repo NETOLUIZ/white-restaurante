@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Cadastro de Produtos — Plataforma</title>
 <script src="scripts/support.js"></script>
+<script src="scripts/html5-qrcode.min.js"></script>
 </head>
 <body>
 <x-dc>
@@ -133,6 +134,7 @@
       <label class="pu-label" for="pu-cb">Código de barras</label>
       <div style="display:flex;gap:8px;">
         <input id="pu-cb" value="{{ draftCodigoBarras }}" onChange="{{ onDraftCodigoBarras }}" onKeyDown="{{ onCodigoBarrasKeyDown }}" inputmode="numeric" placeholder="Escaneie ou digite o código" class="pu-input" autofocus/>
+        <button onClick="{{ abrirScanner }}" class="pu-btn pu-btn-ghost" style="flex:none;" aria-label="Escanear com a câmera">📷</button>
         <button onClick="{{ buscarCodigoBarras }}" disabled="{{ buscandoCodigoBarras }}" class="pu-btn pu-btn-secondary" style="flex:none;">{{ buscarBtnLabel }}</button>
       </div>
     </div>
@@ -201,6 +203,20 @@
   </div>
   </sc-if>
 
+  <sc-if value="{{ scannerAberto }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.78);display:flex;align-items:center;justify-content:center;padding:20px;">
+      <div class="pu-card" style="width:100%;max-width:420px;padding:20px;animation:puUp .2s ease-out;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <h2 style="font-weight:700;font-size:15px;">Escaneie o código de barras</h2>
+          <button onClick="{{ fecharScanner }}" class="pu-btn pu-btn-text" aria-label="Fechar câmera">✕</button>
+        </div>
+        <div id="pu-scanner-viewport" ref="{{ setScannerViewport }}" style="width:100%;aspect-ratio:1;background:#000;border-radius:var(--pu-radius-md);overflow:hidden;"></div>
+        <sc-if value="{{ hasScannerErro }}" hint-placeholder-val="{{ false }}"><p role="alert" style="margin:12px 0 0;font-size:13px;font-weight:600;color:var(--pu-danger);">{{ scannerErro }}</p></sc-if>
+        <p style="margin:12px 0 0;font-size:12.5px;color:var(--pu-text-muted);text-align:center;">Aponte a câmera pro código de barras — o campo preenche sozinho quando detectar.</p>
+      </div>
+    </div>
+  </sc-if>
+
   <sc-if value="{{ hasToast }}" hint-placeholder-val="{{ false }}">
     <div role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1D1009;color:#fff;padding:12px 20px;border-radius:var(--pu-radius-sm);font-size:13.5px;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.3);z-index:100;max-width:90vw;text-align:center;">{{ toast }}</div>
   </sc-if>
@@ -228,6 +244,8 @@ class Component extends DCLogic {
     mostrandoNovaCategoria: false,
     novaCategoriaNome: '',
     salvandoCategoria: false,
+    scannerAberto: false,
+    scannerErro: '',
     toast: '',
   };
 
@@ -326,6 +344,40 @@ class Component extends DCLogic {
       this.showToast(e.status === 404 ? 'Código não encontrado na base Open Food Facts' : (e.message || 'Erro ao buscar código de barras'));
     }
     this.setState({ buscandoCodigoBarras:false });
+  }
+
+  abrirScanner(){ this.setState({ scannerAberto:true, scannerErro:'' }); }
+  fecharScanner(){ this.setState({ scannerAberto:false }); }
+  /** ref do container da câmera — chamado com o elemento ao abrir o modal e
+   * com null ao fechar (React), ponto certo pra start/stop do html5-qrcode
+   * sem depender de timing manual. */
+  setScannerViewport(el){
+    if (el) {
+      this._scannerFechando = false;
+      const scanner = new Html5Qrcode(el.id);
+      this._scanner = scanner;
+      scanner.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: { width: 250, height: 150 } },
+        (texto) => this.onCodigoEscaneado(texto),
+        () => {}, // callback de frame sem código — dispara o tempo todo, sem ação
+      ).catch(() => {
+        this.setState({ scannerErro: 'Não foi possível acessar a câmera. Verifique a permissão do navegador.' });
+      });
+    } else if (this._scanner) {
+      const scanner = this._scanner;
+      this._scanner = null;
+      scanner.stop().then(() => scanner.clear()).catch(() => {});
+    }
+  }
+  onCodigoEscaneado(texto){
+    if (this._scannerFechando) return; // start() continua chamando o callback nos frames seguintes até o stop() (assíncrono) terminar
+    this._scannerFechando = true;
+    const codigo = String(texto || '').replace(/\D/g, '');
+    this.fecharScanner();
+    if (!codigo) return;
+    this.setState(s => ({ draft:{ ...s.draft, codigoBarras:codigo } }));
+    this.buscarCodigoBarras();
   }
 
   toggleNovaCategoria(){ this.setState(s => ({ mostrandoNovaCategoria: !s.mostrandoNovaCategoria, novaCategoriaNome:'' })); }
@@ -438,6 +490,9 @@ class Component extends DCLogic {
       onCodigoBarrasKeyDown:(e) => this.onCodigoBarrasKeyDown(e),
       buscarCodigoBarras:() => this.buscarCodigoBarras(), buscandoCodigoBarras: s.buscandoCodigoBarras,
       buscarBtnLabel: s.buscandoCodigoBarras ? '...' : 'Buscar',
+      abrirScanner:() => this.abrirScanner(), fecharScanner:() => this.fecharScanner(),
+      scannerAberto: s.scannerAberto, setScannerViewport:(el) => this.setScannerViewport(el),
+      hasScannerErro: !!s.scannerErro, scannerErro: s.scannerErro,
       draftNome: s.draft.nome, onDraftNome:(e) => this.onDraftNome(e),
       draftCategoriaId: s.draft.categoriaId, onDraftCategoria:(e) => this.onDraftCategoria(e),
       draftPorPeso: s.draft.porPeso, toggleDraftPorPeso:() => this.toggleDraftPorPeso(),
